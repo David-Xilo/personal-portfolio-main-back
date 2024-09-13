@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 	"safehouse-main-back/src/internal/models"
@@ -12,9 +13,9 @@ type NewsWithTopic struct {
 	TopicOfTheSeason *models.TopicOfTheSeasons `json:"topic_of_the_season"`
 }
 
-func GetNewsByGenre(w http.ResponseWriter, genre models.NewsGenres, db *gorm.DB) {
+func GetNewsByGenre(c *gin.Context, genre models.NewsGenres, db *gorm.DB) {
 	newsList := getNews(genre, db)
-	GetJSONData(w, newsList)
+	c.JSON(http.StatusOK, gin.H{"message": newsList})
 }
 
 func getNews(genre models.NewsGenres, db *gorm.DB) []*models.News {
@@ -34,12 +35,12 @@ func getNews(genre models.NewsGenres, db *gorm.DB) []*models.News {
 	return newsList // Return the list of news if found
 }
 
-func GetTopicOfTheSeasonByGenre(w http.ResponseWriter, genre models.NewsGenres, db *gorm.DB) {
+func GetTopicOfTheSeasonByGenre(c *gin.Context, genre models.NewsGenres, db *gorm.DB) {
 	result, err := getTopNewsWithTopic(genre, db)
 	if err != nil {
 		panic(err)
 	}
-	GetJSONData(w, result)
+	c.JSON(http.StatusOK, gin.H{"message": result})
 }
 
 func getTopNewsWithTopic(genre models.NewsGenres, db *gorm.DB) (*NewsWithTopic, error) {

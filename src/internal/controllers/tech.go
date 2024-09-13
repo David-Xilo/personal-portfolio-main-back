@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 	"safehouse-main-back/src/internal/models"
@@ -13,31 +14,28 @@ type TechController struct {
 	db *gorm.DB
 }
 
-func (tc *TechController) HandleTechRequest(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	switch r.Method {
-	case http.MethodGet:
-		tc.handleGetRequest(w, r)
-	default:
-		// Return an error for unsupported HTTP methods
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
+func (tc *TechController) RegisterRoutes(router *gin.Engine) {
+	router.GET("/tech/intro", tc.handleIntro)
+	router.GET("/tech/news", tc.handleNews)
+	router.GET("/tech/news/topic-of-the-season", tc.handleTopicOfTheSeason)
+	router.GET("/tech/projects", tc.handleProjects)
 }
 
-func (tc *TechController) handleGetRequest(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/intro":
-		service.GetJSONSimpleStringMessage(w, "This is the Tech Intro screen.")
-	case "/news":
-		service.GetNewsByGenre(w, models.NewsGenreTech, tc.db)
-	case "/news/topic-of-the-season":
-		service.GetTopicOfTheSeasonByGenre(w, models.NewsGenreTech, tc.db)
-	case "/projects":
-		tc.getProjectsRequest(w)
-	default:
-		http.NotFound(w, r)
-	}
+func (tc *TechController) handleIntro(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "This is the Tech Intro screen."})
+}
+
+func (tc *TechController) handleNews(c *gin.Context) {
+	service.GetNewsByGenre(c, models.NewsGenreTech, tc.db)
+}
+
+func (tc *TechController) handleTopicOfTheSeason(c *gin.Context) {
+	service.GetTopicOfTheSeasonByGenre(c, models.NewsGenreTech, tc.db)
+}
+
+func (tc *TechController) handleProjects(c *gin.Context) {
+	projects := tc.getProjects()
+	c.JSON(http.StatusOK, gin.H{"message": projects})
 }
 
 func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {

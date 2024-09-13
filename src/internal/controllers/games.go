@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 	"safehouse-main-back/src/internal/models"
@@ -12,52 +13,53 @@ type GamesController struct {
 	db *gorm.DB
 }
 
-// @Summary Games list
-// @Description Returns a list of games
-// @Tags games
-// @Produce json
-// @Success 200 {object} []string
-// @Router /games [get]
-func (gc *GamesController) HandleGamesRequest(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	switch r.Method {
-	case http.MethodGet:
-		gc.handleGetRequest(w, r)
-	case http.MethodPost:
-		gc.handlePostRequest(w, r)
-	default:
-		// Return an error for unsupported HTTP methods
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
+type GamesFilter struct {
+	Genre  string `json:"genre"`
+	Rating *int   `json:"rating"`
 }
 
-func (gc *GamesController) handleGetRequest(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/intro":
-		service.GetJSONSimpleStringMessage(w, "Welcome to the games intro!")
-	case "/news":
-		service.GetNewsByGenre(w, models.NewsGenreGaming, gc.db)
-	case "/news/topic-of-the-season":
-		service.GetTopicOfTheSeasonByGenre(w, models.NewsGenreGaming, gc.db)
-	case "/genres":
-		getGameGenres(w)
-	case "/projects":
-		gc.getGamesRequest(w)
-	default:
-		// Handle other /games routes or return 404 error
-		http.NotFound(w, r)
-	}
+func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
+	router.GET("/games/intro", gc.handleIntro)
+	router.GET("/games/news", gc.handleNews)
+	router.GET("/games/news/topic-of-the-season", gc.handleTopicOfTheSeason)
+	router.GET("/games/genres", gc.handleGenres)
+	router.GET("/games/projects", gc.handleProjects)
+
+	router.POST("/games/filter", gc.handleGamesFiltered)
 }
 
-func getGameGenres(w http.ResponseWriter) {
-	genres := models.GetAllGameGenres()
-	service.GetJSONData(w, genres)
+func (gc *GamesController) handleIntro(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "This is the Tech Intro screen."})
 }
 
-func (gc *GamesController) getGamesRequest(w http.ResponseWriter) {
+func (gc *GamesController) handleNews(c *gin.Context) {
+	service.GetNewsByGenre(c, models.NewsGenreTech, gc.db)
+}
+
+func (gc *GamesController) handleTopicOfTheSeason(c *gin.Context) {
+	service.GetTopicOfTheSeasonByGenre(c, models.NewsGenreTech, gc.db)
+}
+
+func (gc *GamesController) handleProjects(c *gin.Context) {
 	games := getGames(gc.db)
-	service.GetJSONData(w, games)
+	c.JSON(http.StatusOK, gin.H{"message": games})
+}
+
+func (gc *GamesController) handleGenres(c *gin.Context) {
+	genres := models.GetAllGameGenres()
+	c.JSON(http.StatusOK, gin.H{"message": genres})
+}
+
+func (gc *GamesController) handleGamesFiltered(c *gin.Context) {
+	var filter GamesFilter
+
+	if err := c.ShouldBind(&filter); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter"})
+		return
+	}
+
+	games := getGamesFiltered(gc.db, filter)
+	c.JSON(http.StatusOK, gin.H{"message": games})
 }
 
 func getGames(db *gorm.DB) []*models.Games {
@@ -76,26 +78,28 @@ func getGames(db *gorm.DB) []*models.Games {
 	return games
 }
 
-func (gc *GamesController) handlePostRequest(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/games/filter":
-		gc.getGamesFilteredByGenre(w, r)
-	default:
-		http.NotFound(w, r)
-	}
-}
+func getGamesFiltered(db *gorm.DB, filter GamesFilter) []*models.Games {
+	var games []*models.Games
 
-func (gc *GamesController) getGamesFilteredByGenre(w http.ResponseWriter, r *http.Request) {
-	result, err := gc.filterGames(w, r)
-	if err != nil {
+	genre := filter.Genre
+	rating := filter.Rating
+
+	query := db.Order("created_at desc").Limit(5)
+
+	if genre != "" {
+		query = query.Where("genre = ?", genre)
+	}
+
+	if rating != nil && *rating >= 0 {
+		query = query.Where("rating = ?", *rating)
+	}
+
+	if err := query.Find(&games).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []*models.Games{}
+		}
 		panic(err)
 	}
-	service.GetJSONData(w, result)
-}
 
-func (gc *GamesController) filterGames(w http.ResponseWriter, r *http.Request) ([]*models.Games, error) {
-
-	var results []*models.Games
-
-	return results, nil
+	return games
 }
