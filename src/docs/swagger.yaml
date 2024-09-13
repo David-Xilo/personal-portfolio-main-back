@@ -1,0 +1,87 @@
+basePath: /api/v1
+host: localhost:4000
+info:
+  contact: {}
+  description: API for Safehouse application.
+  title: Safehouse API
+  version: "1.0"
+paths:
+  /about/contact:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get about information
+      tags:
+      - about
+  /about/contact-text:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get about information
+      tags:
+      - about
+  /about/intro:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+      summary: Get about information
+      tags:
+      - about
+  /games:
+    get:
+      description: Returns a list of games
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Games list
+      tags:
+      - games
+  /tech:
+    get:
+      description: Returns technical details of the application
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Tech information
+      tags:
+      - tech
+swagger: "2.0"
