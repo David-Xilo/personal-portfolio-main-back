@@ -3,28 +3,17 @@ package controllers
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
 )
 
+type Controller interface {
+	RegisterRoutes(router *gin.Engine)
+}
+
 func SetupRoutes(dbClient *gorm.DB) *gin.Engine {
-
+	controllers := getControllers(dbClient)
 	router := createRouter()
-
-	aboutController := &AboutController{db: dbClient}
-	aboutController.RegisterRoutes(router)
-
-	techController := &TechController{db: dbClient}
-	techController.RegisterRoutes(router)
-
-	gamesController := &GamesController{db: dbClient}
-	gamesController.RegisterRoutes(router)
-
-	financeController := &FinanceController{db: dbClient}
-	financeController.RegisterRoutes(router)
-
+	registerAllRoutes(router, controllers)
 	return router
 }
 
@@ -40,26 +29,26 @@ func createRouter() *gin.Engine {
 	return router
 }
 
-// This needs to be more secure
-func addSwagger() {
-	http.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Hit swagger /swagger/doc.json")
-		http.ServeFile(w, r, "./docs/swagger.json")
-	})
-	http.Handle("/swagger/", httpSwagger.WrapHandler)
+func getControllers(dbClient *gorm.DB) []Controller {
+	var controllers []Controller
+
+	aboutController := &AboutController{db: dbClient}
+	controllers = append(controllers, aboutController)
+
+	techController := &TechController{db: dbClient}
+	controllers = append(controllers, techController)
+
+	gamesController := &GamesController{db: dbClient}
+	controllers = append(controllers, gamesController)
+
+	financeController := &FinanceController{db: dbClient}
+	controllers = append(controllers, financeController)
+
+	return controllers
 }
 
-func addCORSHeaders(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		if origin := req.Header.Get("Origin"); origin != "" {
-			rw.Header().Set("Access-Control-Allow-Origin", origin)
-			rw.Header().Set("Access-Control-Allow-Methods",
-				"POST, GET, PUT, DELETE")
-			rw.Header().Set("Access-Control-Allow-Headers",
-				"Accept, Accept-Language, Content-Type,")
-		}
-
-		// Call the next handler
-		next.ServeHTTP(rw, req)
-	})
+func registerAllRoutes(router *gin.Engine, controllers []Controller) {
+	for _, controller := range controllers {
+		controller.RegisterRoutes(router)
+	}
 }
