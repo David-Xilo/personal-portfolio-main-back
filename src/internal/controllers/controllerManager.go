@@ -21,17 +21,9 @@ func SetupRoutes(dbClient *gorm.DB) *gin.Engine {
 
 	gamesController := &GamesController{db: dbClient}
 	gamesController.RegisterRoutes(router)
-	//financeController := &finance.Controller{DBClient: dbClient}
 
-	// Define the routes and corresponding handler functions
-	//aboutHandler := http.StripPrefix("/about", http.HandlerFunc(aboutController.HandleAboutRequest))
-	//techHandler := http.StripPrefix("/tech", http.HandlerFunc(techController.HandleTechRequest))
-	//gamesHandler := http.StripPrefix("/games", http.HandlerFunc(gamesController.HandleGamesRequest))
-	//financeHandler := http.StripPrefix("/finance", http.HandlerFunc(financeController.HandleFinanceRequest))
-	//http.Handle("/about/", addCORSHeaders(aboutHandler))
-	//http.Handle("/tech/", addCORSHeaders(techHandler))
-	//http.Handle("/games/", addCORSHeaders(gamesHandler))
-	//http.Handle("/finance/", addCORSHeaders(financeHandler))
+	financeController := &FinanceController{db: dbClient}
+	financeController.RegisterRoutes(router)
 
 	return router
 }

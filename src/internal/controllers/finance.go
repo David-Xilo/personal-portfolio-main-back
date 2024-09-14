@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
 	"safehouse-main-back/src/internal/models"
@@ -11,34 +12,35 @@ type FinanceController struct {
 	db *gorm.DB
 }
 
-func (fc *FinanceController) HandleFinanceRequest(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	switch r.Method {
-	case http.MethodGet:
-		fc.handleGetRequest(w, r)
-	default:
-		// Return an error for unsupported HTTP methods
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	}
+func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
+	router.GET("/finance/intro", fc.handleIntro)
+	router.GET("/finance/news", fc.handleNews)
+	router.GET("/finance/news/topic-of-the-season", fc.handleTopicOfTheSeason)
+	//router.GET("/finance/timeframes", fc.handleTimeframes)
+	//router.GET("/finance/assets", fc.handleProjects)
+	//router.GET("/finance/data/{asset}/{timeframe}", fc.handleData)
 }
 
-func (fc *FinanceController) handleGetRequest(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/intro":
-		service.GetJSONSimpleStringMessage(w, "This is the finance Intro screen.")
-	case "/news":
-		service.GetNewsByGenre(w, models.NewsGenreFinance, fc.db)
-	case "/news/topic-of-the-season":
-		service.GetTopicOfTheSeasonByGenre(w, models.NewsGenreFinance, fc.db)
-	case "/timeframes":
-		service.GetJSONSimpleStringMessage(w, "This is the finance studies screen.")
-	case "/assets":
-		service.GetJSONSimpleStringMessage(w, "This is the finance studies screen.")
-	case "/data/{asset}/{timeframe}":
-		service.GetJSONSimpleStringMessage(w, "This is the finance studies screen.")
-	default:
-		// Handle other /games routes or return 404 error
-		http.NotFound(w, r)
-	}
+func (fc *FinanceController) handleIntro(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "This is the Finance Intro screen."})
 }
+
+func (fc *FinanceController) handleNews(c *gin.Context) {
+	service.GetNewsByGenre(c, models.NewsGenreTech, fc.db)
+}
+
+func (fc *FinanceController) handleTopicOfTheSeason(c *gin.Context) {
+	service.GetTopicOfTheSeasonByGenre(c, models.NewsGenreTech, fc.db)
+}
+
+//func (fc *FinanceController) handleTimeframes(c *gin.Context) {
+//	c.JSON(http.StatusOK, gin.H{"message": "This is Timeframes"})
+//}
+//
+//func (fc *FinanceController) handleAssets(c *gin.Context) {
+//	c.JSON(http.StatusOK, gin.H{"message": "This is Assets"})
+//}
+//
+//func (fc *FinanceController) handleData(c *gin.Context) {
+//	c.JSON(http.StatusOK, gin.H{"message": "This is data"})
+//}
