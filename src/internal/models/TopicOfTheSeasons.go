@@ -1,7 +1,6 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
@@ -18,7 +17,10 @@ const (
 )
 
 type TopicOfTheSeasons struct {
-	gorm.Model
+	ID             uint           `json:"id"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      *time.Time     `json:"deleted_at,omitempty"`
 	Topic          string         `json:"topic"`
 	Genre          NewsGenres     `json:"genre"`
 	TopicTimestamp time.Time      `json:"topic_timestamp"`

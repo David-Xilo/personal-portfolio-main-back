@@ -1,6 +1,8 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+)
 
 type NewsSentiments string
 
@@ -20,7 +22,10 @@ const (
 )
 
 type News struct {
-	gorm.Model
+	ID           uint           `json:"id"`
+	CreatedAt    time.Time      `json:"created_at"`
+	UpdatedAt    time.Time      `json:"updated_at"`
+	DeletedAt    *time.Time     `json:"deleted_at,omitempty"`
 	Headline     string         `json:"headline"`
 	LinkToSource string         `json:"link-to-source"`
 	Description  string         `json:"description"`

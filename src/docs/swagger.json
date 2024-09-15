@@ -1,105 +1,34 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for Safehouse application.",
-        "title": "Safehouse API",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "host": "localhost:4000",
-    "basePath": "/api/v1",
     "paths": {
         "/about/contact": {
             "get": {
+                "description": "Get contact information from the database",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "about"
                 ],
-                "summary": "Get about information",
+                "summary": "Get contact information",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/models.Contacts"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/about/contact-text": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "about"
-                ],
-                "summary": "Get about information",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/about/intro": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "about"
-                ],
-                "summary": "Get about information",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/games": {
-            "get": {
-                "description": "Returns a list of games",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "games"
-                ],
-                "summary": "Games list",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
+                            "type": "object",
+                            "additionalProperties": {
                                 "type": "string"
                             }
                         }
@@ -107,16 +36,19 @@
                 }
             }
         },
-        "/tech": {
+        "/about/contact-text": {
             "get": {
-                "description": "Returns technical details of the application",
+                "description": "Get an introduction message for the about section",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "tech"
+                    "about"
                 ],
-                "summary": "Tech information",
+                "summary": "Get introduction about the app",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -127,6 +59,705 @@
                             }
                         }
                     }
+                }
+            }
+        },
+        "/about/intro": {
+            "get": {
+                "description": "Get an introduction message for the about section",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "about"
+                ],
+                "summary": "Get introduction about the app",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/finance/intro": {
+            "get": {
+                "description": "Returns an introductory message for the finance section",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "finance"
+                ],
+                "summary": "Get introduction to the finance section",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/finance/news": {
+            "get": {
+                "description": "Returns a list of news related to the finance genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "finance"
+                ],
+                "summary": "Get finance news",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.News"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/finance/news/topic-of-the-season": {
+            "get": {
+                "description": "Returns the topic of the season for the finance genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "finance"
+                ],
+                "summary": "Get topic of the season for finance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.NewsWithTopic"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/games/filter": {
+            "post": {
+                "description": "Filters the games based on genre and rating parameters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Filter games by genre and rating",
+                "parameters": [
+                    {
+                        "description": "Filter parameters for games",
+                        "name": "filter",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.GamesFilter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Games"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/games/genres": {
+            "get": {
+                "description": "Returns a list of all available game genres",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Get a list of game genres",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/games/intro": {
+            "get": {
+                "description": "Returns a brief introduction to the games section",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Get introduction to the games section",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/games/news": {
+            "get": {
+                "description": "Returns a list of news related to games",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Get news related to games",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.News"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/games/news/topic-of-the-season": {
+            "get": {
+                "description": "Returns the topic of the season for the games genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Get topic of the season for games",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.NewsWithTopic"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/games/projects": {
+            "get": {
+                "description": "Returns a list of projects related to games",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "games"
+                ],
+                "summary": "Get projects related to games",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Games"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tech/intro": {
+            "get": {
+                "description": "Returns an introductory message for the tech section",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tech"
+                ],
+                "summary": "Get introduction to the tech section",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tech/news": {
+            "get": {
+                "description": "Returns a list of news related to the tech genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tech"
+                ],
+                "summary": "Get tech news",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.News"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tech/news/topic-of-the-season": {
+            "get": {
+                "description": "Returns the topic of the season for the tech genre",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tech"
+                ],
+                "summary": "Get topic of the season for tech",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/service.NewsWithTopic"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tech/projects": {
+            "get": {
+                "description": "Returns a list of tech-related projects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tech"
+                ],
+                "summary": "Get projects related to tech",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TechProjects"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.GamesFilter": {
+            "type": "object",
+            "properties": {
+                "genre": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Contacts": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "linked-in": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GameGenres": {
+            "type": "string",
+            "enum": [
+                "undefined",
+                "strategy",
+                "table top"
+            ],
+            "x-enum-varnames": [
+                "GameGenreUndefined",
+                "GameGenreStrategy",
+                "GameGenreTableTop"
+            ]
+        },
+        "models.Games": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "genre": {
+                    "$ref": "#/definitions/models.GameGenres"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link_to_git": {
+                    "type": "string"
+                },
+                "link_to_store": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.News": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "genre": {
+                    "$ref": "#/definitions/models.NewsGenres"
+                },
+                "headline": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link-to-source": {
+                    "type": "string"
+                },
+                "sentiment": {
+                    "$ref": "#/definitions/models.NewsSentiments"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.NewsGenres": {
+            "type": "string",
+            "enum": [
+                "tech",
+                "gaming",
+                "finance"
+            ],
+            "x-enum-varnames": [
+                "NewsGenreTech",
+                "NewsGenreGaming",
+                "NewsGenreFinance"
+            ]
+        },
+        "models.NewsSentiments": {
+            "type": "string",
+            "enum": [
+                "undefined",
+                "good",
+                "indifferent",
+                "bad"
+            ],
+            "x-enum-varnames": [
+                "SentimentUndefined",
+                "SentimentGood",
+                "SentimentIndifferent",
+                "SentimentBad"
+            ]
+        },
+        "models.TechProjects": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "link-to-git": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TimeframeTypes": {
+            "type": "string",
+            "enum": [
+                "custom",
+                "1d",
+                "1w",
+                "1m",
+                "3m",
+                "6m",
+                "1y"
+            ],
+            "x-enum-varnames": [
+                "TimeframeCustom",
+                "Timeframe1D",
+                "Timeframe1W",
+                "Timeframe1M",
+                "Timeframe3M",
+                "Timeframe6M",
+                "Timeframe1Y"
+            ]
+        },
+        "models.TopicOfTheSeasons": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "custom_end": {
+                    "type": "string"
+                },
+                "custom_start": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "genre": {
+                    "$ref": "#/definitions/models.NewsGenres"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "topic": {
+                    "type": "string"
+                },
+                "topic_timestamp": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/models.TimeframeTypes"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.NewsWithTopic": {
+            "type": "object",
+            "properties": {
+                "news_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.News"
+                    }
+                },
+                "topic_of_the_season": {
+                    "$ref": "#/definitions/models.TopicOfTheSeasons"
                 }
             }
         }

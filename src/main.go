@@ -9,11 +9,6 @@ import (
 	"syscall"
 )
 
-// @title Safehouse API
-// @version 1.0
-// @description API for Safehouse application.
-// @host localhost:4000
-// @BasePath /api/v1
 func main() {
 	db := database.InitDB()
 
@@ -37,5 +32,8 @@ func main() {
 	router := controllers.SetupRoutes(db)
 
 	port := ":4000"
-	router.Run(port)
+	err := router.Run(port)
+	if err != nil {
+		return
+	}
 }

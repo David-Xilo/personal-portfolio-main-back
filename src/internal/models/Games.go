@@ -1,7 +1,7 @@
 package models
 
 import (
-	"gorm.io/gorm"
+	"time"
 )
 
 type GameGenres string
@@ -13,7 +13,10 @@ const (
 )
 
 type Games struct {
-	gorm.Model
+	ID          uint       `json:"id"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 	Title       string     `json:"title"`
 	Genre       GameGenres `json:"genre"`
 	Description string     `json:"description"`

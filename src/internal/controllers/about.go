@@ -14,19 +14,41 @@ type AboutController struct {
 
 func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/about/intro", ac.handleIntro)
-	router.GET("/about/contact", ac.getContactRequest)
+	router.GET("/about/contact", ac.handleContactRequest)
 	router.GET("/about/contact-text", ac.handleContactText)
 }
 
+// @Summary Get introduction about the app
+// @Description Get an introduction message for the about section
+// @Tags about
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]string
+// @Router /about/intro [get]
 func (ac *AboutController) handleIntro(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "This is the About Intro screen."})
 }
 
+// @Summary Get introduction about the app
+// @Description Get an introduction message for the about section
+// @Tags about
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]string
+// @Router /about/contact-text [get]
 func (ac *AboutController) handleContactText(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "This is the Contacts screen."})
 }
 
-func (ac *AboutController) getContactRequest(c *gin.Context) {
+// @Summary Get contact information
+// @Description Get contact information from the database
+// @Tags about
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} models.Contacts
+// @Failure 404 {object} map[string]string
+// @Router /about/contact [get]
+func (ac *AboutController) handleContactRequest(c *gin.Context) {
 	contact := ac.getContact()
 	if contact == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Contact not found"})

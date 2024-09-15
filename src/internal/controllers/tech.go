@@ -21,18 +21,49 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/tech/projects", tc.handleProjects)
 }
 
+// @Summary Get introduction to the tech section
+// @Description Returns an introductory message for the tech section
+// @Tags tech
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} map[string]string
+// @Router /tech/intro [get]
 func (tc *TechController) handleIntro(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "This is the Tech Intro screen."})
 }
 
+// @Summary Get tech news
+// @Description Returns a list of news related to the tech genre
+// @Tags tech
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []models.News
+// @Failure 404 {object} map[string]string
+// @Router /tech/news [get]
 func (tc *TechController) handleNews(c *gin.Context) {
 	service.GetNewsByGenre(c, models.NewsGenreTech, tc.db)
 }
 
+// @Summary Get topic of the season for tech
+// @Description Returns the topic of the season for the tech genre
+// @Tags tech
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} service.NewsWithTopic
+// @Failure 404 {object} map[string]string
+// @Router /tech/news/topic-of-the-season [get]
 func (tc *TechController) handleTopicOfTheSeason(c *gin.Context) {
 	service.GetTopicOfTheSeasonByGenre(c, models.NewsGenreTech, tc.db)
 }
 
+// @Summary Get projects related to tech
+// @Description Returns a list of tech-related projects
+// @Tags tech
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []models.TechProjects
+// @Failure 404 {object} map[string]string
+// @Router /tech/projects [get]
 func (tc *TechController) handleProjects(c *gin.Context) {
 	projects := tc.getProjects()
 	c.JSON(http.StatusOK, gin.H{"message": projects})

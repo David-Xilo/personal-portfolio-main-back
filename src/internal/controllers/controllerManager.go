@@ -1,9 +1,26 @@
+// @title safehouse
+// @version 1.0
+// @description safehouse documentation for backend
+// @termsOfService http://yourterms.com
+
+// @contact.name API Support
+// @contact.url http://www.support.com
+// @contact.email support@support.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:4000
+// @BasePath /
 package controllers
 
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
+	_ "safehouse-main-back/src/docs" // Replace with the correct package path
 )
 
 type Controller interface {
@@ -14,6 +31,10 @@ func SetupRoutes(dbClient *gorm.DB) *gin.Engine {
 	controllers := getControllers(dbClient)
 	router := createRouter()
 	registerAllRoutes(router, controllers)
+
+	// Add the Swagger route
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	return router
 }
 

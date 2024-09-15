@@ -28,8 +28,8 @@ WORKDIR /app
 # Copy the executable from the previous build stage
 COPY --from=build /app/main .
 
-# Copy the Swagger docs folder to the final image
-COPY --from=build /app/src/docs ./docs
+# Copy Swagger docs to the expected location
+COPY --from=build /app/src/docs /app/docs
 
 # Expose the port that the application listens on
 EXPOSE 4000
