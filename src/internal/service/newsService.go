@@ -18,7 +18,7 @@ func GetNewsByGenre(c *gin.Context, genre models.NewsGenres, db *gorm.DB) {
 	c.JSON(http.StatusOK, gin.H{"message": newsList})
 }
 
-func getNews(genre models.NewsGenres, db *gorm.DB) []*models.News {
+func getNews(genre models.NewsGenres, db *gorm.DB) []*models.NewsDTO {
 	var newsList []*models.News
 
 	if err := db.
@@ -27,12 +27,18 @@ func getNews(genre models.NewsGenres, db *gorm.DB) []*models.News {
 		Limit(5).
 		Find(&newsList).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.News{}
+			return []*models.NewsDTO{}
 		}
 		panic(err)
 	}
 
-	return newsList // Return the list of news if found
+	var newsDTOList []*models.NewsDTO
+	for _, newsItem := range newsList {
+		dto := models.ToNewsDTO(*newsItem)
+		newsDTOList = append(newsDTOList, &dto)
+	}
+
+	return newsDTOList
 }
 
 func GetTopicOfTheSeasonByGenre(c *gin.Context, genre models.NewsGenres, db *gorm.DB) {
