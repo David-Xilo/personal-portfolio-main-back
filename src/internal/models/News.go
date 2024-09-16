@@ -37,8 +37,8 @@ type NewsDTO struct {
 	Headline     string `json:"headline"`
 	LinkToSource string `json:"link_to_source"`
 	Description  string `json:"description"`
-	Sentiment    string `json:"sentiment"` // Assuming it's a string for simplicity
-	Genre        string `json:"genre"`     // Assuming it's a string for simplicity
+	Sentiment    string `json:"sentiment"`
+	Genre        string `json:"genre"`
 }
 
 func ToNewsDTO(news News) NewsDTO {
@@ -46,7 +46,17 @@ func ToNewsDTO(news News) NewsDTO {
 		Headline:     news.Headline,
 		LinkToSource: news.LinkToSource,
 		Description:  news.Description,
-		Sentiment:    string(news.Sentiment), // Adjust if it's an enum
-		Genre:        string(news.Genre),     // Adjust if it's an enum
+		Sentiment:    string(news.Sentiment),
+		Genre:        string(news.Genre),
 	}
+}
+
+func ToNewsListDTO(newsList []*News) []*NewsDTO {
+	var newsDTOList []*NewsDTO
+	for _, newsItem := range newsList {
+		dto := new(NewsDTO)
+		*dto = ToNewsDTO(*newsItem)
+		newsDTOList = append(newsDTOList, dto)
+	}
+	return newsDTOList
 }

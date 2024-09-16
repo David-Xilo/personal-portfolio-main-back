@@ -28,3 +28,23 @@ type TopicOfTheSeasons struct {
 	CustomStart    *time.Time     `json:"custom_start"`
 	CustomEnd      *time.Time     `json:"custom_end"`
 }
+
+type TopicOfTheSeasonDTO struct {
+	Topic          string         `json:"topic"`
+	Genre          NewsGenres     `json:"genre"`
+	TopicTimestamp time.Time      `json:"topic_timestamp"`
+	Type           TimeframeTypes `json:"type"`
+	CustomStart    *time.Time     `json:"custom_start"`
+	CustomEnd      *time.Time     `json:"custom_end"`
+}
+
+func ToTopicOfTheSeasonDTO(topicOfTheSeasons TopicOfTheSeasons) TopicOfTheSeasonDTO {
+	return TopicOfTheSeasonDTO{
+		Topic:          topicOfTheSeasons.Topic,
+		Genre:          topicOfTheSeasons.Genre,
+		TopicTimestamp: topicOfTheSeasons.TopicTimestamp,
+		Type:           topicOfTheSeasons.Type,
+		CustomStart:    topicOfTheSeasons.CustomStart,
+		CustomEnd:      topicOfTheSeasons.CustomEnd,
+	}
+}

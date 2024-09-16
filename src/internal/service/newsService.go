@@ -9,8 +9,8 @@ import (
 )
 
 type NewsWithTopic struct {
-	NewsList         []*models.News            `json:"news_list"`
-	TopicOfTheSeason *models.TopicOfTheSeasons `json:"topic_of_the_season"`
+	NewsList         []*models.NewsDTO           `json:"news_list"`
+	TopicOfTheSeason *models.TopicOfTheSeasonDTO `json:"topic_of_the_season"`
 }
 
 func GetNewsByGenre(c *gin.Context, genre models.NewsGenres, db *gorm.DB) {
@@ -32,13 +32,8 @@ func getNews(genre models.NewsGenres, db *gorm.DB) []*models.NewsDTO {
 		panic(err)
 	}
 
-	var newsDTOList []*models.NewsDTO
-	for _, newsItem := range newsList {
-		dto := models.ToNewsDTO(*newsItem)
-		newsDTOList = append(newsDTOList, &dto)
-	}
-
-	return newsDTOList
+	newsListDTO := models.ToNewsListDTO(newsList)
+	return newsListDTO
 }
 
 func GetTopicOfTheSeasonByGenre(c *gin.Context, genre models.NewsGenres, db *gorm.DB) {
@@ -75,8 +70,11 @@ func getTopNewsWithTopic(genre models.NewsGenres, db *gorm.DB) (*NewsWithTopic, 
 		panic(err)
 	}
 
+	newsListDTO := models.ToNewsListDTO(newsList)
+	topicOfTheSeasonDTO := models.ToTopicOfTheSeasonDTO(topicOfTheSeason)
+
 	return &NewsWithTopic{
-		NewsList:         newsList,
-		TopicOfTheSeason: &topicOfTheSeason,
+		NewsList:         newsListDTO,
+		TopicOfTheSeason: &topicOfTheSeasonDTO,
 	}, nil
 }
