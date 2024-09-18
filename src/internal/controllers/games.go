@@ -110,7 +110,7 @@ func (gc *GamesController) handleGamesFiltered(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": games})
 }
 
-func getGames(db *gorm.DB) []*models.Games {
+func getGames(db *gorm.DB) []*models.GamesDTO {
 	var games []*models.Games
 
 	if err := db.
@@ -118,15 +118,17 @@ func getGames(db *gorm.DB) []*models.Games {
 		Limit(5).
 		Find(&games).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.Games{}
+			return []*models.GamesDTO{}
 		}
 		panic(err)
 	}
 
-	return games
+	gamesDTOList := models.ToGamesListDTO(games)
+
+	return gamesDTOList
 }
 
-func getGamesFiltered(db *gorm.DB, filter GamesFilter) []*models.Games {
+func getGamesFiltered(db *gorm.DB, filter GamesFilter) []*models.GamesDTO {
 	var games []*models.Games
 
 	genre := filter.Genre
@@ -144,10 +146,12 @@ func getGamesFiltered(db *gorm.DB, filter GamesFilter) []*models.Games {
 
 	if err := query.Find(&games).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.Games{}
+			return []*models.GamesDTO{}
 		}
 		panic(err)
 	}
 
-	return games
+	gamesDTOList := models.ToGamesListDTO(games)
+
+	return gamesDTOList
 }
