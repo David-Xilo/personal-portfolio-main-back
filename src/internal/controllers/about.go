@@ -57,7 +57,7 @@ func (ac *AboutController) handleContactRequest(c *gin.Context) {
 	c.JSON(http.StatusOK, contact)
 }
 
-func (ac *AboutController) getContact() *models.Contacts {
+func (ac *AboutController) getContact() *models.ContactsDTO {
 	var contact models.Contacts
 	if err := ac.db.Where("active = ?", true).First(&contact).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -65,5 +65,6 @@ func (ac *AboutController) getContact() *models.Contacts {
 		}
 		panic(err)
 	}
-	return &contact
+	contactsDTO := models.ToContactsDTO(contact)
+	return &contactsDTO
 }

@@ -14,3 +14,19 @@ type Contacts struct {
 	LinkedIn  string     `json:"linked-in"`
 	Github    string     `json:"github"`
 }
+
+type ContactsDTO struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	LinkedIn string `json:"linked-in"`
+	Github   string `json:"github"`
+}
+
+func ToContactsDTO(contact Contacts) ContactsDTO {
+	return ContactsDTO{
+		Name:     contact.Name,
+		Email:    contact.Email,
+		LinkedIn: contact.LinkedIn,
+		Github:   contact.Github,
+	}
+}
