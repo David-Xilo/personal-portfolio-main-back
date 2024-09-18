@@ -22,8 +22,8 @@ type ContactsDTO struct {
 	Github   string `json:"github"`
 }
 
-func ToContactsDTO(contact Contacts) ContactsDTO {
-	return ContactsDTO{
+func ToContactsDTO(contact *Contacts) *ContactsDTO {
+	return &ContactsDTO{
 		Name:     contact.Name,
 		Email:    contact.Email,
 		LinkedIn: contact.LinkedIn,

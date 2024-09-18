@@ -65,6 +65,6 @@ func (ac *AboutController) getContact() *models.ContactsDTO {
 		}
 		panic(err)
 	}
-	contactsDTO := models.ToContactsDTO(contact)
-	return &contactsDTO
+	contactsDTO := models.ToContactsDTO(&contact)
+	return contactsDTO
 }

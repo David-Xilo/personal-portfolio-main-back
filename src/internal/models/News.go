@@ -41,8 +41,8 @@ type NewsDTO struct {
 	Genre        string `json:"genre"`
 }
 
-func ToNewsDTO(news News) NewsDTO {
-	return NewsDTO{
+func ToNewsDTO(news *News) *NewsDTO {
+	return &NewsDTO{
 		Headline:     news.Headline,
 		LinkToSource: news.LinkToSource,
 		Description:  news.Description,
@@ -54,8 +54,7 @@ func ToNewsDTO(news News) NewsDTO {
 func ToNewsListDTO(newsList []*News) []*NewsDTO {
 	var newsDTOList []*NewsDTO
 	for _, newsItem := range newsList {
-		dto := new(NewsDTO)
-		*dto = ToNewsDTO(*newsItem)
+		dto := ToNewsDTO(newsItem)
 		newsDTOList = append(newsDTOList, dto)
 	}
 	return newsDTOList

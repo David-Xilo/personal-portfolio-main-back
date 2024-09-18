@@ -20,8 +20,8 @@ type TechProjectsDTO struct {
 	LinkToGit   string `json:"link-to-git"`
 }
 
-func ToTechProjectsDTO(techProject TechProjects) TechProjectsDTO {
-	return TechProjectsDTO{
+func ToTechProjectsDTO(techProject *TechProjects) *TechProjectsDTO {
+	return &TechProjectsDTO{
 		Title:       techProject.Title,
 		Description: techProject.Description,
 		LinkToGit:   techProject.LinkToGit,
@@ -31,8 +31,7 @@ func ToTechProjectsDTO(techProject TechProjects) TechProjectsDTO {
 func ToTechProjectsDTOList(techProjects []*TechProjects) []*TechProjectsDTO {
 	var techProjectsDTOList []*TechProjectsDTO
 	for _, techProject := range techProjects {
-		dto := new(TechProjectsDTO)
-		*dto = ToTechProjectsDTO(*techProject)
+		dto := ToTechProjectsDTO(techProject)
 		techProjectsDTOList = append(techProjectsDTOList, dto)
 	}
 	return techProjectsDTOList

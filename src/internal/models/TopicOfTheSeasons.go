@@ -38,8 +38,8 @@ type TopicOfTheSeasonDTO struct {
 	CustomEnd      *time.Time     `json:"custom_end"`
 }
 
-func ToTopicOfTheSeasonDTO(topicOfTheSeasons TopicOfTheSeasons) TopicOfTheSeasonDTO {
-	return TopicOfTheSeasonDTO{
+func ToTopicOfTheSeasonDTO(topicOfTheSeasons *TopicOfTheSeasons) *TopicOfTheSeasonDTO {
+	return &TopicOfTheSeasonDTO{
 		Topic:          topicOfTheSeasons.Topic,
 		Genre:          topicOfTheSeasons.Genre,
 		TopicTimestamp: topicOfTheSeasons.TopicTimestamp,

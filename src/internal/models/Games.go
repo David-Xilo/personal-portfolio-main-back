@@ -40,8 +40,8 @@ func GetAllGameGenres() []GameGenres {
 	}
 }
 
-func ToGamesDTO(games Games) GamesDTO {
-	return GamesDTO{
+func ToGamesDTO(games *Games) *GamesDTO {
+	return &GamesDTO{
 		Title:       games.Title,
 		Genre:       games.Genre,
 		Description: games.Description,
@@ -53,8 +53,7 @@ func ToGamesDTO(games Games) GamesDTO {
 func ToGamesListDTO(games []*Games) []*GamesDTO {
 	var gamesDTOList []*GamesDTO
 	for _, game := range games {
-		dto := new(GamesDTO)
-		*dto = ToGamesDTO(*game)
+		dto := ToGamesDTO(game)
 		gamesDTOList = append(gamesDTOList, dto)
 	}
 	return gamesDTOList
