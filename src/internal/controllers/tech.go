@@ -74,14 +74,17 @@ func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {
 	service.GetJSONData(w, projects)
 }
 
-func (tc *TechController) getProjects() []*models.TechProjects {
+func (tc *TechController) getProjects() []*models.TechProjectsDTO {
 	var projects []*models.TechProjects
 
 	if err := tc.db.Limit(10).Find(&projects).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.TechProjects{}
+			return []*models.TechProjectsDTO{}
 		}
 		panic(err)
 	}
-	return projects
+
+	projectsDTOList := models.ToTechProjectsDTOList(projects)
+
+	return projectsDTOList
 }
