@@ -46,7 +46,7 @@ func GetTopicOfTheSeasonByGenre(c *gin.Context, genre models.NewsGenres, db *gor
 
 func getTopNewsWithTopic(genre models.NewsGenres, db *gorm.DB) (*NewsWithTopic, error) {
 	var newsList []*models.News
-	var topicOfTheSeason models.TopicOfTheSeasons
+	var topicOfTheSeason *models.TopicOfTheSeasons
 
 	if err := db.Where("genre = ?", genre).
 		Order("created_at desc").
@@ -75,6 +75,6 @@ func getTopNewsWithTopic(genre models.NewsGenres, db *gorm.DB) (*NewsWithTopic, 
 
 	return &NewsWithTopic{
 		NewsList:         newsListDTO,
-		TopicOfTheSeason: &topicOfTheSeasonDTO,
+		TopicOfTheSeason: topicOfTheSeasonDTO,
 	}, nil
 }
