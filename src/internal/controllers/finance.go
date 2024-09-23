@@ -37,7 +37,7 @@ func (fc *FinanceController) handleIntro(c *gin.Context) {
 // @Tags finance
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.News
+// @Success 200 {object} []models.NewsDTO
 // @Failure 404 {object} map[string]string
 // @Router /finance/news [get]
 func (fc *FinanceController) handleNews(c *gin.Context) {

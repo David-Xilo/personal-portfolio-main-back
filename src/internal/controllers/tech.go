@@ -37,7 +37,7 @@ func (tc *TechController) handleIntro(c *gin.Context) {
 // @Tags tech
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.News
+// @Success 200 {object} []models.NewsDTO
 // @Failure 404 {object} map[string]string
 // @Router /tech/news [get]
 func (tc *TechController) handleNews(c *gin.Context) {
@@ -61,7 +61,7 @@ func (tc *TechController) handleTopicOfTheSeason(c *gin.Context) {
 // @Tags tech
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.TechProjects
+// @Success 200 {object} []models.TechProjectsDTO
 // @Failure 404 {object} map[string]string
 // @Router /tech/projects [get]
 func (tc *TechController) handleProjects(c *gin.Context) {

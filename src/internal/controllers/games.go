@@ -44,7 +44,7 @@ func (gc *GamesController) handleIntro(c *gin.Context) {
 // @Tags games
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.News
+// @Success 200 {object} []models.NewsDTO
 // @Failure 404 {object} map[string]string
 // @Router /games/news [get]
 func (gc *GamesController) handleNews(c *gin.Context) {
@@ -68,7 +68,7 @@ func (gc *GamesController) handleTopicOfTheSeason(c *gin.Context) {
 // @Tags games
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.Games
+// @Success 200 {object} []models.GamesDTO
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
 func (gc *GamesController) handleProjects(c *gin.Context) {
@@ -95,7 +95,7 @@ func (gc *GamesController) handleGenres(c *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param filter body GamesFilter true "Filter parameters for games"
-// @Success 200 {object} []models.Games
+// @Success 200 {object} []models.GamesDTO
 // @Failure 400 {object} map[string]string
 // @Router /games/filter [post]
 func (gc *GamesController) handleGamesFiltered(c *gin.Context) {

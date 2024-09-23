@@ -45,7 +45,7 @@ func (ac *AboutController) handleContactText(c *gin.Context) {
 // @Tags about
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} models.Contacts
+// @Success 200 {object} models.ContactsDTO
 // @Failure 404 {object} map[string]string
 // @Router /about/contact [get]
 func (ac *AboutController) handleContactRequest(c *gin.Context) {
