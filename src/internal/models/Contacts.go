@@ -18,7 +18,7 @@ type Contacts struct {
 type ContactsDTO struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
-	LinkedIn string `json:"linked-in"`
+	LinkedIn string `json:"linkedin"`
 	Github   string `json:"github"`
 }
 

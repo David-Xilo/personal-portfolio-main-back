@@ -11,13 +11,13 @@ type TechProjects struct {
 	DeletedAt   *time.Time `json:"deleted_at,omitempty"`
 	Title       string     `json:"title"`
 	Description string     `json:"description"`
-	LinkToGit   string     `json:"link-to-git"`
+	LinkToGit   string     `json:"link_to_git"`
 }
 
 type TechProjectsDTO struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	LinkToGit   string `json:"link-to-git"`
+	LinkToGit   string `json:"link_to_git"`
 }
 
 func ToTechProjectsDTO(techProject *TechProjects) *TechProjectsDTO {

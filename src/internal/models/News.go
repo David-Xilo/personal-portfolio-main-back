@@ -27,7 +27,7 @@ type News struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 	DeletedAt    *time.Time     `json:"deleted_at,omitempty"`
 	Headline     string         `json:"headline"`
-	LinkToSource string         `json:"link-to-source"`
+	LinkToSource string         `json:"link_to_source"`
 	Description  string         `json:"description"`
 	Sentiment    NewsSentiments `json:"sentiment"`
 	Genre        NewsGenres     `json:"genre"`
