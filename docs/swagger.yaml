@@ -1,0 +1,200 @@
+definitions:
+  models.ContactsDTO:
+    properties:
+      email:
+        type: string
+      github:
+        type: string
+      linkedin:
+        type: string
+      name:
+        type: string
+    type: object
+  models.GameGenres:
+    enum:
+    - undefined
+    - strategy
+    - table top
+    type: string
+    x-enum-varnames:
+    - GameGenreUndefined
+    - GameGenreStrategy
+    - GameGenreTableTop
+  models.GamesDTO:
+    properties:
+      description:
+        type: string
+      genre:
+        $ref: '#/definitions/models.GameGenres'
+      link_to_git:
+        type: string
+      link_to_store:
+        type: string
+      title:
+        type: string
+    type: object
+  models.TechProjectsDTO:
+    properties:
+      description:
+        type: string
+      link_to_git:
+        type: string
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /about/contact:
+    get:
+      consumes:
+      - application/json
+      description: Get contact information from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ContactsDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get contact information
+      tags:
+      - about
+  /about/contact-text:
+    get:
+      consumes:
+      - application/json
+      description: Get an introduction message for the about section
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get introduction about the app
+      tags:
+      - about
+  /about/intro:
+    get:
+      consumes:
+      - application/json
+      description: Get an introduction message for the about section
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get introduction about the app
+      tags:
+      - about
+  /finance/intro:
+    get:
+      consumes:
+      - application/json
+      description: Returns an introductory message for the finance section
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get introduction to the finance section
+      tags:
+      - finance
+  /games/intro:
+    get:
+      consumes:
+      - application/json
+      description: Returns a brief introduction to the games section
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get introduction to the games section
+      tags:
+      - games
+  /games/projects:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of projects related to games
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.GamesDTO'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get projects related to games
+      tags:
+      - games
+  /tech/intro:
+    get:
+      consumes:
+      - application/json
+      description: Returns an introductory message for the tech section
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get introduction to the tech section
+      tags:
+      - tech
+  /tech/projects:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of tech-related projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TechProjectsDTO'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get projects related to tech
+      tags:
+      - tech
+swagger: "2.0"

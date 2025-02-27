@@ -19,20 +19,38 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"gorm.io/gorm"
-	_ "safehouse-main-back/src/docs" // Replace with the correct package path
+	"net/http"
+	_ "safehouse-main-back/docs"
+	"safehouse-main-back/src/internal/database"
+	"strings"
 )
 
 type Controller interface {
 	RegisterRoutes(router *gin.Engine)
 }
 
-func SetupRoutes(dbClient *gorm.DB) *gin.Engine {
-	controllers := getControllers(dbClient)
+func SetupRoutes(db database.Database) *gin.Engine {
+	controllers := getControllers(db)
 	router := createRouter()
 	registerAllRoutes(router, controllers)
 
 	// Add the Swagger route
+	router.GET("/", func(c *gin.Context) {
+		accept := c.Request.Header.Get("Accept")
+
+		// If it looks like a browser request (wants HTML)
+		if strings.Contains(accept, "text/html") {
+			c.Redirect(http.StatusFound, "/swagger/index.html")
+			return
+		}
+
+		// Otherwise, treat it as an API request
+		c.JSON(http.StatusOK, gin.H{
+			"status":        "API is running",
+			"documentation": "/swagger/index.html",
+			"version":       "1.0.0",
+		})
+	})
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
@@ -41,7 +59,7 @@ func SetupRoutes(dbClient *gorm.DB) *gin.Engine {
 func createRouter() *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -50,20 +68,20 @@ func createRouter() *gin.Engine {
 	return router
 }
 
-func getControllers(dbClient *gorm.DB) []Controller {
+func getControllers(db database.Database) []Controller {
 	var controllers []Controller
 
-	aboutController := &AboutController{db: dbClient}
+	aboutController := &AboutController{db: db}
 	controllers = append(controllers, aboutController)
 
-	techController := &TechController{db: dbClient}
+	techController := &TechController{db: db}
 	controllers = append(controllers, techController)
 
-	gamesController := &GamesController{db: dbClient}
+	gamesController := &GamesController{db: db}
 	controllers = append(controllers, gamesController)
 
-	financeController := &FinanceController{db: dbClient}
-	controllers = append(controllers, financeController)
+	//financeController := &FinanceController{db: db}
+	//controllers = append(controllers, financeController)
 
 	return controllers
 }

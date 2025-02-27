@@ -1,17 +1,16 @@
 package controllers
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
+	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/models"
 
 	"safehouse-main-back/src/internal/service"
 )
 
 type TechController struct {
-	db *gorm.DB
+	db database.Database
 }
 
 func (tc *TechController) RegisterRoutes(router *gin.Engine) {
@@ -39,26 +38,12 @@ func (tc *TechController) handleIntro(c *gin.Context) {
 // @Failure 404 {object} map[string]string
 // @Router /tech/projects [get]
 func (tc *TechController) handleProjects(c *gin.Context) {
-	projects := tc.getProjects()
+	projects, _ := tc.db.GetTechProjects()
 	c.JSON(http.StatusOK, gin.H{"message": projects})
 }
 
 func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {
-	projects := tc.getProjects()
-	service.GetJSONData(w, projects)
-}
-
-func (tc *TechController) getProjects() []*models.TechProjectsDTO {
-	var projects []*models.TechProjects
-
-	if err := tc.db.Limit(10).Find(&projects).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.TechProjectsDTO{}
-		}
-		panic(err)
-	}
-
+	projects, _ := tc.db.GetTechProjects()
 	projectsDTOList := models.ToTechProjectsDTOList(projects)
-
-	return projectsDTOList
+	service.GetJSONData(w, projectsDTOList)
 }

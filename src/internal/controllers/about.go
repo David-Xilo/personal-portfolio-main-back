@@ -1,15 +1,14 @@
 package controllers
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
+	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/models"
 )
 
 type AboutController struct {
-	db *gorm.DB
+	db database.Database
 }
 
 func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
@@ -49,22 +48,11 @@ func (ac *AboutController) handleContactText(c *gin.Context) {
 // @Failure 404 {object} map[string]string
 // @Router /about/contact [get]
 func (ac *AboutController) handleContactRequest(c *gin.Context) {
-	contact := ac.getContact()
+	contact, _ := ac.db.GetContact()
+	contactsDTO := models.ToContactsDTO(contact)
 	if contact == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Contact not found"})
 		return
 	}
-	c.JSON(http.StatusOK, contact)
-}
-
-func (ac *AboutController) getContact() *models.ContactsDTO {
-	var contact models.Contacts
-	if err := ac.db.Where("active = ?", true).First(&contact).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil
-		}
-		panic(err)
-	}
-	contactsDTO := models.ToContactsDTO(&contact)
-	return contactsDTO
+	c.JSON(http.StatusOK, contactsDTO)
 }

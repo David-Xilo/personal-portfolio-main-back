@@ -1,0 +1,66 @@
+package mockdb
+
+import (
+	"safehouse-main-back/src/internal/database"
+	"safehouse-main-back/src/internal/models"
+	"time"
+)
+
+type MockDB struct{}
+
+func NewMockDB() database.Database {
+	return &MockDB{}
+}
+
+func (m *MockDB) GetContact() (*models.Contacts, error) {
+	return &models.Contacts{
+		ID:        1,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      "Mock user",
+		Email:     "mock@example.com",
+		LinkedIn:  "linkedin.com/mockuser",
+		Github:    "github.com/mockuser",
+	}, nil
+}
+
+func (m *MockDB) GetTechProjects() ([]*models.TechProjects, error) {
+	return []*models.TechProjects{
+		{
+			ID:          1,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil, // Indicates the project is not deleted
+			Title:       "Sample Project",
+			Description: "This is a sample project used for testing purposes.",
+			LinkToGit:   "https://github.com/sample/sample-project",
+		},
+	}, nil
+}
+
+func (m *MockDB) GetGames() ([]*models.Games, error) {
+	return []*models.Games{
+		{
+			ID:          1,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil, // Indicates the game is not deleted
+			Title:       "Epic Adventure",
+			Genre:       models.GameGenreStrategy,
+			Description: "Embark on an epic journey through uncharted lands.",
+			LinkToGit:   "https://github.com/example/epic-adventure",
+			LinkToStore: "https://store.example.com/epic-adventure",
+		},
+		{
+			ID:          2,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil,
+			Title:       "Mystic Quest",
+			Genre:       models.GameGenreTableTop,
+			Description: "Dive into the mystic world and unravel its secrets.",
+			LinkToGit:   "https://github.com/example/mystic-quest",
+			LinkToStore: "https://store.example.com/mystic-quest",
+		},
+	}, nil
+}
