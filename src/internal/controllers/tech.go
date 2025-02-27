@@ -16,8 +16,6 @@ type TechController struct {
 
 func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/tech/intro", tc.handleIntro)
-	router.GET("/tech/news", tc.handleNews)
-	router.GET("/tech/news/topic-of-the-season", tc.handleTopicOfTheSeason)
 	router.GET("/tech/projects", tc.handleProjects)
 }
 
@@ -30,30 +28,6 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 // @Router /tech/intro [get]
 func (tc *TechController) handleIntro(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "This is the Tech Intro screen."})
-}
-
-// @Summary Get tech news
-// @Description Returns a list of news related to the tech genre
-// @Tags tech
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} []models.NewsDTO
-// @Failure 404 {object} map[string]string
-// @Router /tech/news [get]
-func (tc *TechController) handleNews(c *gin.Context) {
-	service.GetNewsByGenre(c, models.NewsGenreTech, tc.db)
-}
-
-// @Summary Get topic of the season for tech
-// @Description Returns the topic of the season for the tech genre
-// @Tags tech
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} service.NewsWithTopic
-// @Failure 404 {object} map[string]string
-// @Router /tech/news/topic-of-the-season [get]
-func (tc *TechController) handleTopicOfTheSeason(c *gin.Context) {
-	service.GetTopicOfTheSeasonByGenre(c, models.NewsGenreTech, tc.db)
 }
 
 // @Summary Get projects related to tech
