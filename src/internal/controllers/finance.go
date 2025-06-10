@@ -28,14 +28,14 @@ func (fc *FinanceController) handleIntro(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "This is the Finance Intro screen."})
 }
 
-// @Summary Get projects related to tech
-// @Description Returns a list of tech-related projects
-// @Tags tech
+// @Summary Get projects related to finance
+// @Description Returns a list of finance-related projects
+// @Tags finance
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.TechProjectsDTO
+// @Success 200 {object} []models.FinanceProjectsDTO
 // @Failure 404 {object} map[string]string
-// @Router /tech/projects [get]
+// @Router /finance/projects [get]
 func (fc *FinanceController) handleProjects(c *gin.Context) {
 	projects, _ := fc.db.GetFinanceProjects()
 	c.JSON(http.StatusOK, gin.H{"message": projects})
