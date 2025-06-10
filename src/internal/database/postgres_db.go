@@ -53,3 +53,16 @@ func (p *PostgresDB) GetTechProjects() ([]*models.TechProjects, error) {
 
 	return projects, nil
 }
+
+func (p *PostgresDB) GetFinanceProjects() ([]*models.FinanceProjects, error) {
+	var projects []*models.FinanceProjects
+
+	if err := p.db.Limit(10).Find(&projects).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []*models.FinanceProjects{}, nil
+		}
+		panic(err)
+	}
+
+	return projects, nil
+}

@@ -80,8 +80,8 @@ func getControllers(db database.Database) []Controller {
 	gamesController := &GamesController{db: db}
 	controllers = append(controllers, gamesController)
 
-	//financeController := &FinanceController{db: db}
-	//controllers = append(controllers, financeController)
+	financeController := &FinanceController{db: db}
+	controllers = append(controllers, financeController)
 
 	return controllers
 }

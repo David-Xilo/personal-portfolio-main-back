@@ -7,5 +7,6 @@ import (
 type Database interface {
 	GetContact() (*models.Contacts, error)
 	GetTechProjects() ([]*models.TechProjects, error)
+	GetFinanceProjects() ([]*models.FinanceProjects, error)
 	GetGames() ([]*models.Games, error)
 }
