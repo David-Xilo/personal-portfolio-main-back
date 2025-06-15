@@ -25,7 +25,12 @@ func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
 // @Success 200 {object} map[string]string
 // @Router /about/intro [get]
 func (ac *AboutController) handleIntro(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "This is the About Intro screen."})
+	aboutIntroMessage := "Hey! I’m David—great to see you here!\n " +
+		"I built a simple portfolio page a while back but kept postponing it—well, it’s finally live!\n " +
+		"I’m a Senior Software Engineer specializing in backend. " +
+		"I have a LOT of interests and tend to explore them fully, so expect to see some interesting projects here!\n " +
+		"You’ll also find my contact info and a peek into my passions. Enjoy exploring!"
+	c.JSON(http.StatusOK, gin.H{"message": aboutIntroMessage})
 }
 
 // @Summary Get introduction about the app
@@ -36,7 +41,8 @@ func (ac *AboutController) handleIntro(c *gin.Context) {
 // @Success 200 {object} map[string]string
 // @Router /about/contact-text [get]
 func (ac *AboutController) handleContactText(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "This is the Contacts screen."})
+	contactText := "This is my contact information. Don't hesitate in dropping a message if you want to connect!"
+	c.JSON(http.StatusOK, gin.H{"message": contactText})
 }
 
 // @Summary Get contact information

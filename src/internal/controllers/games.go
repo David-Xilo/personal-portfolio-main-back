@@ -28,7 +28,11 @@ func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
 // @Success 200 {object} map[string]string
 // @Router /games/intro [get]
 func (gc *GamesController) handleIntro(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "This is the Tech Intro screen."})
+	gamesIntroMessage := "This section is all about games.\n " +
+		"Since I was a kid I've loved video games, in fact, they were one of the main reasons I got interested in computers.\n " +
+		"This page might be empty (it is for sure emptier than I'd like), but I'll keep adding new games I've made here. " +
+		"Who knows — maybe one day you'll recognize one of the names!"
+	c.JSON(http.StatusOK, gin.H{"message": gamesIntroMessage})
 }
 
 // @Summary Get projects related to games

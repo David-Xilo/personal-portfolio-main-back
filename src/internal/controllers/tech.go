@@ -26,7 +26,12 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 // @Success 200 {object} map[string]string
 // @Router /tech/intro [get]
 func (tc *TechController) handleIntro(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "This is the Tech Intro screen."})
+	techIntroMessage := "Technology is always improving — and so am I.\n " +
+		"Technology is my bread and butter. I've grown around it, worked with it, and played with it — " +
+		"It's part of my personality and I try to learn and explore it as much as I can.\n " +
+		"I'll post my personal projects here as a way to keep myself accountable.\n" +
+		" Have fun exploring them!"
+	c.JSON(http.StatusOK, gin.H{"message": techIntroMessage})
 }
 
 // @Summary Get projects related to tech
