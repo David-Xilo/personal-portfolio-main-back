@@ -9,4 +9,5 @@ type Database interface {
 	GetTechProjects() ([]*models.TechProjects, error)
 	GetFinanceProjects() ([]*models.FinanceProjects, error)
 	GetGames() ([]*models.Games, error)
+	GetGamesPlayed() ([]*models.GamesPlayed, error)
 }

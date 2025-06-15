@@ -4,14 +4,6 @@ import (
 	"time"
 )
 
-type GameGenres string
-
-const (
-	GameGenreUndefined GameGenres = "undefined"
-	GameGenreStrategy  GameGenres = "strategy"
-	GameGenreTableTop  GameGenres = "table top"
-)
-
 type Games struct {
 	ID          uint       `json:"id"`
 	CreatedAt   time.Time  `json:"created_at"`
@@ -30,14 +22,6 @@ type GamesDTO struct {
 	Description string     `json:"description"`
 	LinkToGit   string     `json:"link_to_git"`
 	LinkToStore string     `json:"link_to_store"`
-}
-
-func GetAllGameGenres() []GameGenres {
-	return []GameGenres{
-		GameGenreUndefined,
-		GameGenreStrategy,
-		GameGenreTableTop,
-	}
 }
 
 func ToGamesDTO(games *Games) *GamesDTO {

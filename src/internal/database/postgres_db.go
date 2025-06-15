@@ -41,6 +41,22 @@ func (p *PostgresDB) GetGames() ([]*models.Games, error) {
 	return games, nil
 }
 
+func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
+	var gamesPlayed []*models.GamesPlayed
+
+	if err := p.db.
+		Order("created_at desc").
+		Limit(5).
+		Find(&gamesPlayed).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []*models.GamesPlayed{}, nil
+		}
+		panic(err)
+	}
+
+	return gamesPlayed, nil
+}
+
 func (p *PostgresDB) GetTechProjects() ([]*models.TechProjects, error) {
 	var projects []*models.TechProjects
 

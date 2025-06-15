@@ -38,6 +38,12 @@ func (m *MockDB) GetTechProjects() ([]*models.TechProjects, error) {
 	}, nil
 }
 
+func (m *MockDB) GetFinanceProjects() ([]*models.FinanceProjects, error) {
+	return []*models.FinanceProjects{
+		{},
+	}, nil
+}
+
 func (m *MockDB) GetGames() ([]*models.Games, error) {
 	return []*models.Games{
 		{
@@ -61,6 +67,71 @@ func (m *MockDB) GetGames() ([]*models.Games, error) {
 			Description: "Dive into the mystic world and unravel its secrets.",
 			LinkToGit:   "https://github.com/example/mystic-quest",
 			LinkToStore: "https://store.example.com/mystic-quest",
+		},
+	}, nil
+}
+
+func (m *MockDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
+	return []*models.GamesPlayed{
+		{
+			ID:          1,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil, // Indicates the game is not deleted
+			Title:       "Epic Adventure",
+			Genre:       models.GameGenreUndefined,
+			Rating:      4,
+			Description: "Embark on an epic journey through uncharted lands.",
+		},
+		{
+			ID:          2,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil,
+			Title:       "Mystic Quest",
+			Genre:       models.GameGenreTableTop,
+			Rating:      4,
+			Description: "Dive into the mystic world and unravel its secrets.",
+		},
+		{
+			ID:          3,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil,
+			Title:       "Mystic Quest",
+			Genre:       models.GameGenreStrategy,
+			Rating:      4,
+			Description: "Dive into the mystic world and unravel its secrets.",
+		},
+		{
+			ID:          4,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil,
+			Title:       "Mystic Quest",
+			Genre:       models.GameGenreRpg,
+			Rating:      4,
+			Description: "Dive into the mystic world and unravel its secrets.",
+		},
+		{
+			ID:          5,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil,
+			Title:       "Mystic Quest",
+			Genre:       models.GameGenreTableTop,
+			Rating:      4,
+			Description: "Dive into the mystic world and unravel its secrets.",
+		},
+		{
+			ID:          6,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			DeletedAt:   nil,
+			Title:       "Mystic Quest",
+			Genre:       models.GameGenreTableTop,
+			Rating:      4,
+			Description: "Dive into the mystic world and unravel its secrets.",
 		},
 	}, nil
 }

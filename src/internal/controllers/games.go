@@ -44,3 +44,18 @@ func (gc *GamesController) handleProjects(c *gin.Context) {
 	gamesDTOList := models.ToGamesListDTO(games)
 	c.JSON(http.StatusOK, gin.H{"message": gamesDTOList})
 }
+
+// @Summary Get projects related to games
+// @Description Returns a list of projects related to games
+// @Tags games
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []models.GamesPlayedDTO
+// @Failure 404 {object} map[string]string
+// @Router /games/projects [get]
+func (gc *GamesController) handleGamesPlayedCarousel(c *gin.Context) {
+	gamesPlayed, _ := gc.db.GetGamesPlayed()
+	firstFive := gamesPlayed[:min(len(gamesPlayed), 5)]
+	gamesPlayedDTOList := models.ToGamesPlayedListDTO(firstFive)
+	c.JSON(http.StatusOK, gin.H{"message": gamesPlayedDTOList})
+}
