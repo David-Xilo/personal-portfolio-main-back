@@ -6,7 +6,7 @@ const (
 	GameGenreUndefined GameGenres = "undefined"
 	GameGenreStrategy  GameGenres = "strategy"
 	GameGenreTableTop  GameGenres = "table top"
-	GameGenreRpg       GameGenres = "rpg"
+	GameGenreRpg       GameGenres = "RPG"
 )
 
 func GetAllGameGenres() []GameGenres {
