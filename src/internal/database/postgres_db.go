@@ -25,20 +25,58 @@ func (p *PostgresDB) GetContact() (*models.Contacts, error) {
 	return &contact, nil
 }
 
-func (p *PostgresDB) GetGames() ([]*models.Games, error) {
-	var games []*models.Games
+func (p *PostgresDB) GetGameProjects() ([]*models.ProjectGroups, error) {
+	var gameProjectGroups []*models.ProjectGroups
 
 	if err := p.db.
+		Preload("GameProjects").
+		Joins("JOIN game_projects ON project_groups.id = game_projects.project_group_id").
 		Order("created_at desc").
-		Limit(5).
-		Find(&games).Error; err != nil {
+		//Limit(10).
+		Find(&gameProjectGroups).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.Games{}, nil
+			return []*models.ProjectGroups{}, nil
 		}
 		panic(err)
 	}
 
-	return games, nil
+	return gameProjectGroups, nil
+}
+
+func (p *PostgresDB) GetTechProjects() ([]*models.ProjectGroups, error) {
+	var techProjectGroups []*models.ProjectGroups
+
+	if err := p.db.
+		Preload("TechProjects").
+		Joins("JOIN tech_projects ON project_groups.id = tech_projects.project_group_id").
+		Order("created_at desc").
+		//Limit(10).
+		Find(&techProjectGroups).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []*models.ProjectGroups{}, nil
+		}
+		panic(err)
+	}
+
+	return techProjectGroups, nil
+}
+
+func (p *PostgresDB) GetFinanceProjects() ([]*models.ProjectGroups, error) {
+	var financeProjectGroups []*models.ProjectGroups
+
+	if err := p.db.
+		Preload("FinanceProjects").
+		Joins("JOIN finance_projects ON project_groups.id = finance_projects.project_group_id").
+		Order("created_at desc").
+		//Limit(10).
+		Find(&financeProjectGroups).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []*models.ProjectGroups{}, nil
+		}
+		panic(err)
+	}
+
+	return financeProjectGroups, nil
 }
 
 func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
@@ -46,7 +84,7 @@ func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
 
 	if err := p.db.
 		Order("created_at desc").
-		Limit(5).
+		Limit(5). // limit for now, just in case
 		Find(&gamesPlayed).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return []*models.GamesPlayed{}, nil
@@ -55,30 +93,4 @@ func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
 	}
 
 	return gamesPlayed, nil
-}
-
-func (p *PostgresDB) GetTechProjects() ([]*models.TechProjects, error) {
-	var projects []*models.TechProjects
-
-	if err := p.db.Limit(10).Find(&projects).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.TechProjects{}, nil
-		}
-		panic(err)
-	}
-
-	return projects, nil
-}
-
-func (p *PostgresDB) GetFinanceProjects() ([]*models.FinanceProjects, error) {
-	var projects []*models.FinanceProjects
-
-	if err := p.db.Limit(10).Find(&projects).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.FinanceProjects{}, nil
-		}
-		panic(err)
-	}
-
-	return projects, nil
 }

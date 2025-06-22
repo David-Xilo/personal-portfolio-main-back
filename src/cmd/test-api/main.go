@@ -4,10 +4,11 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	mockdb "safehouse-main-back/src/test/mocks/database"
 	"syscall"
 
 	"safehouse-main-back/src/internal/controllers"
-	mockdb "safehouse-main-back/src/test/mocks/database"
+	//mockdb "safehouse-main-back/src/test/mocks/database"
 )
 
 func main() {

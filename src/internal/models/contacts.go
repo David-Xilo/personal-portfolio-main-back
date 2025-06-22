@@ -13,6 +13,7 @@ type Contacts struct {
 	Email     string     `json:"email"`
 	LinkedIn  string     `json:"linked-in"`
 	Github    string     `json:"github"`
+	Credly    string     `json:"credly"`
 }
 
 type ContactsDTO struct {
@@ -20,6 +21,7 @@ type ContactsDTO struct {
 	Email    string `json:"email"`
 	LinkedIn string `json:"linkedin"`
 	Github   string `json:"github"`
+	Credly   string `json:"credly"`
 }
 
 func ToContactsDTO(contact *Contacts) *ContactsDTO {
@@ -28,5 +30,6 @@ func ToContactsDTO(contact *Contacts) *ContactsDTO {
 		Email:    contact.Email,
 		LinkedIn: contact.LinkedIn,
 		Github:   contact.Github,
+		Credly:   contact.Credly,
 	}
 }

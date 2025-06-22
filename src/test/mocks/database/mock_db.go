@@ -24,8 +24,8 @@ func (m *MockDB) GetContact() (*models.Contacts, error) {
 	}, nil
 }
 
-func (m *MockDB) GetTechProjects() ([]*models.TechProjects, error) {
-	return []*models.TechProjects{
+func (m *MockDB) GetTechProjects() ([]*models.ProjectGroups, error) {
+	return []*models.ProjectGroups{
 		{
 			ID:          1,
 			CreatedAt:   time.Now(),
@@ -33,40 +33,40 @@ func (m *MockDB) GetTechProjects() ([]*models.TechProjects, error) {
 			DeletedAt:   nil, // Indicates the project is not deleted
 			Title:       "Sample Project",
 			Description: "This is a sample project used for testing purposes.",
-			LinkToGit:   "https://github.com/sample/sample-project",
+			//LinkToGit:   "https://github.com/sample/sample-project",
 		},
 	}, nil
 }
 
-func (m *MockDB) GetFinanceProjects() ([]*models.FinanceProjects, error) {
-	return []*models.FinanceProjects{
+func (m *MockDB) GetFinanceProjects() ([]*models.ProjectGroups, error) {
+	return []*models.ProjectGroups{
 		{},
 	}, nil
 }
 
-func (m *MockDB) GetGames() ([]*models.Games, error) {
-	return []*models.Games{
+func (m *MockDB) GetGameProjects() ([]*models.ProjectGroups, error) {
+	return []*models.ProjectGroups{
 		{
-			ID:          1,
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
-			DeletedAt:   nil, // Indicates the game is not deleted
-			Title:       "Epic Adventure",
-			Genre:       models.GameGenreStrategy,
+			ID:        1,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			DeletedAt: nil, // Indicates the game is not deleted
+			Title:     "Epic Adventure",
+			//Genre:       models.GameGenreStrategy,
 			Description: "Embark on an epic journey through uncharted lands.",
-			LinkToGit:   "https://github.com/example/epic-adventure",
-			LinkToStore: "https://store.example.com/epic-adventure",
+			//LinkToGit:   "https://github.com/example/epic-adventure",
+			//LinkToStore: "https://store.example.com/epic-adventure",
 		},
 		{
-			ID:          2,
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
-			DeletedAt:   nil,
-			Title:       "Mystic Quest",
-			Genre:       models.GameGenreTableTop,
+			ID:        2,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+			DeletedAt: nil,
+			Title:     "Mystic Quest",
+			//Genre:       models.GameGenreTableTop,
 			Description: "Dive into the mystic world and unravel its secrets.",
-			LinkToGit:   "https://github.com/example/mystic-quest",
-			LinkToStore: "https://store.example.com/mystic-quest",
+			//LinkToGit:   "https://github.com/example/mystic-quest",
+			//LinkToStore: "https://store.example.com/mystic-quest",
 		},
 	}, nil
 }

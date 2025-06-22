@@ -9,15 +9,6 @@ import (
 	"time"
 )
 
-//var config = DBConfig{
-//	Host:     os.Getenv("DB_HOST"),
-//	Port:     5432, // Example: can also be os.Getenv("DB_PORT")
-//	User:     os.Getenv("DB_USER"),
-//	Password: os.Getenv("DB_PASSWORD"),
-//	Dbname:   os.Getenv("DB_NAME"),
-//	Sslmode:  os.Getenv("DB_SSLMODE"),
-//}
-
 type DBConfig struct {
 	Host     string
 	Port     int
@@ -39,8 +30,6 @@ var config = DBConfig{
 func InitDB() *gorm.DB {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		config.Host, config.Port, config.User, config.Password, config.Dbname, config.Sslmode)
-
-	//"host=safehouse-db-container port=5432 user=safehouse-main-user password=mypassword dbname=safehouse-main-db sslmode=disable"
 
 	var db *gorm.DB
 	var err error
@@ -64,7 +53,6 @@ func InitDB() *gorm.DB {
 }
 
 func CloseDB(db *gorm.DB) error {
-	// Get the underlying sql.DB object and close it
 	sqlDB, err := db.DB()
 	if err != nil {
 		return err
@@ -78,8 +66,4 @@ func ValidateDBSchema(db *gorm.DB) {
 	if !db.Migrator().HasTable(&models.Contacts{}) {
 		log.Fatal("Database schema is outdated. Please run the migrations first.")
 	}
-
-	//if !db.Migrator().HasTable(&models.AnotherModel{}) {
-	//	log.Fatal("Another important table is missing!")
-	//}
 }

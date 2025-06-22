@@ -1,0 +1,49 @@
+package models
+
+import (
+	"time"
+)
+
+type GameProjects struct {
+	ID             uint       `json:"id"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+	DeletedAt      *time.Time `json:"deleted_at,omitempty"`
+	ProjectGroupID uint       `json:"project_group_id"`
+	Title          string     `json:"title"`
+	Genre          GameGenres `json:"genre"`
+	Rating         int        `json:"rating"`
+	Description    string     `json:"description"`
+	LinkToGit      string     `json:"link_to_git"`
+	LinkToStore    string     `json:"link_to_store"`
+
+	ProjectGroup ProjectGroups `json:"project_group,omitempty" gorm:"foreignKey:ProjectGroupID"`
+}
+
+type GameProjectsDTO struct {
+	Title       string     `json:"title"`
+	Genre       GameGenres `json:"genre"`
+	Rating      int        `json:"rating"`
+	Description string     `json:"description"`
+	LinkToGit   string     `json:"link_to_git"`
+	LinkToStore string     `json:"link_to_store"`
+}
+
+func ToGamesDTO(games *GameProjects) *GameProjectsDTO {
+	return &GameProjectsDTO{
+		Title:       games.Title,
+		Genre:       games.Genre,
+		Description: games.Description,
+		LinkToGit:   games.LinkToGit,
+		LinkToStore: games.LinkToStore,
+	}
+}
+
+func ToGamesListDTO(games []*GameProjects) []*GameProjectsDTO {
+	var gamesDTOList []*GameProjectsDTO
+	for _, game := range games {
+		dto := ToGamesDTO(game)
+		gamesDTOList = append(gamesDTOList, dto)
+	}
+	return gamesDTOList
+}
