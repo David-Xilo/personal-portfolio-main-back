@@ -31,6 +31,6 @@ func (fc *FinanceController) handleProjects(c *gin.Context) {
 
 func (fc *FinanceController) getProjectsRequest(w http.ResponseWriter) {
 	projects, _ := fc.db.GetFinanceProjects()
-	projectsDTOList := models.ToFinanceProjectsDTOList(projects)
+	projectsDTOList := models.ToProjectGroupsDTOList(projects)
 	service.GetJSONData(w, projectsDTOList)
 }

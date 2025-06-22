@@ -15,6 +15,7 @@ type AboutController struct {
 
 func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/about/contact", ac.handleContactRequest)
+	router.GET("/about/reviews/carousel", ac.handleReviewsCarouselRequest)
 }
 
 // @Summary Get contact information
@@ -40,7 +41,7 @@ func (ac *AboutController) handleContactRequest(c *gin.Context) {
 // @Tags about
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []*models.PersonalReviewsCarouselDTO
+// @Success 200 {array} models.PersonalReviewsCarouselDTO
 // @Failure 404 {object} map[string]string
 // @Router /about/reviews/carousel [get]
 func (ac *AboutController) handleReviewsCarouselRequest(c *gin.Context) {

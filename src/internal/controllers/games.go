@@ -29,8 +29,8 @@ func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
 func (gc *GamesController) handleProjects(c *gin.Context) {
-	games, _ := gc.db.GetGames()
-	gamesDTOList := models.ToGamesListDTO(games)
+	games, _ := gc.db.GetGameProjects()
+	gamesDTOList := models.ToProjectGroupsDTOList(games)
 	c.JSON(http.StatusOK, gin.H{"message": gamesDTOList})
 }
 

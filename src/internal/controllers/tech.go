@@ -32,6 +32,6 @@ func (tc *TechController) handleProjects(c *gin.Context) {
 
 func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {
 	projects, _ := tc.db.GetTechProjects()
-	projectsDTOList := models.ToTechProjectsDTOList(projects)
+	projectsDTOList := models.ToProjectGroupsDTOList(projects)
 	service.GetJSONData(w, projectsDTOList)
 }
