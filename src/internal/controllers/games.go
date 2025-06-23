@@ -25,7 +25,7 @@ func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
 // @Tags games
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.GameProjectsDTO
+// @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
 func (gc *GamesController) handleProjects(c *gin.Context) {

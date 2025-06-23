@@ -22,12 +22,13 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 // @Tags tech
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.TechProjectsDTO
+// @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /tech/projects [get]
 func (tc *TechController) handleProjects(c *gin.Context) {
 	projects, _ := tc.db.GetTechProjects()
-	c.JSON(http.StatusOK, gin.H{"message": projects})
+	projectsDTOList := models.ToProjectGroupsDTOList(projects)
+	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }
 
 func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {

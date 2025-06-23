@@ -13,9 +13,9 @@ type ProjectGroups struct {
 	Description string     `json:"description"`
 	ProjectType string     `json:"project_type"`
 
-	TechProjects    []TechProjects    `json:"tech_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
-	GameProjects    []GameProjects    `json:"game_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
-	FinanceProjects []FinanceProjects `json:"finance_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	TechProjects    []TechRepositories    `json:"tech_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	GameProjects    []GameRepositories    `json:"game_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	FinanceProjects []FinanceRepositories `json:"finance_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
 }
 
 type ProjectGroupsDTO struct {
@@ -23,31 +23,31 @@ type ProjectGroupsDTO struct {
 	Description string `json:"description"`
 	ProjectType string `json:"project_type"`
 
-	Projects []*ProjectsDTO `json:"projects,omitempty"`
+	Repositories []*RepositoriesDTO `json:"repositories,omitempty"`
 }
 
 func ToProjectGroupsDTO(projectGroup *ProjectGroups) *ProjectGroupsDTO {
-	var projectsDTOList []*ProjectsDTO
+	var repositoriesDTOList []*RepositoriesDTO
 	for _, techProject := range projectGroup.TechProjects {
 		dto := TechProjectsToProjectsDTO(&techProject)
-		projectsDTOList = append(projectsDTOList, dto)
+		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
 	for _, gameProject := range projectGroup.GameProjects {
 		dto := GameProjectsToProjectsDTO(&gameProject)
-		projectsDTOList = append(projectsDTOList, dto)
+		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
 	for _, financeProject := range projectGroup.FinanceProjects {
 		dto := FinanceProjectsToProjectsDTO(&financeProject)
-		projectsDTOList = append(projectsDTOList, dto)
+		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
 	return &ProjectGroupsDTO{
-		Title:       projectGroup.Title,
-		Description: projectGroup.Description,
-		ProjectType: projectGroup.ProjectType,
-		Projects:    projectsDTOList,
+		Title:        projectGroup.Title,
+		Description:  projectGroup.Description,
+		ProjectType:  projectGroup.ProjectType,
+		Repositories: repositoriesDTOList,
 	}
 }
 

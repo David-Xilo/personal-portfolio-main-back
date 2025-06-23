@@ -29,7 +29,7 @@ func (p *PostgresDB) GetGameProjects() ([]*models.ProjectGroups, error) {
 	var gameProjectGroups []*models.ProjectGroups
 
 	if err := p.db.
-		Preload("GameProjects").
+		Preload("GameRepositories").
 		Joins("JOIN game_projects ON project_groups.id = game_projects.project_group_id").
 		Order("created_at desc").
 		//Limit(10).
@@ -47,10 +47,10 @@ func (p *PostgresDB) GetTechProjects() ([]*models.ProjectGroups, error) {
 	var techProjectGroups []*models.ProjectGroups
 
 	if err := p.db.
+		Where("project_type = ?", "tech").
 		Preload("TechProjects").
-		Joins("JOIN tech_projects ON project_groups.id = tech_projects.project_group_id").
+		// REMOVE THIS LINE: Joins("JOIN tech_projects ON project_groups.id = tech_projects.project_group_id").
 		Order("created_at desc").
-		//Limit(10).
 		Find(&techProjectGroups).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return []*models.ProjectGroups{}, nil
@@ -65,7 +65,7 @@ func (p *PostgresDB) GetFinanceProjects() ([]*models.ProjectGroups, error) {
 	var financeProjectGroups []*models.ProjectGroups
 
 	if err := p.db.
-		Preload("FinanceProjects").
+		Preload("FinanceRepositories").
 		Joins("JOIN finance_projects ON project_groups.id = finance_projects.project_group_id").
 		Order("created_at desc").
 		//Limit(10).

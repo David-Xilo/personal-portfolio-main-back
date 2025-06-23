@@ -1,6 +1,6 @@
 package models
 
-type ProjectsDTO struct {
+type RepositoriesDTO struct {
 	Title       string     `json:"title"`
 	Genre       GameGenres `json:"genre"`
 	Rating      int        `json:"rating"`
@@ -9,8 +9,8 @@ type ProjectsDTO struct {
 	LinkToStore string     `json:"link_to_store"`
 }
 
-func GameProjectsToProjectsDTO(gameProject *GameProjects) *ProjectsDTO {
-	return &ProjectsDTO{
+func GameProjectsToProjectsDTO(gameProject *GameRepositories) *RepositoriesDTO {
+	return &RepositoriesDTO{
 		Title:       gameProject.Title,
 		Genre:       gameProject.Genre,
 		Rating:      gameProject.Rating,
@@ -20,24 +20,24 @@ func GameProjectsToProjectsDTO(gameProject *GameProjects) *ProjectsDTO {
 	}
 }
 
-func TechProjectsToProjectsDTO(techProject *TechProjects) *ProjectsDTO {
-	return &ProjectsDTO{
+func TechProjectsToProjectsDTO(techProject *TechRepositories) *RepositoriesDTO {
+	return &RepositoriesDTO{
 		Title:       techProject.Title,
 		Description: techProject.Description,
 		LinkToGit:   techProject.LinkToGit,
 	}
 }
 
-func FinanceProjectsToProjectsDTO(financeProjects *FinanceProjects) *ProjectsDTO {
-	return &ProjectsDTO{
+func FinanceProjectsToProjectsDTO(financeProjects *FinanceRepositories) *RepositoriesDTO {
+	return &RepositoriesDTO{
 		Title:       financeProjects.Title,
 		Description: financeProjects.Description,
 		LinkToGit:   financeProjects.LinkToGit,
 	}
 }
 
-func GameProjectsToProjectsDTOList(gameProjects []*GameProjects) []*ProjectsDTO {
-	var projectsDTO []*ProjectsDTO
+func GameProjectsToProjectsDTOList(gameProjects []*GameRepositories) []*RepositoriesDTO {
+	var projectsDTO []*RepositoriesDTO
 	for _, gameProject := range gameProjects {
 		dto := GameProjectsToProjectsDTO(gameProject)
 		projectsDTO = append(projectsDTO, dto)
@@ -45,8 +45,8 @@ func GameProjectsToProjectsDTOList(gameProjects []*GameProjects) []*ProjectsDTO 
 	return projectsDTO
 }
 
-func TechProjectsToProjectsDTOList(techProjects []*TechProjects) []*ProjectsDTO {
-	var projectsDTO []*ProjectsDTO
+func TechProjectsToProjectsDTOList(techProjects []*TechRepositories) []*RepositoriesDTO {
+	var projectsDTO []*RepositoriesDTO
 	for _, techProject := range techProjects {
 		dto := TechProjectsToProjectsDTO(techProject)
 		projectsDTO = append(projectsDTO, dto)
@@ -54,8 +54,8 @@ func TechProjectsToProjectsDTOList(techProjects []*TechProjects) []*ProjectsDTO 
 	return projectsDTO
 }
 
-func FinanceProjectsToProjectsDTOList(financeProjects []*FinanceProjects) []*ProjectsDTO {
-	var projectsDTO []*ProjectsDTO
+func FinanceProjectsToProjectsDTOList(financeProjects []*FinanceRepositories) []*RepositoriesDTO {
+	var projectsDTO []*RepositoriesDTO
 	for _, financeProject := range financeProjects {
 		dto := FinanceProjectsToProjectsDTO(financeProject)
 		projectsDTO = append(projectsDTO, dto)

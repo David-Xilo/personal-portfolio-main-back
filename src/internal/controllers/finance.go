@@ -21,7 +21,7 @@ func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
 // @Tags finance
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.FinanceProjectsDTO
+// @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /finance/projects [get]
 func (fc *FinanceController) handleProjects(c *gin.Context) {
