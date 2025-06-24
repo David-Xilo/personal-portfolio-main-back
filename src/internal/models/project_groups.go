@@ -27,7 +27,7 @@ type ProjectGroupsDTO struct {
 }
 
 func ToProjectGroupsDTO(projectGroup *ProjectGroups) *ProjectGroupsDTO {
-	var repositoriesDTOList []*RepositoriesDTO
+	repositoriesDTOList := make([]*RepositoriesDTO, 0)
 	for _, techProject := range projectGroup.TechRepositories {
 		dto := TechProjectsToProjectsDTO(&techProject)
 		repositoriesDTOList = append(repositoriesDTOList, dto)
@@ -52,7 +52,7 @@ func ToProjectGroupsDTO(projectGroup *ProjectGroups) *ProjectGroupsDTO {
 }
 
 func ToProjectGroupsDTOList(projectGroups []*ProjectGroups) []*ProjectGroupsDTO {
-	var projectGroupsDTOList []*ProjectGroupsDTO
+	projectGroupsDTOList := make([]*ProjectGroupsDTO, 0)
 	for _, techProject := range projectGroups {
 		dto := ToProjectGroupsDTO(techProject)
 		projectGroupsDTOList = append(projectGroupsDTOList, dto)

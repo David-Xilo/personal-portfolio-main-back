@@ -26,20 +26,19 @@ func (p *PostgresDB) GetContact() (*models.Contacts, error) {
 }
 
 func (p *PostgresDB) GetProjects(projectType models.ProjectType) ([]*models.ProjectGroups, error) {
-	var techProjectGroups []*models.ProjectGroups
+	var projectGroups []*models.ProjectGroups
 
 	if err := p.db.
 		Where("project_type = ?", projectType).
 		Preload("TechRepositories").
+		Preload("GameRepositories").
+		Preload("FinanceRepositories").
 		Order("created_at desc").
-		Find(&techProjectGroups).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.ProjectGroups{}, nil
-		}
-		panic(err)
+		Find(&projectGroups).Error; err != nil {
+		return []*models.ProjectGroups{}, err
 	}
 
-	return techProjectGroups, nil
+	return projectGroups, nil
 }
 
 func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
