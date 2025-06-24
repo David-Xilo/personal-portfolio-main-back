@@ -10,7 +10,7 @@ type PersonalReviewService struct {
 }
 
 func (rs *PersonalReviewService) GetAllReviews() []*models.PersonalReviewsCarouselDTO {
-	numberExtraReviews := rs.rng.Intn(10)
+	numberExtraReviews := rs.rng.Intn(5)
 	var allReviews []*models.PersonalReviewsCarouselDTO
 
 	goodReviews := rs.getFiveStarReviews()

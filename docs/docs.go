@@ -9,7 +9,16 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "http://yourterms.com",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.support.com",
+            "email": "support@support.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -47,9 +56,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/about/contact-text": {
+        "/about/reviews/carousel": {
             "get": {
-                "description": "Get an introduction message for the about section",
+                "description": "Get random reviews from random people, for the carousel component in the about section",
                 "consumes": [
                     "application/json"
                 ],
@@ -59,10 +68,19 @@ const docTemplate = `{
                 "tags": [
                     "about"
                 ],
-                "summary": "Get introduction about the app",
+                "summary": "Get random reviews from random people",
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.PersonalReviewsCarouselDTO"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -73,35 +91,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/about/intro": {
+        "/finance/projects": {
             "get": {
-                "description": "Get an introduction message for the about section",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "about"
-                ],
-                "summary": "Get introduction about the app",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/finance/intro": {
-            "get": {
-                "description": "Returns an introductory message for the finance section",
+                "description": "Returns a list of finance-related projects",
                 "consumes": [
                     "application/json"
                 ],
@@ -111,36 +103,22 @@ const docTemplate = `{
                 "tags": [
                     "finance"
                 ],
-                "summary": "Get introduction to the finance section",
+                "summary": "Get projects related to finance",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/models.ProjectGroupsDTO"
+                                }
                             }
                         }
-                    }
-                }
-            }
-        },
-        "/games/intro": {
-            "get": {
-                "description": "Returns a brief introduction to the games section",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "games"
-                ],
-                "summary": "Get introduction to the games section",
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -170,38 +148,12 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.GamesDTO"
+                                "$ref": "#/definitions/models.GamesPlayedDTO"
                             }
                         }
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/tech/intro": {
-            "get": {
-                "description": "Returns an introductory message for the tech section",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tech"
-                ],
-                "summary": "Get introduction to the tech section",
-                "responses": {
-                    "200": {
-                        "description": "OK",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -231,7 +183,10 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.TechProjectsDTO"
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/models.ProjectGroupsDTO"
+                                }
                             }
                         }
                     },
@@ -252,6 +207,9 @@ const docTemplate = `{
         "models.ContactsDTO": {
             "type": "object",
             "properties": {
+                "credly": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -271,15 +229,68 @@ const docTemplate = `{
             "enum": [
                 "undefined",
                 "strategy",
-                "table top"
+                "table top",
+                "RPG"
             ],
             "x-enum-varnames": [
                 "GameGenreUndefined",
                 "GameGenreStrategy",
-                "GameGenreTableTop"
+                "GameGenreTableTop",
+                "GameGenreRpg"
             ]
         },
-        "models.GamesDTO": {
+        "models.GamesPlayedDTO": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "genre": {
+                    "$ref": "#/definitions/models.GameGenres"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.PersonalReviewsCarouselDTO": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ProjectGroupsDTO": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "project_type": {
+                    "type": "string"
+                },
+                "repositories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.RepositoriesDTO"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.RepositoriesDTO": {
             "type": "object",
             "properties": {
                 "description": {
@@ -294,19 +305,8 @@ const docTemplate = `{
                 "link_to_store": {
                     "type": "string"
                 },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.TechProjectsDTO": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "link_to_git": {
-                    "type": "string"
+                "rating": {
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"
@@ -318,12 +318,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:4000",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "safehouse",
+	Description:      "safehouse documentation for backend",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

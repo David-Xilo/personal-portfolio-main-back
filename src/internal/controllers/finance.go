@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/models"
-	"safehouse-main-back/src/internal/service"
 )
 
 type FinanceController struct {
@@ -28,10 +27,4 @@ func (fc *FinanceController) handleProjects(c *gin.Context) {
 	projects, _ := fc.db.GetProjects(models.ProjectTypeFinance)
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
 	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
-}
-
-func (fc *FinanceController) getProjectsRequest(w http.ResponseWriter) {
-	projects, _ := fc.db.GetFinanceProjects()
-	projectsDTOList := models.ToProjectGroupsDTOList(projects)
-	service.GetJSONData(w, projectsDTOList)
 }

@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/models"
-
-	"safehouse-main-back/src/internal/service"
 )
 
 type TechController struct {
@@ -29,10 +27,4 @@ func (tc *TechController) handleProjects(c *gin.Context) {
 	projects, _ := tc.db.GetProjects(models.ProjectTypeTech)
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
 	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
-}
-
-func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {
-	projects, _ := tc.db.GetTechProjects()
-	projectsDTOList := models.ToProjectGroupsDTOList(projects)
-	service.GetJSONData(w, projectsDTOList)
 }
