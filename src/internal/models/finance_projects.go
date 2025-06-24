@@ -20,20 +20,3 @@ type FinanceRepositoriesDTO struct {
 	Description string `json:"description"`
 	LinkToGit   string `json:"link_to_git"`
 }
-
-//func ToFinanceProjectsDTO(financeProject *FinanceRepositories) *FinanceRepositoriesDTO {
-//	return &FinanceRepositoriesDTO{
-//		Title:       financeProject.Title,
-//		Description: financeProject.Description,
-//		LinkToGit:   financeProject.LinkToGit,
-//	}
-//}
-
-//func ToFinanceProjectsDTOList(finProjects []*FinanceRepositories) []*FinanceRepositoriesDTO {
-//	var finProjectsDTOList []*FinanceRepositoriesDTO
-//	for _, finProject := range finProjects {
-//		dto := ToFinanceProjectsDTO(finProject)
-//		finProjectsDTOList = append(finProjectsDTOList, dto)
-//	}
-//	return finProjectsDTOList
-//}

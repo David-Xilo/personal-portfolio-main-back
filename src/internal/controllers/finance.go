@@ -25,8 +25,9 @@ func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
 // @Failure 404 {object} map[string]string
 // @Router /finance/projects [get]
 func (fc *FinanceController) handleProjects(c *gin.Context) {
-	projects, _ := fc.db.GetFinanceProjects()
-	c.JSON(http.StatusOK, gin.H{"message": projects})
+	projects, _ := fc.db.GetProjects(models.ProjectTypeFinance)
+	projectsDTOList := models.ToProjectGroupsDTOList(projects)
+	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }
 
 func (fc *FinanceController) getProjectsRequest(w http.ResponseWriter) {

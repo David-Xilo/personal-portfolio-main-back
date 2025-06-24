@@ -13,9 +13,9 @@ type ProjectGroups struct {
 	Description string     `json:"description"`
 	ProjectType string     `json:"project_type"`
 
-	TechProjects    []TechRepositories    `json:"tech_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
-	GameProjects    []GameRepositories    `json:"game_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
-	FinanceProjects []FinanceRepositories `json:"finance_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	TechRepositories    []TechRepositories    `json:"tech_repositories,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	GameRepositories    []GameRepositories    `json:"game_repositories,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	FinanceRepositories []FinanceRepositories `json:"finance_repositories,omitempty" gorm:"foreignKey:ProjectGroupID"`
 }
 
 type ProjectGroupsDTO struct {
@@ -28,17 +28,17 @@ type ProjectGroupsDTO struct {
 
 func ToProjectGroupsDTO(projectGroup *ProjectGroups) *ProjectGroupsDTO {
 	var repositoriesDTOList []*RepositoriesDTO
-	for _, techProject := range projectGroup.TechProjects {
+	for _, techProject := range projectGroup.TechRepositories {
 		dto := TechProjectsToProjectsDTO(&techProject)
 		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
-	for _, gameProject := range projectGroup.GameProjects {
+	for _, gameProject := range projectGroup.GameRepositories {
 		dto := GameProjectsToProjectsDTO(&gameProject)
 		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
-	for _, financeProject := range projectGroup.FinanceProjects {
+	for _, financeProject := range projectGroup.FinanceRepositories {
 		dto := FinanceProjectsToProjectsDTO(&financeProject)
 		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}

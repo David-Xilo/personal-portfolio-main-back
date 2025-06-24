@@ -26,7 +26,7 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 // @Failure 404 {object} map[string]string
 // @Router /tech/projects [get]
 func (tc *TechController) handleProjects(c *gin.Context) {
-	projects, _ := tc.db.GetTechProjects()
+	projects, _ := tc.db.GetProjects(models.ProjectTypeTech)
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
 	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }

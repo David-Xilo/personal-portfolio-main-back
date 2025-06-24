@@ -35,30 +35,3 @@ func FinanceProjectsToProjectsDTO(financeProjects *FinanceRepositories) *Reposit
 		LinkToGit:   financeProjects.LinkToGit,
 	}
 }
-
-func GameProjectsToProjectsDTOList(gameProjects []*GameRepositories) []*RepositoriesDTO {
-	var projectsDTO []*RepositoriesDTO
-	for _, gameProject := range gameProjects {
-		dto := GameProjectsToProjectsDTO(gameProject)
-		projectsDTO = append(projectsDTO, dto)
-	}
-	return projectsDTO
-}
-
-func TechProjectsToProjectsDTOList(techProjects []*TechRepositories) []*RepositoriesDTO {
-	var projectsDTO []*RepositoriesDTO
-	for _, techProject := range techProjects {
-		dto := TechProjectsToProjectsDTO(techProject)
-		projectsDTO = append(projectsDTO, dto)
-	}
-	return projectsDTO
-}
-
-func FinanceProjectsToProjectsDTOList(financeProjects []*FinanceRepositories) []*RepositoriesDTO {
-	var projectsDTO []*RepositoriesDTO
-	for _, financeProject := range financeProjects {
-		dto := FinanceProjectsToProjectsDTO(financeProject)
-		projectsDTO = append(projectsDTO, dto)
-	}
-	return projectsDTO
-}

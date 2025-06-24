@@ -13,8 +13,6 @@ type TechRepositories struct {
 	Title          string     `json:"title"`
 	Description    string     `json:"description"`
 	LinkToGit      string     `json:"link_to_git"`
-
-	//ProjectGroup ProjectGroups `json:"project_group,omitempty" gorm:"foreignKey:ProjectGroupID"`
 }
 
 type TechRepositoriesDTO struct {
@@ -22,20 +20,3 @@ type TechRepositoriesDTO struct {
 	Description string `json:"description"`
 	LinkToGit   string `json:"link_to_git"`
 }
-
-//func ToTechProjectsDTO(techProject *TechRepositories) *TechRepositoriesDTO {
-//	return &TechRepositoriesDTO{
-//		Title:       techProject.Title,
-//		Description: techProject.Description,
-//		LinkToGit:   techProject.LinkToGit,
-//	}
-//}
-
-//func ToTechProjectsDTOList(techProjects []*TechRepositories) []*TechRepositoriesDTO {
-//	var techProjectsDTOList []*TechRepositoriesDTO
-//	for _, techProject := range techProjects {
-//		dto := ToTechProjectsDTO(techProject)
-//		techProjectsDTOList = append(techProjectsDTOList, dto)
-//	}
-//	return techProjectsDTOList
-//}
