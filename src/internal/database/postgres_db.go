@@ -25,58 +25,23 @@ func (p *PostgresDB) GetContact() (*models.Contacts, error) {
 	return &contact, nil
 }
 
-func (p *PostgresDB) GetGameProjects() ([]*models.ProjectGroups, error) {
-	var gameProjectGroups []*models.ProjectGroups
+func (p *PostgresDB) GetProjects(projectType models.ProjectType) ([]*models.ProjectGroups, error) {
+	var projectGroups []*models.ProjectGroups
 
 	if err := p.db.
-		Preload("GameProjects").
-		Joins("JOIN game_projects ON project_groups.id = game_projects.project_group_id").
+		Where("project_type = ?", projectType).
+		Preload("TechRepositories").
+		Preload("GameRepositories").
+		Preload("FinanceRepositories").
 		Order("created_at desc").
-		//Limit(10).
-		Find(&gameProjectGroups).Error; err != nil {
+		Find(&projectGroups).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.ProjectGroups{}, nil
+			return nil, err
 		}
 		panic(err)
 	}
 
-	return gameProjectGroups, nil
-}
-
-func (p *PostgresDB) GetTechProjects() ([]*models.ProjectGroups, error) {
-	var techProjectGroups []*models.ProjectGroups
-
-	if err := p.db.
-		Preload("TechProjects").
-		Joins("JOIN tech_projects ON project_groups.id = tech_projects.project_group_id").
-		Order("created_at desc").
-		//Limit(10).
-		Find(&techProjectGroups).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.ProjectGroups{}, nil
-		}
-		panic(err)
-	}
-
-	return techProjectGroups, nil
-}
-
-func (p *PostgresDB) GetFinanceProjects() ([]*models.ProjectGroups, error) {
-	var financeProjectGroups []*models.ProjectGroups
-
-	if err := p.db.
-		Preload("FinanceProjects").
-		Joins("JOIN finance_projects ON project_groups.id = finance_projects.project_group_id").
-		Order("created_at desc").
-		//Limit(10).
-		Find(&financeProjectGroups).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return []*models.ProjectGroups{}, nil
-		}
-		panic(err)
-	}
-
-	return financeProjectGroups, nil
+	return projectGroups, nil
 }
 
 func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {

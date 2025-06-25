@@ -3,14 +3,24 @@ package service
 import (
 	"math/rand"
 	"safehouse-main-back/src/internal/models"
+	"time"
 )
+
+const ExtraReviews = 5
 
 type PersonalReviewService struct {
 	rng *rand.Rand
 }
 
+func NewPersonalReviewService() *PersonalReviewService {
+	src := rand.NewSource(time.Now().UnixNano())
+	return &PersonalReviewService{
+		rng: rand.New(src),
+	}
+}
+
 func (rs *PersonalReviewService) GetAllReviews() []*models.PersonalReviewsCarouselDTO {
-	numberExtraReviews := rs.rng.Intn(10)
+	numberExtraReviews := rs.rng.Intn(ExtraReviews)
 	var allReviews []*models.PersonalReviewsCarouselDTO
 
 	goodReviews := rs.getFiveStarReviews()
@@ -24,7 +34,7 @@ func (rs *PersonalReviewService) GetAllReviews() []*models.PersonalReviewsCarous
 func (rs *PersonalReviewService) getRandomReviews(numberReviews int) []*models.PersonalReviewsCarouselDTO {
 	var randomReviews []*models.PersonalReviewsCarouselDTO
 
-	for range numberReviews {
+	for i := 0; i < numberReviews; i++ {
 		rating := rs.rng.Intn(5) + 1
 		authorAndDescList := models.ReviewsByRating[rating]
 		numberAuthorsAndDesc := len(authorAndDescList)

@@ -71,16 +71,16 @@ func createRouter() *gin.Engine {
 func getControllers(db database.Database) []Controller {
 	var controllers []Controller
 
-	aboutController := &AboutController{db: db}
+	aboutController := NewAboutController(db)
 	controllers = append(controllers, aboutController)
 
-	techController := &TechController{db: db}
+	techController := NewTechController(db)
 	controllers = append(controllers, techController)
 
-	gamesController := &GamesController{db: db}
+	gamesController := NewGamesController(db)
 	controllers = append(controllers, gamesController)
 
-	financeController := &FinanceController{db: db}
+	financeController := NewFinanceController(db)
 	controllers = append(controllers, financeController)
 
 	return controllers

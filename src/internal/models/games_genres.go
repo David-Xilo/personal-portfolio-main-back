@@ -8,12 +8,3 @@ const (
 	GameGenreTableTop  GameGenres = "table top"
 	GameGenreRpg       GameGenres = "RPG"
 )
-
-func GetAllGameGenres() []GameGenres {
-	return []GameGenres{
-		GameGenreUndefined,
-		GameGenreStrategy,
-		GameGenreTableTop,
-		GameGenreRpg,
-	}
-}

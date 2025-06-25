@@ -10,7 +10,14 @@ import (
 
 type AboutController struct {
 	db                    database.Database
-	personalReviewService service.PersonalReviewService
+	personalReviewService *service.PersonalReviewService
+}
+
+func NewAboutController(db database.Database) *AboutController {
+	return &AboutController{
+		db:                    db,
+		personalReviewService: service.NewPersonalReviewService(),
+	}
 }
 
 func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
@@ -28,12 +35,12 @@ func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
 // @Router /about/contact [get]
 func (ac *AboutController) handleContactRequest(c *gin.Context) {
 	contact, _ := ac.db.GetContact()
-	contactsDTO := models.ToContactsDTO(contact)
+	contactDTO := models.ToContactsDTO(contact)
 	if contact == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Contact not found"})
 		return
 	}
-	c.JSON(http.StatusOK, contactsDTO)
+	c.JSON(http.StatusOK, gin.H{"message": contactDTO})
 }
 
 // @Summary Get random reviews from random people
@@ -46,5 +53,5 @@ func (ac *AboutController) handleContactRequest(c *gin.Context) {
 // @Router /about/reviews/carousel [get]
 func (ac *AboutController) handleReviewsCarouselRequest(c *gin.Context) {
 	reviewsCarouselDTOs := ac.personalReviewService.GetAllReviews()
-	c.JSON(http.StatusOK, reviewsCarouselDTOs)
+	c.JSON(http.StatusOK, gin.H{"message": reviewsCarouselDTOs})
 }

@@ -11,6 +11,12 @@ type GamesController struct {
 	db database.Database
 }
 
+func NewGamesController(db database.Database) *GamesController {
+	return &GamesController{
+		db: db,
+	}
+}
+
 type GamesFilter struct {
 	Genre string `json:"genre"`
 }
@@ -25,13 +31,13 @@ func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
 // @Tags games
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.GameProjectsDTO
+// @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
 func (gc *GamesController) handleProjects(c *gin.Context) {
-	games, _ := gc.db.GetGameProjects()
-	gamesDTOList := models.ToProjectGroupsDTOList(games)
-	c.JSON(http.StatusOK, gin.H{"message": gamesDTOList})
+	games, _ := gc.db.GetProjects(models.ProjectTypeGame)
+	projectsDTOList := models.ToProjectGroupsDTOList(games)
+	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }
 
 // @Summary Get projects related to games

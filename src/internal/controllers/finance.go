@@ -5,11 +5,16 @@ import (
 	"net/http"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/models"
-	"safehouse-main-back/src/internal/service"
 )
 
 type FinanceController struct {
 	db database.Database
+}
+
+func NewFinanceController(db database.Database) *FinanceController {
+	return &FinanceController{
+		db: db,
+	}
 }
 
 func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
@@ -21,16 +26,11 @@ func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
 // @Tags finance
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.FinanceProjectsDTO
+// @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /finance/projects [get]
 func (fc *FinanceController) handleProjects(c *gin.Context) {
-	projects, _ := fc.db.GetFinanceProjects()
-	c.JSON(http.StatusOK, gin.H{"message": projects})
-}
-
-func (fc *FinanceController) getProjectsRequest(w http.ResponseWriter) {
-	projects, _ := fc.db.GetFinanceProjects()
+	projects, _ := fc.db.GetProjects(models.ProjectTypeFinance)
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
-	service.GetJSONData(w, projectsDTOList)
+	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }

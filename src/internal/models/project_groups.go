@@ -13,9 +13,9 @@ type ProjectGroups struct {
 	Description string     `json:"description"`
 	ProjectType string     `json:"project_type"`
 
-	TechProjects    []TechProjects    `json:"tech_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
-	GameProjects    []GameProjects    `json:"game_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
-	FinanceProjects []FinanceProjects `json:"finance_projects,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	TechRepositories    []TechRepositories    `json:"tech_repositories,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	GameRepositories    []GameRepositories    `json:"game_repositories,omitempty" gorm:"foreignKey:ProjectGroupID"`
+	FinanceRepositories []FinanceRepositories `json:"finance_repositories,omitempty" gorm:"foreignKey:ProjectGroupID"`
 }
 
 type ProjectGroupsDTO struct {
@@ -23,36 +23,36 @@ type ProjectGroupsDTO struct {
 	Description string `json:"description"`
 	ProjectType string `json:"project_type"`
 
-	Projects []*ProjectsDTO `json:"projects,omitempty"`
+	Repositories []*RepositoriesDTO `json:"repositories,omitempty"`
 }
 
 func ToProjectGroupsDTO(projectGroup *ProjectGroups) *ProjectGroupsDTO {
-	var projectsDTOList []*ProjectsDTO
-	for _, techProject := range projectGroup.TechProjects {
+	repositoriesDTOList := make([]*RepositoriesDTO, 0)
+	for _, techProject := range projectGroup.TechRepositories {
 		dto := TechProjectsToProjectsDTO(&techProject)
-		projectsDTOList = append(projectsDTOList, dto)
+		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
-	for _, gameProject := range projectGroup.GameProjects {
+	for _, gameProject := range projectGroup.GameRepositories {
 		dto := GameProjectsToProjectsDTO(&gameProject)
-		projectsDTOList = append(projectsDTOList, dto)
+		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
-	for _, financeProject := range projectGroup.FinanceProjects {
+	for _, financeProject := range projectGroup.FinanceRepositories {
 		dto := FinanceProjectsToProjectsDTO(&financeProject)
-		projectsDTOList = append(projectsDTOList, dto)
+		repositoriesDTOList = append(repositoriesDTOList, dto)
 	}
 
 	return &ProjectGroupsDTO{
-		Title:       projectGroup.Title,
-		Description: projectGroup.Description,
-		ProjectType: projectGroup.ProjectType,
-		Projects:    projectsDTOList,
+		Title:        projectGroup.Title,
+		Description:  projectGroup.Description,
+		ProjectType:  projectGroup.ProjectType,
+		Repositories: repositoriesDTOList,
 	}
 }
 
 func ToProjectGroupsDTOList(projectGroups []*ProjectGroups) []*ProjectGroupsDTO {
-	var projectGroupsDTOList []*ProjectGroupsDTO
+	projectGroupsDTOList := make([]*ProjectGroupsDTO, 0)
 	for _, techProject := range projectGroups {
 		dto := ToProjectGroupsDTO(techProject)
 		projectGroupsDTOList = append(projectGroupsDTOList, dto)

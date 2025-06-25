@@ -6,8 +6,6 @@ import (
 
 type Database interface {
 	GetContact() (*models.Contacts, error)
-	GetTechProjects() ([]*models.ProjectGroups, error)
-	GetFinanceProjects() ([]*models.ProjectGroups, error)
-	GetGameProjects() ([]*models.ProjectGroups, error)
+	GetProjects(projectType models.ProjectType) ([]*models.ProjectGroups, error)
 	GetGamesPlayed() ([]*models.GamesPlayed, error)
 }

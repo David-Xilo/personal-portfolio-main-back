@@ -1,19 +1,10 @@
 package models
 
-type ProjectTypes string
+type ProjectType string
 
 const (
-	ProjectTypeUndefined ProjectTypes = "undefined"
-	ProjectTypeTech      ProjectTypes = "tech"
-	ProjectTypeGame      ProjectTypes = "game"
-	ProjectTypeFinance   ProjectTypes = "finance"
+	ProjectTypeUndefined ProjectType = "undefined"
+	ProjectTypeTech      ProjectType = "tech"
+	ProjectTypeGame      ProjectType = "game"
+	ProjectTypeFinance   ProjectType = "finance"
 )
-
-func GetAllProjectTypes() []ProjectTypes {
-	return []ProjectTypes{
-		ProjectTypeUndefined,
-		ProjectTypeTech,
-		ProjectTypeGame,
-		ProjectTypeFinance,
-	}
-}

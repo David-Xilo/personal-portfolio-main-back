@@ -5,12 +5,16 @@ import (
 	"net/http"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/models"
-
-	"safehouse-main-back/src/internal/service"
 )
 
 type TechController struct {
 	db database.Database
+}
+
+func NewTechController(db database.Database) *TechController {
+	return &TechController{
+		db: db,
+	}
 }
 
 func (tc *TechController) RegisterRoutes(router *gin.Engine) {
@@ -22,16 +26,11 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 // @Tags tech
 // @Accept  json
 // @Produce  json
-// @Success 200 {object} []models.TechProjectsDTO
+// @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /tech/projects [get]
 func (tc *TechController) handleProjects(c *gin.Context) {
-	projects, _ := tc.db.GetTechProjects()
-	c.JSON(http.StatusOK, gin.H{"message": projects})
-}
-
-func (tc *TechController) getProjectsRequest(w http.ResponseWriter) {
-	projects, _ := tc.db.GetTechProjects()
+	projects, _ := tc.db.GetProjects(models.ProjectTypeTech)
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
-	service.GetJSONData(w, projectsDTOList)
+	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }
