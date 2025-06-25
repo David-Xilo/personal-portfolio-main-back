@@ -11,6 +11,12 @@ type TechController struct {
 	db database.Database
 }
 
+func NewTechController(db database.Database) *TechController {
+	return &TechController{
+		db: db,
+	}
+}
+
 func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/tech/projects", tc.handleProjects)
 }

@@ -11,6 +11,12 @@ type GamesController struct {
 	db database.Database
 }
 
+func NewGamesController(db database.Database) *GamesController {
+	return &GamesController{
+		db: db,
+	}
+}
+
 type GamesFilter struct {
 	Genre string `json:"genre"`
 }

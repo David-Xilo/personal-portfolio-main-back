@@ -11,6 +11,12 @@ type FinanceController struct {
 	db database.Database
 }
 
+func NewFinanceController(db database.Database) *FinanceController {
+	return &FinanceController{
+		db: db,
+	}
+}
+
 func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/finance/projects", fc.handleProjects)
 }

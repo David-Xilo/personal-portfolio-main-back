@@ -11,7 +11,7 @@ type Contacts struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	Name      string     `json:"name"`
 	Email     string     `json:"email"`
-	LinkedIn  string     `json:"linked-in"`
+	Linkedin  string     `json:"linkedin"`
 	Github    string     `json:"github"`
 	Credly    string     `json:"credly"`
 }
@@ -28,7 +28,7 @@ func ToContactsDTO(contact *Contacts) *ContactsDTO {
 	return &ContactsDTO{
 		Name:     contact.Name,
 		Email:    contact.Email,
-		LinkedIn: contact.LinkedIn,
+		LinkedIn: contact.Linkedin,
 		Github:   contact.Github,
 		Credly:   contact.Credly,
 	}
