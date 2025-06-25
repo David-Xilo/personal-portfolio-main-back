@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const ExtraReviews = 5
+
 type PersonalReviewService struct {
 	rng *rand.Rand
 }
@@ -18,7 +20,7 @@ func NewPersonalReviewService() *PersonalReviewService {
 }
 
 func (rs *PersonalReviewService) GetAllReviews() []*models.PersonalReviewsCarouselDTO {
-	numberExtraReviews := rs.rng.Intn(5)
+	numberExtraReviews := rs.rng.Intn(ExtraReviews)
 	var allReviews []*models.PersonalReviewsCarouselDTO
 
 	goodReviews := rs.getFiveStarReviews()
