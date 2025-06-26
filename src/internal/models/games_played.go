@@ -15,6 +15,10 @@ type GamesPlayed struct {
 	Description string     `json:"description"`
 }
 
+func (GamesPlayed) TableName() string {
+	return "games_played" // Use singular or your preferred name
+}
+
 type GamesPlayedDTO struct {
 	Title       string     `json:"title"`
 	Genre       GameGenres `json:"genre"`

@@ -58,14 +58,32 @@ func SetupRoutes(db database.Database) *gin.Engine {
 
 func createRouter() *gin.Engine {
 	router := gin.Default()
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
+	router.Use(cors.New(getCORSConfig()))
 	return router
+}
+
+func getCORSConfig() cors.Config {
+
+	allowedHeaders := []string{
+		"content-type",
+		"referer",
+		"sec-ch-ua",
+		"sec-ch-ua-mobile",
+		"sec-ch-ua-platform",
+		"user-agent",
+		"x-client-version",
+		"origin",
+		"accept",
+	}
+
+	return cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:3000",
+		},
+		AllowMethods:     []string{"GET", "OPTIONS"},
+		AllowHeaders:     allowedHeaders,
+		AllowCredentials: true,
+	}
 }
 
 func getControllers(db database.Database) []Controller {
