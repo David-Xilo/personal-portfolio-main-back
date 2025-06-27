@@ -3,13 +3,14 @@ package security
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	configuration "safehouse-main-back/src/internal/config"
 )
 
-func GetCors() gin.HandlerFunc {
-	return cors.New(getCORSConfig())
+func GetCors(config configuration.Config) gin.HandlerFunc {
+	return cors.New(getCORSConfig(config))
 }
 
-func getCORSConfig() cors.Config {
+func getCORSConfig(config configuration.Config) cors.Config {
 
 	allowedHeaders := []string{
 		"content-type",
@@ -25,7 +26,7 @@ func getCORSConfig() cors.Config {
 
 	return cors.Config{
 		AllowOrigins: []string{
-			"http://localhost:3000",
+			config.FrontendURL,
 		},
 		AllowMethods:     []string{"GET", "OPTIONS"},
 		AllowHeaders:     allowedHeaders,
