@@ -42,6 +42,8 @@ func SetupRoutes(db database.Database) *gin.Engine {
 func createRouter() *gin.Engine {
 	router := gin.Default()
 
+	router.Use(security.SecurityHeadersMiddleware())
+
 	limiter := security.NewIPRateLimiter(rate.Limit(5), 30)
 	router.Use(security.RateLimitMiddleware(limiter))
 
