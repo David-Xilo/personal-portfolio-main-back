@@ -10,7 +10,7 @@ go run src/cmd/main.go
 
 docker build -t safehouse-main-back-container .
 
-docker run --name safehouse-main-back-container -p 4000:4000 -d safehouse-back
+docker run --name safehouse-main-back-container -p 4000:4000 -d safehouse-main-back-container
 
 ## stop container
 
