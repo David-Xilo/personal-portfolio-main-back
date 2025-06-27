@@ -8,20 +8,20 @@ go run src/cmd/main.go
 
 ## start container
 
-docker build -t safehouse-back .
+docker build -t safehouse-main-back-container .
 
-docker run --name safehouse-back-container -p 4000:4000 -d safehouse-back
+docker run --name safehouse-main-back-container -p 4000:4000 -d safehouse-main-back-container
 
 ## stop container
 
-docker stop safehouse-back-container
+docker stop safehouse-main-back-container
 
-docker rm safehouse-back-container
+docker rm safehouse-main-back-container
 
 
 ## see logs
 
-docker logs safehouse-back-container -f
+docker logs safehouse-main-back-container -f
 
 ## shell the container
 
