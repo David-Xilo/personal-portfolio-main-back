@@ -15,14 +15,13 @@
 package controllers
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
+	"golang.org/x/time/rate"
 	_ "safehouse-main-back/docs"
+	"safehouse-main-back/src/internal/controllers/endpoints"
+	"safehouse-main-back/src/internal/controllers/security"
+	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
 	"safehouse-main-back/src/internal/database"
-	"strings"
 )
 
 type Controller interface {
@@ -32,73 +31,38 @@ type Controller interface {
 func SetupRoutes(db database.Database) *gin.Engine {
 	controllers := getControllers(db)
 	router := createRouter()
+
 	registerAllRoutes(router, controllers)
 
-	// Add the Swagger route
-	router.GET("/", func(c *gin.Context) {
-		accept := c.Request.Header.Get("Accept")
-
-		// If it looks like a browser request (wants HTML)
-		if strings.Contains(accept, "text/html") {
-			c.Redirect(http.StatusFound, "/swagger/index.html")
-			return
-		}
-
-		// Otherwise, treat it as an API request
-		c.JSON(http.StatusOK, gin.H{
-			"status":        "API is running",
-			"documentation": "/swagger/index.html",
-			"version":       "1.0.0",
-		})
-	})
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	swaggerconfig.AddSwaggerEndpoint(router)
 
 	return router
 }
 
 func createRouter() *gin.Engine {
 	router := gin.Default()
-	router.Use(cors.New(getCORSConfig()))
+
+	limiter := security.NewIPRateLimiter(rate.Limit(5), 30)
+	router.Use(security.RateLimitMiddleware(limiter))
+
+	router.Use(security.GetCors())
+
 	return router
-}
-
-func getCORSConfig() cors.Config {
-
-	allowedHeaders := []string{
-		"content-type",
-		"referer",
-		"sec-ch-ua",
-		"sec-ch-ua-mobile",
-		"sec-ch-ua-platform",
-		"user-agent",
-		"x-client-version",
-		"origin",
-		"accept",
-	}
-
-	return cors.Config{
-		AllowOrigins: []string{
-			"http://localhost:3000",
-		},
-		AllowMethods:     []string{"GET", "OPTIONS"},
-		AllowHeaders:     allowedHeaders,
-		AllowCredentials: true,
-	}
 }
 
 func getControllers(db database.Database) []Controller {
 	var controllers []Controller
 
-	aboutController := NewAboutController(db)
+	aboutController := endpoints.NewAboutController(db)
 	controllers = append(controllers, aboutController)
 
-	techController := NewTechController(db)
+	techController := endpoints.NewTechController(db)
 	controllers = append(controllers, techController)
 
-	gamesController := NewGamesController(db)
+	gamesController := endpoints.NewGamesController(db)
 	controllers = append(controllers, gamesController)
 
-	financeController := NewFinanceController(db)
+	financeController := endpoints.NewFinanceController(db)
 	controllers = append(controllers, financeController)
 
 	return controllers
