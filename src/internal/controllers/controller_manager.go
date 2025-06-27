@@ -18,6 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
 	_ "safehouse-main-back/docs"
+	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/controllers/endpoints"
 	"safehouse-main-back/src/internal/controllers/security"
 	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
@@ -29,8 +30,10 @@ type Controller interface {
 }
 
 func SetupRoutes(db database.Database) *gin.Engine {
+	config := configuration.LoadConfig()
+
 	controllers := getControllers(db)
-	router := createRouter()
+	router := createRouter(config)
 
 	registerAllRoutes(router, controllers)
 
@@ -39,13 +42,19 @@ func SetupRoutes(db database.Database) *gin.Engine {
 	return router
 }
 
-func createRouter() *gin.Engine {
+func createRouter(config configuration.Config) *gin.Engine {
 	router := gin.Default()
+
+	router.Use(security.SecurityHeadersMiddleware())
+
+	if config.EnableHTTPSRedirect { // Railway sets this automatically
+		router.Use(security.HttpsRedirectMiddleware())
+	}
 
 	limiter := security.NewIPRateLimiter(rate.Limit(5), 30)
 	router.Use(security.RateLimitMiddleware(limiter))
 
-	router.Use(security.GetCors())
+	router.Use(security.GetCors(config))
 
 	return router
 }
