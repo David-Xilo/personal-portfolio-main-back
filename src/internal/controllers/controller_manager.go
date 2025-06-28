@@ -51,7 +51,7 @@ func createRouter(config configuration.Config) *gin.Engine {
 
 	router.Use(middleware.BasicRequestValidationMiddleware())
 
-	router.Use(middleware.SecurityHeadersMiddleware())
+	router.Use(middleware.SecurityHeadersMiddleware(config))
 
 	if config.EnableHTTPSRedirect { // Railway sets this automatically
 		router.Use(middleware.HttpsRedirectMiddleware())

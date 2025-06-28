@@ -1,28 +1,30 @@
 package middleware
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	configuration "safehouse-main-back/src/internal/config"
+	"strings"
+)
 
-func SecurityHeadersMiddleware() gin.HandlerFunc {
+func SecurityHeadersMiddleware(config configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Prevent MIME type sniffing
+
+		path := c.Request.URL.Path
+		isSwagger := strings.HasPrefix(path, "/swagger/") || path == "/"
+
 		c.Header("X-Content-Type-Options", "nosniff")
-
-		// Prevent clickjacking
-		c.Header("X-Frame-Options", "DENY")
-
-		// XSS protection (legacy but still good to have)
-		c.Header("X-XSS-Protection", "1; mode=block")
-
-		// Referrer policy
 		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
 
-		// Content Security Policy (basic for API)
-		c.Header("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none';")
-
-		// Prevent caching of sensitive responses
-		c.Header("Cache-Control", "no-store, no-cache, must-revalidate, private")
-		c.Header("Pragma", "no-cache")
-		c.Header("Expires", "0")
+		if isSwagger && config.Environment == "development" {
+			c.Header("Content-Security-Policy", "default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';")
+		} else {
+			c.Header("X-Frame-Options", "DENY")
+			c.Header("X-XSS-Protection", "1; mode=block")
+			c.Header("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none';")
+			c.Header("Cache-Control", "no-store, no-cache, must-revalidate, private")
+			c.Header("Pragma", "no-cache")
+			c.Header("Expires", "0")
+		}
 
 		c.Next()
 	}

@@ -10,7 +10,6 @@ type Config struct {
 	EnableHTTPSRedirect bool
 	Port                string
 	FrontendURL         string
-	SelfURL             string
 	DatabaseTimeout     time.Duration
 	ReadTimeout         time.Duration
 	WriteTimeout        time.Duration
@@ -22,8 +21,7 @@ func LoadConfig() Config {
 	isProd := env == "production"
 
 	frontendURL := getEnvOrDefault("FRONTEND_URL", "http://localhost:3000")
-	port := getEnvOrDefault("SELF_URL", "4000")
-	selfURL := getEnvOrDefault("SELF_URL", "http://localhost:"+port)
+	port := getEnvOrDefault("PORT", "4000")
 
 	dbTimeout, _ := time.ParseDuration(getEnvOrDefault("DATABASE_TIMEOUT", "10s"))
 	readTimeout, _ := time.ParseDuration(getEnvOrDefault("READ_TIMEOUT", "10s"))
@@ -34,7 +32,6 @@ func LoadConfig() Config {
 		Environment:         env,
 		EnableHTTPSRedirect: isProd,
 		FrontendURL:         frontendURL,
-		SelfURL:             selfURL,
 		Port:                port,
 		DatabaseTimeout:     dbTimeout,
 		ReadTimeout:         readTimeout,
