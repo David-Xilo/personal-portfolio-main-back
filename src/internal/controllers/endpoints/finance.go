@@ -2,18 +2,24 @@ package endpoints
 
 import (
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
 	"net/http"
+	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/database"
+	dberrors "safehouse-main-back/src/internal/database/errors"
+	"safehouse-main-back/src/internal/database/timeout"
 	"safehouse-main-back/src/internal/models"
 )
 
 type FinanceController struct {
-	db database.Database
+	db     database.Database
+	config configuration.Config
 }
 
-func NewFinanceController(db database.Database) *FinanceController {
+func NewFinanceController(db database.Database, config configuration.Config) *FinanceController {
 	return &FinanceController{
-		db: db,
+		db:     db,
+		config: config,
 	}
 }
 
@@ -29,8 +35,14 @@ func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
 // @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /finance/projects [get]
-func (fc *FinanceController) handleProjects(c *gin.Context) {
-	projects, _ := fc.db.GetProjects(models.ProjectTypeFinance)
+func (fc *FinanceController) handleProjects(ctx *gin.Context) {
+	projects, err := timeout.WithTimeout(ctx.Request.Context(), fc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
+		return fc.db.GetProjects(models.ProjectTypeFinance)
+	})
+	if err != nil {
+		dberrors.HandleDatabaseError(ctx, err)
+		return
+	}
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
-	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
+	ctx.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }

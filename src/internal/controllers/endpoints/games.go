@@ -2,18 +2,24 @@ package endpoints
 
 import (
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
 	"net/http"
+	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/database"
+	dberrors "safehouse-main-back/src/internal/database/errors"
+	"safehouse-main-back/src/internal/database/timeout"
 	"safehouse-main-back/src/internal/models"
 )
 
 type GamesController struct {
-	db database.Database
+	db     database.Database
+	config configuration.Config
 }
 
-func NewGamesController(db database.Database) *GamesController {
+func NewGamesController(db database.Database, config configuration.Config) *GamesController {
 	return &GamesController{
-		db: db,
+		db:     db,
+		config: config,
 	}
 }
 
@@ -34,10 +40,16 @@ func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
 // @Success 200 {array} []models.ProjectGroupsDTO
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
-func (gc *GamesController) handleProjects(c *gin.Context) {
-	games, _ := gc.db.GetProjects(models.ProjectTypeGame)
+func (gc *GamesController) handleProjects(ctx *gin.Context) {
+	games, err := timeout.WithTimeout(ctx.Request.Context(), gc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
+		return gc.db.GetProjects(models.ProjectTypeGame)
+	})
+	if err != nil {
+		dberrors.HandleDatabaseError(ctx, err)
+		return
+	}
 	projectsDTOList := models.ToProjectGroupsDTOList(games)
-	c.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
+	ctx.JSON(http.StatusOK, gin.H{"message": projectsDTOList})
 }
 
 // @Summary Get projects related to games
@@ -48,9 +60,13 @@ func (gc *GamesController) handleProjects(c *gin.Context) {
 // @Success 200 {object} []models.GamesPlayedDTO
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
-func (gc *GamesController) handleGamesPlayedCarousel(c *gin.Context) {
-	gamesPlayed, _ := gc.db.GetGamesPlayed()
+func (gc *GamesController) handleGamesPlayedCarousel(ctx *gin.Context) {
+	gamesPlayed, err := gc.db.GetGamesPlayed()
+	if err != nil {
+		dberrors.HandleDatabaseError(ctx, err)
+		return
+	}
 	firstFive := gamesPlayed[:min(len(gamesPlayed), 5)]
 	gamesPlayedDTOList := models.ToGamesPlayedListDTO(firstFive)
-	c.JSON(http.StatusOK, gin.H{"message": gamesPlayedDTOList})
+	ctx.JSON(http.StatusOK, gin.H{"message": gamesPlayedDTOList})
 }

@@ -2,20 +2,26 @@ package endpoints
 
 import (
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
 	"net/http"
+	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/database"
+	dberrors "safehouse-main-back/src/internal/database/errors"
+	"safehouse-main-back/src/internal/database/timeout"
 	"safehouse-main-back/src/internal/models"
 	"safehouse-main-back/src/internal/service"
 )
 
 type AboutController struct {
 	db                    database.Database
+	config                configuration.Config
 	personalReviewService *service.PersonalReviewService
 }
 
-func NewAboutController(db database.Database) *AboutController {
+func NewAboutController(db database.Database, config configuration.Config) *AboutController {
 	return &AboutController{
 		db:                    db,
+		config:                config,
 		personalReviewService: service.NewPersonalReviewService(),
 	}
 }
@@ -33,14 +39,16 @@ func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
 // @Success 200 {object} models.ContactsDTO
 // @Failure 404 {object} map[string]string
 // @Router /about/contact [get]
-func (ac *AboutController) handleContactRequest(c *gin.Context) {
-	contact, _ := ac.db.GetContact()
-	contactDTO := models.ToContactsDTO(contact)
-	if contact == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Contact not found"})
+func (ac *AboutController) handleContactRequest(ctx *gin.Context) {
+	contact, err := timeout.WithTimeout(ctx.Request.Context(), ac.config.DatabaseTimeout, func(dbCtx context.Context) (*models.Contacts, error) {
+		return ac.db.GetContact()
+	})
+	if err != nil {
+		dberrors.HandleDatabaseError(ctx, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": contactDTO})
+	contactDTO := models.ToContactsDTO(contact)
+	ctx.JSON(http.StatusOK, gin.H{"message": contactDTO})
 }
 
 // @Summary Get random reviews from random people
@@ -52,6 +60,6 @@ func (ac *AboutController) handleContactRequest(c *gin.Context) {
 // @Failure 404 {object} map[string]string
 // @Router /about/reviews/carousel [get]
 func (ac *AboutController) handleReviewsCarouselRequest(c *gin.Context) {
-	reviewsCarouselDTOs := ac.personalReviewService.GetAllReviews()
-	c.JSON(http.StatusOK, gin.H{"message": reviewsCarouselDTOs})
+	reviewCarousel := ac.personalReviewService.GetAllReviews()
+	c.JSON(http.StatusOK, gin.H{"message": reviewCarousel})
 }
