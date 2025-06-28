@@ -29,6 +29,10 @@ func InitDB() *gorm.DB {
 		time.Sleep(2 * time.Second)
 	}
 
+	if err != nil {
+		log.Fatalf("Failed to connect to the database after %d attempts: %v\n", maxRetries, err)
+	}
+
 	return db
 }
 
