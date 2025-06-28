@@ -22,7 +22,7 @@ import (
 	"safehouse-main-back/src/internal/controllers/endpoints"
 	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
 	"safehouse-main-back/src/internal/database"
-	middleware2 "safehouse-main-back/src/internal/middleware"
+	"safehouse-main-back/src/internal/middleware"
 )
 
 type Controller interface {
@@ -45,16 +45,18 @@ func SetupRoutes(db database.Database) *gin.Engine {
 func createRouter(config configuration.Config) *gin.Engine {
 	router := gin.Default()
 
-	router.Use(middleware2.SecurityHeadersMiddleware())
+	router.Use(middleware.BasicRequestValidationMiddleware())
+
+	router.Use(middleware.SecurityHeadersMiddleware())
 
 	if config.EnableHTTPSRedirect { // Railway sets this automatically
-		router.Use(middleware2.HttpsRedirectMiddleware())
+		router.Use(middleware.HttpsRedirectMiddleware())
 	}
 
-	limiter := middleware2.NewIPRateLimiter(rate.Limit(5), 30)
-	router.Use(middleware2.RateLimitMiddleware(limiter))
+	limiter := middleware.NewIPRateLimiter(rate.Limit(5), 30)
+	router.Use(middleware.RateLimitMiddleware(limiter))
 
-	router.Use(middleware2.GetCors(config))
+	router.Use(middleware.GetCors(config))
 
 	return router
 }

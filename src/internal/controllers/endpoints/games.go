@@ -1,14 +1,13 @@
 package endpoints
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	"gorm.io/gorm"
 	"net/http"
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/database"
-	"safehouse-main-back/src/internal/middleware"
+	dberrors "safehouse-main-back/src/internal/database/errors"
+	"safehouse-main-back/src/internal/database/timeout"
 	"safehouse-main-back/src/internal/models"
 )
 
@@ -42,19 +41,11 @@ func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
 func (gc *GamesController) handleProjects(ctx *gin.Context) {
-	games, err := middleware.WithTimeout(ctx.Request.Context(), gc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
+	games, err := timeout.WithTimeout(ctx.Request.Context(), gc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
 		return gc.db.GetProjects(models.ProjectTypeGame)
 	})
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			ctx.JSON(http.StatusRequestTimeout, gin.H{"error": "Database timeout"})
-			return
-		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNoContent, gin.H{"error": "No contact found"})
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		dberrors.HandleDatabaseError(ctx, err)
 		return
 	}
 	projectsDTOList := models.ToProjectGroupsDTOList(games)
@@ -72,15 +63,7 @@ func (gc *GamesController) handleProjects(ctx *gin.Context) {
 func (gc *GamesController) handleGamesPlayedCarousel(ctx *gin.Context) {
 	gamesPlayed, err := gc.db.GetGamesPlayed()
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			ctx.JSON(http.StatusRequestTimeout, gin.H{"error": "Database timeout"})
-			return
-		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNoContent, gin.H{"error": "No contact found"})
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		dberrors.HandleDatabaseError(ctx, err)
 		return
 	}
 	firstFive := gamesPlayed[:min(len(gamesPlayed), 5)]

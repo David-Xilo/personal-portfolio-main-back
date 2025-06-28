@@ -1,14 +1,13 @@
 package endpoints
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	"gorm.io/gorm"
 	"net/http"
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/database"
-	"safehouse-main-back/src/internal/middleware"
+	"safehouse-main-back/src/internal/database/errors"
+	"safehouse-main-back/src/internal/database/timeout"
 	"safehouse-main-back/src/internal/models"
 )
 
@@ -37,19 +36,11 @@ func (tc *TechController) RegisterRoutes(router *gin.Engine) {
 // @Failure 404 {object} map[string]string
 // @Router /tech/projects [get]
 func (tc *TechController) handleProjects(ctx *gin.Context) {
-	projects, err := middleware.WithTimeout(ctx.Request.Context(), tc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
+	projects, err := timeout.WithTimeout(ctx.Request.Context(), tc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
 		return tc.db.GetProjects(models.ProjectTypeTech)
 	})
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
-			ctx.JSON(http.StatusRequestTimeout, gin.H{"error": "Database timeout"})
-			return
-		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNoContent, gin.H{"error": "No contact found"})
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		dberrors.HandleDatabaseError(ctx, err)
 		return
 	}
 	projectsDTOList := models.ToProjectGroupsDTOList(projects)
