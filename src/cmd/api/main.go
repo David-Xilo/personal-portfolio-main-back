@@ -47,13 +47,13 @@ func main() {
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		log.Printf("Error during server shutdown")
+		log.Printf("Error during server shutdown: %v", err)
 	} else {
 		log.Println("Server stopped gracefully")
 	}
 
 	if err := database.CloseDB(gormDB); err != nil {
-		log.Printf("Error closing database connection")
+		log.Printf("Error closing database connection: %v", err)
 	} else {
 		log.Println("Database connection closed successfully")
 	}
