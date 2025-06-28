@@ -15,7 +15,7 @@ func BasicRequestValidationMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		if c.Request.Method != http.MethodGet {
+		if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodOptions {
 			c.JSON(http.StatusMethodNotAllowed, gin.H{
 				"error": "Method not allowed",
 			})
