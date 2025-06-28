@@ -25,7 +25,7 @@ func LoadConfig() Config {
 	port := getEnvOrDefault("PORT", "4000")
 
 	dbTimeoutStr := getEnvOrDefault("DATABASE_TIMEOUT", "10s")
-	dbTimeout, err := time.ParseDuration(getEnvOrDefault("DATABASE_TIMEOUT", "10s"))
+	dbTimeout, err := time.ParseDuration(dbTimeoutStr)
 	if err != nil {
 		log.Printf("Invalid DATABASE_TIMEOUT value '%s', falling back to default: 10s.", dbTimeoutStr)
 		dbTimeout = 10 * time.Second
