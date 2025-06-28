@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"errors"
-	"golang.org/x/net/context"
 	"log"
 	"net/http"
 	"os"
@@ -16,23 +16,7 @@ import (
 
 func main() {
 	gormDB := database.InitDB()
-
 	db := database.NewPostgresDB(gormDB)
-
-	dbChannel := make(chan os.Signal, 1)
-	signal.Notify(dbChannel, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-dbChannel
-		log.Println("Shutting down gracefully...")
-
-		if err := database.CloseDB(gormDB); err != nil {
-			log.Printf("Error closing database connection: %v\n", err)
-		} else {
-			log.Println("Database connection closed successfully")
-		}
-
-		os.Exit(0)
-	}()
 
 	database.ValidateDBSchema(gormDB)
 
@@ -53,17 +37,17 @@ func main() {
 		}
 	}()
 
-	serverChannel := make(chan os.Signal, 1)
-	signal.Notify(serverChannel, syscall.SIGINT, syscall.SIGTERM)
-	<-serverChannel
+	shutdownChannel := make(chan os.Signal, 1)
+	signal.Notify(shutdownChannel, syscall.SIGINT, syscall.SIGTERM)
 
+	<-shutdownChannel
 	log.Println("Shutting down gracefully...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		log.Printf("Error during server shutdown: %v", err)
+		log.Printf("Error during server shutdown")
 	} else {
 		log.Println("Server stopped gracefully")
 	}

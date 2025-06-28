@@ -8,15 +8,6 @@ import (
 	"safehouse-main-back/src/internal/models"
 )
 
-type DBConfig struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Dbname   string
-	Sslmode  string
-}
-
 func InitDB() *gorm.DB {
 
 	dsn := os.Getenv("DATABASE_URL")
