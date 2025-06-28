@@ -20,9 +20,9 @@ import (
 	_ "safehouse-main-back/docs"
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/controllers/endpoints"
-	"safehouse-main-back/src/internal/controllers/middleware"
 	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
 	"safehouse-main-back/src/internal/database"
+	middleware2 "safehouse-main-back/src/internal/middleware"
 )
 
 type Controller interface {
@@ -32,7 +32,7 @@ type Controller interface {
 func SetupRoutes(db database.Database) *gin.Engine {
 	config := configuration.LoadConfig()
 
-	controllers := getControllers(db)
+	controllers := getControllers(db, config)
 	router := createRouter(config)
 
 	registerAllRoutes(router, controllers)
@@ -45,33 +45,33 @@ func SetupRoutes(db database.Database) *gin.Engine {
 func createRouter(config configuration.Config) *gin.Engine {
 	router := gin.Default()
 
-	router.Use(middleware.SecurityHeadersMiddleware())
+	router.Use(middleware2.SecurityHeadersMiddleware())
 
 	if config.EnableHTTPSRedirect { // Railway sets this automatically
-		router.Use(middleware.HttpsRedirectMiddleware())
+		router.Use(middleware2.HttpsRedirectMiddleware())
 	}
 
-	limiter := middleware.NewIPRateLimiter(rate.Limit(5), 30)
-	router.Use(middleware.RateLimitMiddleware(limiter))
+	limiter := middleware2.NewIPRateLimiter(rate.Limit(5), 30)
+	router.Use(middleware2.RateLimitMiddleware(limiter))
 
-	router.Use(middleware.GetCors(config))
+	router.Use(middleware2.GetCors(config))
 
 	return router
 }
 
-func getControllers(db database.Database) []Controller {
+func getControllers(db database.Database, config configuration.Config) []Controller {
 	var controllers []Controller
 
-	aboutController := endpoints.NewAboutController(db)
+	aboutController := endpoints.NewAboutController(db, config)
 	controllers = append(controllers, aboutController)
 
-	techController := endpoints.NewTechController(db)
+	techController := endpoints.NewTechController(db, config)
 	controllers = append(controllers, techController)
 
-	gamesController := endpoints.NewGamesController(db)
+	gamesController := endpoints.NewGamesController(db, config)
 	controllers = append(controllers, gamesController)
 
-	financeController := endpoints.NewFinanceController(db)
+	financeController := endpoints.NewFinanceController(db, config)
 	controllers = append(controllers, financeController)
 
 	return controllers
