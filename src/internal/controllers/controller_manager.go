@@ -17,12 +17,14 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
+	"net/http"
 	_ "safehouse-main-back/docs"
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/controllers/endpoints"
 	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/middleware"
+	"time"
 )
 
 type Controller interface {
@@ -34,6 +36,8 @@ func SetupRoutes(db database.Database) *gin.Engine {
 
 	controllers := getControllers(db, config)
 	router := createRouter(config)
+
+	addHealthEndpoint(router)
 
 	registerAllRoutes(router, controllers)
 
@@ -77,6 +81,15 @@ func getControllers(db database.Database, config configuration.Config) []Control
 	controllers = append(controllers, financeController)
 
 	return controllers
+}
+
+func addHealthEndpoint(router *gin.Engine) {
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":    "healthy",
+			"timestamp": time.Now().Unix(),
+		})
+	})
 }
 
 func registerAllRoutes(router *gin.Engine, controllers []Controller) {
