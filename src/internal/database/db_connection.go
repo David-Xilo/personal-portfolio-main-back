@@ -1,40 +1,24 @@
 package database
 
 import (
-	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
+	"os"
 	"safehouse-main-back/src/internal/models"
 	"time"
 )
 
-type DBConfig struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Dbname   string
-	Sslmode  string
-}
-
-var config = DBConfig{
-	Host:     "safehouse-db-container",
-	Port:     5432,
-	User:     "safehouse-main-user",
-	Password: "mypassword",
-	Dbname:   "safehouse-main-db",
-	Sslmode:  "disable",
-}
-
 func InitDB() *gorm.DB {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		config.Host, config.Port, config.User, config.Password, config.Dbname, config.Sslmode)
+
+	maxRetries := 15 // Retry for 30 seconds (with a 2-second interval)
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Fatal("DATABASE_URL environment variable not set")
+	}
 
 	var db *gorm.DB
 	var err error
-	maxRetries := 15 // Retry for 30 seconds (with a 2-second interval)
-
 	for i := 0; i < maxRetries; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
@@ -46,7 +30,7 @@ func InitDB() *gorm.DB {
 	}
 
 	if err != nil {
-		log.Fatalf("Failed to connect to the database after 30 seconds: %v", err)
+		log.Fatalf("Failed to connect to the database after %d attempts: %v\n", maxRetries, err)
 	}
 
 	return db
@@ -62,7 +46,6 @@ func CloseDB(db *gorm.DB) error {
 }
 
 func ValidateDBSchema(db *gorm.DB) {
-
 	if !db.Migrator().HasTable(&models.Contacts{}) {
 		log.Fatal("Database schema is outdated. Please run the migrations first.")
 	}
