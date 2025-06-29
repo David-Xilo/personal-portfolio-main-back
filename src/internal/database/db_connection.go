@@ -3,7 +3,7 @@ package database
 import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
+	"log/slog"
 	"os"
 	"safehouse-main-back/src/internal/models"
 	"time"
@@ -14,7 +14,8 @@ func InitDB() *gorm.DB {
 	maxRetries := 15 // Retry for 30 seconds (with a 2-second interval)
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		log.Fatal("DATABASE_URL environment variable not set")
+		slog.Error("DATABASE_URL environment variable not set")
+		os.Exit(1)
 	}
 
 	var db *gorm.DB
@@ -22,15 +23,16 @@ func InitDB() *gorm.DB {
 	for i := 0; i < maxRetries; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
-			log.Println("Connected to the database successfully!")
+			slog.Info("Connected to the database successfully")
 			break
 		}
-		log.Printf("Retrying to connect to the database... attempt %d, error: %v\n", i+1, err)
+		slog.Warn("Retrying to connect to the database", "attempt", i+1, "error", err)
 		time.Sleep(2 * time.Second)
 	}
 
 	if err != nil {
-		log.Fatalf("Failed to connect to the database after %d attempts: %v\n", maxRetries, err)
+		slog.Error("Failed to connect to the database", "attempts", maxRetries, "error", err)
+		os.Exit(1)
 	}
 
 	return db
@@ -47,6 +49,7 @@ func CloseDB(db *gorm.DB) error {
 
 func ValidateDBSchema(db *gorm.DB) {
 	if !db.Migrator().HasTable(&models.Contacts{}) {
-		log.Fatal("Database schema is outdated. Please run the migrations first.")
+		slog.Error("Database schema is outdated. Please run the migrations first.")
+		os.Exit(1)
 	}
 }
