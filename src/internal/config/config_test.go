@@ -1,0 +1,239 @@
+package configuration
+
+import (
+	"os"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestGetEnvOrDefault(t *testing.T) {
+	tests := []struct {
+		name         string
+		key          string
+		defaultValue string
+		envValue     string
+		expected     string
+	}{
+		{
+			name:         "returns environment value when set",
+			key:          "TEST_KEY",
+			defaultValue: "default",
+			envValue:     "env_value",
+			expected:     "env_value",
+		},
+		{
+			name:         "returns default when environment not set",
+			key:          "TEST_KEY_NOT_SET",
+			defaultValue: "default",
+			envValue:     "",
+			expected:     "default",
+		},
+		{
+			name:         "returns default when environment is empty",
+			key:          "TEST_KEY_EMPTY",
+			defaultValue: "default",
+			envValue:     "",
+			expected:     "default",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Clean up before test
+			os.Unsetenv(tt.key)
+			
+			// Set environment variable if provided
+			if tt.envValue != "" {
+				os.Setenv(tt.key, tt.envValue)
+				defer os.Unsetenv(tt.key)
+			}
+
+			result := getEnvOrDefault(tt.key, tt.defaultValue)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestLoadConfig_DefaultValues(t *testing.T) {
+	// Clear all relevant environment variables
+	envVars := []string{"ENV", "FRONTEND_URL", "PORT", "DATABASE_TIMEOUT", "READ_TIMEOUT", "WRITE_TIMEOUT"}
+	for _, env := range envVars {
+		os.Unsetenv(env)
+	}
+
+	config := LoadConfig()
+
+	assert.Equal(t, "development", config.Environment)
+	assert.False(t, config.EnableHTTPSRedirect)
+	assert.Equal(t, "http://localhost:3000", config.FrontendURL)
+	assert.Equal(t, "4000", config.Port)
+	assert.Equal(t, 10*time.Second, config.DatabaseTimeout)
+	assert.Equal(t, 10*time.Second, config.ReadTimeout)
+	assert.Equal(t, 1*time.Second, config.WriteTimeout)
+}
+
+func TestLoadConfig_ProductionEnvironment(t *testing.T) {
+	// Set production environment
+	os.Setenv("ENV", "production")
+	defer os.Unsetenv("ENV")
+
+	config := LoadConfig()
+
+	assert.Equal(t, "production", config.Environment)
+	assert.True(t, config.EnableHTTPSRedirect)
+}
+
+func TestLoadConfig_CustomValues(t *testing.T) {
+	// Set custom environment variables
+	envVars := map[string]string{
+		"ENV":              "staging",
+		"FRONTEND_URL":     "https://example.com",
+		"PORT":            "8080",
+		"DATABASE_TIMEOUT": "30s",
+		"READ_TIMEOUT":     "15s",
+		"WRITE_TIMEOUT":    "5s",
+	}
+
+	for key, value := range envVars {
+		os.Setenv(key, value)
+		defer os.Unsetenv(key)
+	}
+
+	config := LoadConfig()
+
+	assert.Equal(t, "staging", config.Environment)
+	assert.False(t, config.EnableHTTPSRedirect) // Only "production" enables HTTPS redirect
+	assert.Equal(t, "https://example.com", config.FrontendURL)
+	assert.Equal(t, "8080", config.Port)
+	assert.Equal(t, 30*time.Second, config.DatabaseTimeout)
+	assert.Equal(t, 15*time.Second, config.ReadTimeout)
+	assert.Equal(t, 5*time.Second, config.WriteTimeout)
+}
+
+func TestLoadConfig_InvalidTimeouts(t *testing.T) {
+	tests := []struct {
+		name     string
+		envVar   string
+		value    string
+		expected time.Duration
+	}{
+		{
+			name:     "invalid database timeout falls back to default",
+			envVar:   "DATABASE_TIMEOUT",
+			value:    "invalid",
+			expected: 10 * time.Second,
+		},
+		{
+			name:     "invalid read timeout falls back to default",
+			envVar:   "READ_TIMEOUT",
+			value:    "not-a-duration",
+			expected: 10 * time.Second,
+		},
+		{
+			name:     "invalid write timeout falls back to default",
+			envVar:   "WRITE_TIMEOUT",
+			value:    "xyz",
+			expected: 1 * time.Second,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Clear all timeout environment variables first
+			timeoutVars := []string{"DATABASE_TIMEOUT", "READ_TIMEOUT", "WRITE_TIMEOUT"}
+			for _, env := range timeoutVars {
+				os.Unsetenv(env)
+			}
+
+			// Set the specific invalid value
+			os.Setenv(tt.envVar, tt.value)
+			defer os.Unsetenv(tt.envVar)
+
+			config := LoadConfig()
+
+			switch tt.envVar {
+			case "DATABASE_TIMEOUT":
+				assert.Equal(t, tt.expected, config.DatabaseTimeout)
+			case "READ_TIMEOUT":
+				assert.Equal(t, tt.expected, config.ReadTimeout)
+			case "WRITE_TIMEOUT":
+				assert.Equal(t, tt.expected, config.WriteTimeout)
+			}
+		})
+	}
+}
+
+func TestLoadConfig_ValidTimeouts(t *testing.T) {
+	tests := []struct {
+		name     string
+		envVar   string
+		value    string
+		expected time.Duration
+	}{
+		{
+			name:     "valid database timeout in seconds",
+			envVar:   "DATABASE_TIMEOUT",
+			value:    "25s",
+			expected: 25 * time.Second,
+		},
+		{
+			name:     "valid read timeout in minutes",
+			envVar:   "READ_TIMEOUT",
+			value:    "2m",
+			expected: 2 * time.Minute,
+		},
+		{
+			name:     "valid write timeout in milliseconds",
+			envVar:   "WRITE_TIMEOUT",
+			value:    "500ms",
+			expected: 500 * time.Millisecond,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Clear all timeout environment variables first
+			timeoutVars := []string{"DATABASE_TIMEOUT", "READ_TIMEOUT", "WRITE_TIMEOUT"}
+			for _, env := range timeoutVars {
+				os.Unsetenv(env)
+			}
+
+			// Set the specific valid value
+			os.Setenv(tt.envVar, tt.value)
+			defer os.Unsetenv(tt.envVar)
+
+			config := LoadConfig()
+
+			switch tt.envVar {
+			case "DATABASE_TIMEOUT":
+				assert.Equal(t, tt.expected, config.DatabaseTimeout)
+			case "READ_TIMEOUT":
+				assert.Equal(t, tt.expected, config.ReadTimeout)
+			case "WRITE_TIMEOUT":
+				assert.Equal(t, tt.expected, config.WriteTimeout)
+			}
+		})
+	}
+}
+
+func TestConfig_Struct(t *testing.T) {
+	config := Config{
+		Environment:         "test",
+		EnableHTTPSRedirect: true,
+		Port:                "3000",
+		FrontendURL:         "http://test.com",
+		DatabaseTimeout:     5 * time.Second,
+		ReadTimeout:         15 * time.Second,
+		WriteTimeout:        2 * time.Second,
+	}
+
+	assert.Equal(t, "test", config.Environment)
+	assert.True(t, config.EnableHTTPSRedirect)
+	assert.Equal(t, "3000", config.Port)
+	assert.Equal(t, "http://test.com", config.FrontendURL)
+	assert.Equal(t, 5*time.Second, config.DatabaseTimeout)
+	assert.Equal(t, 15*time.Second, config.ReadTimeout)
+	assert.Equal(t, 2*time.Second, config.WriteTimeout)
+}
