@@ -1,7 +1,7 @@
 package configuration
 
 import (
-	"log"
+	"log/slog"
 	"os"
 	"time"
 )
@@ -27,21 +27,21 @@ func LoadConfig() Config {
 	dbTimeoutStr := getEnvOrDefault("DATABASE_TIMEOUT", "10s")
 	dbTimeout, err := time.ParseDuration(dbTimeoutStr)
 	if err != nil {
-		log.Printf("Invalid DATABASE_TIMEOUT value '%s', falling back to default: 10s.", dbTimeoutStr)
+		slog.Warn("Invalid DATABASE_TIMEOUT value, falling back to default", "value", dbTimeoutStr, "default", "10s")
 		dbTimeout = 10 * time.Second
 	}
 
 	readTimeoutStr := getEnvOrDefault("READ_TIMEOUT", "10s")
 	readTimeout, err := time.ParseDuration(readTimeoutStr)
 	if err != nil {
-		log.Printf("Invalid READ_TIMEOUT value '%s', falling back to default: 10s.", readTimeoutStr)
+		slog.Warn("Invalid READ_TIMEOUT value, falling back to default", "value", readTimeoutStr, "default", "10s")
 		readTimeout = 10 * time.Second
 	}
 	// I don't have writes at the moment, used to init the server
 	writeTimeoutStr := getEnvOrDefault("WRITE_TIMEOUT", "1s")
 	writeTimeout, err := time.ParseDuration(writeTimeoutStr)
 	if err != nil {
-		log.Printf("Invalid WRITE_TIMEOUT value '%s', falling back to default: 1s.", writeTimeoutStr)
+		slog.Warn("Invalid WRITE_TIMEOUT value, falling back to default", "value", writeTimeoutStr, "default", "1s")
 		writeTimeout = 1 * time.Second
 	}
 

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -31,9 +31,10 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Server starting on port %s", config.Port)
+		slog.Info("Server starting", "port", config.Port)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("Failed to start server: %v", err)
+			slog.Error("Failed to start server", "error", err)
+			os.Exit(1)
 		}
 	}()
 
@@ -41,22 +42,22 @@ func main() {
 	signal.Notify(shutdownChannel, syscall.SIGINT, syscall.SIGTERM)
 
 	<-shutdownChannel
-	log.Println("Shutting down gracefully...")
+	slog.Info("Shutting down gracefully")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		log.Printf("Error during server shutdown: %v", err)
+		slog.Error("Error during server shutdown", "error", err)
 	} else {
-		log.Println("Server stopped gracefully")
+		slog.Info("Server stopped gracefully")
 	}
 
 	if err := database.CloseDB(gormDB); err != nil {
-		log.Printf("Error closing database connection: %v", err)
+		slog.Error("Error closing database connection", "error", err)
 	} else {
-		log.Println("Database connection closed successfully")
+		slog.Info("Database connection closed successfully")
 	}
 
-	log.Println("Application shutdown complete")
+	slog.Info("Application shutdown complete")
 }
