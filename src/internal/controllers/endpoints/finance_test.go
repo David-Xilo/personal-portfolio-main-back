@@ -27,14 +27,14 @@ func setupTestFinanceController() (*FinanceController, *MockDatabase) {
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}
-	
+
 	controller := NewFinanceController(mockDB, config)
 	return controller, mockDB
 }
 
 func TestNewFinanceController(t *testing.T) {
 	controller, mockDB := setupTestFinanceController()
-	
+
 	assert.NotNil(t, controller)
 	assert.Equal(t, mockDB, controller.db)
 	assert.NotNil(t, controller.config)
@@ -42,32 +42,32 @@ func TestNewFinanceController(t *testing.T) {
 
 func TestFinanceController_RegisterRoutes(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	controller, _ := setupTestFinanceController()
 	router := gin.New()
-	
+
 	controller.RegisterRoutes(router)
-	
+
 	// Test that routes are registered by checking the routes
 	routes := router.Routes()
-	
+
 	// Check that the finance projects route exists
 	financeRouteFound := false
-	
+
 	for _, route := range routes {
 		if route.Path == "/finance/projects" && route.Method == "GET" {
 			financeRouteFound = true
 		}
 	}
-	
+
 	assert.True(t, financeRouteFound, "Finance projects route should be registered")
 }
 
 func TestFinanceController_HandleProjects_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	controller, mockDB := setupTestFinanceController()
-	
+
 	// Set up mock expectation
 	expectedProjects := []*models.ProjectGroups{
 		{
@@ -85,113 +85,113 @@ func TestFinanceController_HandleProjects_Success(t *testing.T) {
 			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 	}
-	
+
 	mockDB.On("GetProjects", models.ProjectTypeFinance).Return(expectedProjects, nil)
-	
+
 	// Create test request
 	router := gin.New()
 	controller.RegisterRoutes(router)
-	
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/finance/projects", nil)
 	router.ServeHTTP(w, req)
-	
+
 	assert.Equal(t, http.StatusOK, w.Code)
-	
+
 	var response map[string]interface{}
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	require.NoError(t, err)
-	
+
 	assert.Contains(t, response, "message")
-	
+
 	message := response["message"].([]interface{})
 	assert.Len(t, message, 2)
-	
+
 	// Check first project
 	firstProject := message[0].(map[string]interface{})
 	assert.Equal(t, "Finance Project 1", firstProject["title"])
 	assert.Equal(t, "Test finance project", firstProject["description"])
 	assert.Equal(t, string(models.ProjectTypeFinance), firstProject["project_type"])
-	
+
 	mockDB.AssertExpectations(t)
 }
 
 func TestFinanceController_HandleProjects_EmptyResult(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	controller, mockDB := setupTestFinanceController()
-	
+
 	// Set up mock expectation for empty result
 	mockDB.On("GetProjects", models.ProjectTypeFinance).Return([]*models.ProjectGroups{}, nil)
-	
+
 	// Create test request
 	router := gin.New()
 	controller.RegisterRoutes(router)
-	
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/finance/projects", nil)
 	router.ServeHTTP(w, req)
-	
+
 	assert.Equal(t, http.StatusOK, w.Code)
-	
+
 	var response map[string]interface{}
 	err := json.Unmarshal(w.Body.Bytes(), &response)
 	require.NoError(t, err)
-	
+
 	assert.Contains(t, response, "message")
-	
+
 	message := response["message"].([]interface{})
 	assert.Len(t, message, 0)
-	
+
 	mockDB.AssertExpectations(t)
 }
 
 func TestFinanceController_HandleProjects_NotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	controller, mockDB := setupTestFinanceController()
-	
+
 	// Set up mock expectation for not found
 	mockDB.On("GetProjects", models.ProjectTypeFinance).Return(nil, gorm.ErrRecordNotFound)
-	
+
 	// Create test request
 	router := gin.New()
 	controller.RegisterRoutes(router)
-	
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/finance/projects", nil)
 	router.ServeHTTP(w, req)
-	
+
 	assert.Equal(t, http.StatusNotFound, w.Code)
-	
+
 	mockDB.AssertExpectations(t)
 }
 
 func TestFinanceController_HandleProjects_DatabaseError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	controller, mockDB := setupTestFinanceController()
-	
+
 	// Set up mock expectation for database error
 	mockDB.On("GetProjects", models.ProjectTypeFinance).Return(nil, errors.New("database connection error"))
-	
+
 	// Create test request
 	router := gin.New()
 	controller.RegisterRoutes(router)
-	
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/finance/projects", nil)
 	router.ServeHTTP(w, req)
-	
+
 	// Should return 500 for database errors
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	
+
 	mockDB.AssertExpectations(t)
 }
 
 func TestFinanceController_HandleProjects_Timeout(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	// Create controller with very short timeout
 	mockDB := new(MockDatabase)
 	config := configuration.Config{
@@ -203,20 +203,20 @@ func TestFinanceController_HandleProjects_Timeout(t *testing.T) {
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}
-	
+
 	controller := NewFinanceController(mockDB, config)
-	
+
 	// Set up mock expectation
 	mockDB.On("GetProjects", models.ProjectTypeFinance).Return([]*models.ProjectGroups{}, nil).Maybe()
-	
+
 	// Create test request
 	router := gin.New()
 	controller.RegisterRoutes(router)
-	
+
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/finance/projects", nil)
 	router.ServeHTTP(w, req)
-	
+
 	// Should timeout and return error
-	assert.NotEqual(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusRequestTimeout, w.Code)
 }
