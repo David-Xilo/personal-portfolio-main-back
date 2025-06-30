@@ -9,9 +9,10 @@ import (
 	"time"
 )
 
+const maxRetries = 15
+
 func InitDB() *gorm.DB {
 
-	maxRetries := 15 // Retry for 30 seconds (with a 2-second interval)
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
 		slog.Error("DATABASE_URL environment variable not set")

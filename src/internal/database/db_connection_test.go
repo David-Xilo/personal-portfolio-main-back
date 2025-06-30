@@ -83,7 +83,7 @@ func TestInitDB_EnvironmentVariableHandling(t *testing.T) {
 
 	// Test case 1: DATABASE_URL not set
 	os.Unsetenv("DATABASE_URL")
-	
+
 	// Note: InitDB calls os.Exit(1) when DATABASE_URL is not set
 	// In a real test, you'd want to refactor InitDB to return an error instead
 	// For demonstration, we're just testing that the function exists
@@ -98,13 +98,12 @@ func TestInitDB_EnvironmentVariableHandling(t *testing.T) {
 func TestInitDB_Constants(t *testing.T) {
 	// Test that we can verify the retry logic constants
 	// This tests the values used in InitDB without actually calling it
-	
-	maxRetries := 15 // This should match the value in InitDB
+
 	retryInterval := 2 * time.Second
-	
+
 	assert.Equal(t, 15, maxRetries)
 	assert.Equal(t, 2*time.Second, retryInterval)
-	
+
 	// Calculate total retry time
 	totalRetryTime := time.Duration(maxRetries) * retryInterval
 	expectedTime := 30 * time.Second
