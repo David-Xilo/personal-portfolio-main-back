@@ -75,14 +75,14 @@ func TestTechController_HandleProjects_Success(t *testing.T) {
 			Title:       "Tech Project 1",
 			Description: "Test tech project",
 			ProjectType: string(models.ProjectTypeTech),
-			CreatedAt:   time.Now(),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 		{
 			ID:          2,
 			Title:       "Tech Project 2",
 			Description: "Another tech project",
 			ProjectType: string(models.ProjectTypeTech),
-			CreatedAt:   time.Now(),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 	}
 	

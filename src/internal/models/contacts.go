@@ -11,6 +11,7 @@ type Contacts struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	Name      string     `json:"name"`
 	Email     string     `json:"email"`
+	Active    bool       `json:"active"`
 	Linkedin  string     `json:"linkedin"`
 	Github    string     `json:"github"`
 	Credly    string     `json:"credly"`

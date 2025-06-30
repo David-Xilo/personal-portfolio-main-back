@@ -11,8 +11,8 @@ func TestToContactsDTO(t *testing.T) {
 	// Create a test contact
 	contact := &Contacts{
 		ID:        1,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
+		UpdatedAt: time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		Name:      "John Doe",
 		Email:     "john.doe@example.com",
 		Linkedin:  "linkedin.com/in/johndoe",
@@ -36,8 +36,8 @@ func TestToContactsDTO_WithEmptyFields(t *testing.T) {
 	// Create a test contact with empty fields
 	contact := &Contacts{
 		ID:        2,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
+		UpdatedAt: time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		Name:      "Jane Smith",
 		Email:     "jane@example.com",
 		Linkedin:  "",
@@ -65,8 +65,8 @@ func TestToContactsDTO_NilContact(t *testing.T) {
 }
 
 func TestContactsStruct(t *testing.T) {
-	now := time.Now()
-	deletedAt := time.Now().Add(1 * time.Hour)
+	now := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC)
+	deletedAt := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC).Add(1 * time.Hour)
 
 	contact := Contacts{
 		ID:        123,

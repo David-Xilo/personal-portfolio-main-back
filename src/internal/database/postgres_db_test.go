@@ -46,19 +46,14 @@ func TestPostgresDB_GetContact_Success(t *testing.T) {
 	testContact := &models.Contacts{
 		Name:     "John Doe",
 		Email:    "john@example.com",
+		Active:   true,
 		Linkedin: "linkedin.com/in/johndoe",
 		Github:   "github.com/johndoe",
 		Credly:   "credly.com/johndoe",
 	}
-	
-	// Insert with active = true (assuming there's an active field)
+
 	result := db.Create(testContact)
 	require.NoError(t, result.Error)
-
-	// Since the query looks for active = true, we need to ensure the test contact has active = true
-	// Let's add the active column to the test
-	db.Exec("ALTER TABLE contacts ADD COLUMN active BOOLEAN DEFAULT FALSE")
-	db.Model(testContact).Update("active", true)
 
 	contact, err := postgresDB.GetContact()
 
@@ -72,8 +67,7 @@ func TestPostgresDB_GetContact_NotFound(t *testing.T) {
 	db := setupTestDBForPostgres(t)
 	postgresDB := NewPostgresDB(db)
 
-	// Add active column but don't create any active records
-	db.Exec("ALTER TABLE contacts ADD COLUMN active BOOLEAN DEFAULT FALSE")
+	// Don't create any active records - the contacts model already has an active field
 
 	contact, err := postgresDB.GetContact()
 
@@ -91,7 +85,7 @@ func TestPostgresDB_GetProjects_Success(t *testing.T) {
 		Title:       "Test Project",
 		Description: "Test Description",
 		ProjectType: string(models.ProjectTypeTech),
-		CreatedAt:   time.Now(),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 	}
 
 	result := db.Create(testProjectGroup)
@@ -124,14 +118,14 @@ func TestPostgresDB_GetProjects_FiltersByType(t *testing.T) {
 		Title:       "Tech Project",
 		Description: "Tech Description",
 		ProjectType: string(models.ProjectTypeTech),
-		CreatedAt:   time.Now(),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 	}
-	
+
 	gameProject := &models.ProjectGroups{
 		Title:       "Game Project",
 		Description: "Game Description",
 		ProjectType: string(models.ProjectTypeGame),
-		CreatedAt:   time.Now(),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 	}
 
 	db.Create(techProject)
@@ -160,7 +154,7 @@ func TestPostgresDB_GetGamesPlayed_Success(t *testing.T) {
 			Title:       fmt.Sprintf("Game %d", i+1),
 			Description: "Test game description",
 			Rating:      5,
-			CreatedAt:   time.Now().Add(-time.Duration(i) * time.Hour),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC).Add(-time.Duration(i) * time.Hour),
 		}
 		db.Create(game)
 	}
@@ -192,14 +186,14 @@ func TestPostgresDB_GetGamesPlayed_OrderedByCreatedAt(t *testing.T) {
 		Title:       "Old Game",
 		Description: "Old game description",
 		Rating:      4,
-		CreatedAt:   time.Now().Add(-24 * time.Hour),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC).Add(-24 * time.Hour),
 	}
-	
+
 	newGame := &models.GamesPlayed{
 		Title:       "New Game",
 		Description: "New game description",
 		Rating:      5,
-		CreatedAt:   time.Now(),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 	}
 
 	db.Create(oldGame)
@@ -218,11 +212,11 @@ func TestPostgresDB_GetGamesPlayed_OrderedByCreatedAt(t *testing.T) {
 // but we can test the basic error conditions
 func TestPostgresDB_GetContact_DatabaseError(t *testing.T) {
 	db := setupTestDBForPostgres(t)
-	
+
 	// Close the database to simulate connection error
 	sqlDB, _ := db.DB()
 	sqlDB.Close()
-	
+
 	postgresDB := NewPostgresDB(db)
 
 	// This should panic in the actual implementation, but we can't easily test panics

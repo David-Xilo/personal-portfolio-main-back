@@ -43,8 +43,8 @@ func TestToProjectGroupsDTO(t *testing.T) {
 	// Create a test project group
 	projectGroup := &ProjectGroups{
 		ID:                  1,
-		CreatedAt:           time.Now(),
-		UpdatedAt:           time.Now(),
+		CreatedAt:           time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
+		UpdatedAt:           time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		Title:               "Test Project Group",
 		Description:         "A test project group",
 		ProjectType:         "tech",
@@ -69,8 +69,8 @@ func TestToProjectGroupsDTO_EmptyRepositories(t *testing.T) {
 	// Create a test project group with no repositories
 	projectGroup := &ProjectGroups{
 		ID:                  2,
-		CreatedAt:           time.Now(),
-		UpdatedAt:           time.Now(),
+		CreatedAt:           time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
+		UpdatedAt:           time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		Title:               "Empty Project Group",
 		Description:         "A project group with no repositories",
 		ProjectType:         "game",
@@ -106,14 +106,14 @@ func TestToProjectGroupsDTOList(t *testing.T) {
 			Title:       "Project Group 1",
 			Description: "First project group",
 			ProjectType: "tech",
-			CreatedAt:   time.Now(),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 		{
 			ID:          2,
 			Title:       "Project Group 2", 
 			Description: "Second project group",
 			ProjectType: "game",
-			CreatedAt:   time.Now(),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 	}
 
@@ -153,8 +153,8 @@ func TestToProjectGroupsDTOList_NilList(t *testing.T) {
 }
 
 func TestProjectGroupsStruct(t *testing.T) {
-	now := time.Now()
-	deletedAt := time.Now().Add(1 * time.Hour)
+	now := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC)
+	deletedAt := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC).Add(1 * time.Hour)
 
 	projectGroup := ProjectGroups{
 		ID:          123,

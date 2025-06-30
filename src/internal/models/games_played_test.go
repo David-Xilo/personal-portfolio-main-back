@@ -18,8 +18,8 @@ func TestToGamesPlayedDTO(t *testing.T) {
 	// Create a test games played record
 	game := &GamesPlayed{
 		ID:          1,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
+		UpdatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		Title:       "The Legend of Zelda",
 		Genre:       "Adventure", // Assuming GameGenres is a string type
 		Rating:      5,
@@ -41,8 +41,8 @@ func TestToGamesPlayedDTO_WithEmptyFields(t *testing.T) {
 	// Create a test games played record with minimal fields
 	game := &GamesPlayed{
 		ID:          2,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
+		UpdatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		Title:       "Simple Game",
 		Genre:       "",
 		Rating:      0,
@@ -76,7 +76,7 @@ func TestToGamesPlayedListDTO(t *testing.T) {
 			Genre:       "Action",
 			Rating:      5,
 			Description: "First game",
-			CreatedAt:   time.Now(),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 		{
 			ID:          2,
@@ -84,7 +84,7 @@ func TestToGamesPlayedListDTO(t *testing.T) {
 			Genre:       "RPG",
 			Rating:      4,
 			Description: "Second game",
-			CreatedAt:   time.Now(),
+			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
 		},
 	}
 
@@ -126,8 +126,8 @@ func TestToGamesPlayedListDTO_NilList(t *testing.T) {
 }
 
 func TestGamesPlayedStruct(t *testing.T) {
-	now := time.Now()
-	deletedAt := time.Now().Add(1 * time.Hour)
+	now := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC)
+	deletedAt := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC).Add(1 * time.Hour)
 
 	game := GamesPlayed{
 		ID:          123,

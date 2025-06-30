@@ -8,8 +8,8 @@ import (
 )
 
 func TestFinanceRepositoriesStruct(t *testing.T) {
-	now := time.Now()
-	deletedAt := time.Now().Add(1 * time.Hour)
+	now := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC)
+	deletedAt := time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC).Add(1 * time.Hour)
 
 	financeRepo := FinanceRepositories{
 		ID:             123,
