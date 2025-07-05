@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
+	"log/slog"
 	"net/http"
 )
 
@@ -41,10 +42,18 @@ func HandleDatabaseError(c *gin.Context, err error) {
 
 	if errors.Is(err, context.DeadlineExceeded) {
 		apiError = ErrDatabaseTimeout
+		slog.Warn("Database timeout occurred", "path", c.Request.URL.Path, "error", err.Error())
 	} else if errors.Is(err, sql.ErrNoRows) || errors.Is(err, gorm.ErrRecordNotFound) {
 		apiError = ErrNotFound
+		slog.Info("Resource not found", "path", c.Request.URL.Path)
 	} else {
 		apiError = ErrInternalServer
+		// Log the actual error for debugging but don't expose it to clients
+		slog.Error("Database error occurred",
+			"path", c.Request.URL.Path,
+			"method", c.Request.Method,
+			"error", err.Error(),
+			"user_agent", c.GetHeader("User-Agent"))
 	}
 
 	c.JSON(apiError.Status, apiError)
