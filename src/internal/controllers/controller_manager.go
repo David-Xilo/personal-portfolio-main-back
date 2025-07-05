@@ -32,11 +32,19 @@ type Controller interface {
 	RegisterRoutes(router gin.IRouter)
 }
 
-func SetupRoutes(db database.Database, config configuration.Config, jwtManager *security.JWTManager) *gin.Engine {
+type RouterSetup struct {
+	Router      *gin.Engine
+	RateLimiter *middleware.IPRateLimiter
+}
+
+func SetupRoutes(db database.Database, config configuration.Config, jwtManager *security.JWTManager) *RouterSetup {
 	controllers := getControllers(db, config, jwtManager)
-	router := createRouter(config)
+	routerSetup := createRouter(config)
+
+	router := routerSetup.Router
 
 	addHealthEndpoint(router)
+	addMonitoringEndpoints(router, routerSetup.RateLimiter)
 
 	// Add auth routes (no JWT required for token endpoint)
 	authController := endpoints.NewAuthController(config, jwtManager)
@@ -50,10 +58,10 @@ func SetupRoutes(db database.Database, config configuration.Config, jwtManager *
 
 	swaggerconfig.AddSwaggerEndpoint(router)
 
-	return router
+	return routerSetup
 }
 
-func createRouter(config configuration.Config) *gin.Engine {
+func createRouter(config configuration.Config) *RouterSetup {
 	router := gin.Default()
 
 	router.Use(middleware.BasicRequestValidationMiddleware())
@@ -69,7 +77,10 @@ func createRouter(config configuration.Config) *gin.Engine {
 
 	router.Use(middleware.GetCors(config))
 
-	return router
+	return &RouterSetup{
+		Router:      router,
+		RateLimiter: limiter,
+	}
 }
 
 func getControllers(db database.Database, config configuration.Config, jwtManager *security.JWTManager) []Controller {
@@ -95,6 +106,17 @@ func addHealthEndpoint(router *gin.Engine) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":    "healthy",
 			"timestamp": time.Now().Unix(),
+		})
+	})
+}
+
+func addMonitoringEndpoints(router *gin.Engine, rateLimiter *middleware.IPRateLimiter) {
+	// Add rate limiter stats endpoint for monitoring
+	router.GET("/internal/stats/rate-limiter", func(c *gin.Context) {
+		stats := rateLimiter.GetStats()
+		c.JSON(http.StatusOK, gin.H{
+			"rate_limiter": stats,
+			"timestamp":    time.Now().Unix(),
 		})
 	})
 }

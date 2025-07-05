@@ -70,14 +70,16 @@ func TestSetupRoutes(t *testing.T) {
 	}
 	jwtManager := security2.NewJWTManager(config)
 
-	router := SetupRoutes(mockDB, config, jwtManager)
+	routerSetup := SetupRoutes(mockDB, config, jwtManager)
 
-	assert.NotNil(t, router)
+	assert.NotNil(t, routerSetup)
+	assert.NotNil(t, routerSetup.Router)
+	assert.NotNil(t, routerSetup.RateLimiter)
 
 	// Test that the router is created and has expected behavior
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/health", nil)
-	router.ServeHTTP(w, req)
+	routerSetup.Router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
@@ -102,14 +104,16 @@ func TestCreateRouter(t *testing.T) {
 		WriteTimeout:        1 * time.Second,
 	}
 
-	router := createRouter(config)
+	routerSetup := createRouter(config)
 
-	assert.NotNil(t, router)
+	assert.NotNil(t, routerSetup)
+	assert.NotNil(t, routerSetup.Router)
+	assert.NotNil(t, routerSetup.RateLimiter)
 
 	// Test basic functionality
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/nonexistent", nil)
-	router.ServeHTTP(w, req)
+	routerSetup.Router.ServeHTTP(w, req)
 
 	// Should return 404 for non-existent routes
 	assert.Equal(t, http.StatusNotFound, w.Code)
@@ -128,9 +132,11 @@ func TestCreateRouter_WithHTTPSRedirect(t *testing.T) {
 		WriteTimeout:        1 * time.Second,
 	}
 
-	router := createRouter(config)
+	routerSetup := createRouter(config)
 
-	assert.NotNil(t, router)
+	assert.NotNil(t, routerSetup)
+	assert.NotNil(t, routerSetup.Router)
+	assert.NotNil(t, routerSetup.RateLimiter)
 }
 
 func TestGetControllers(t *testing.T) {

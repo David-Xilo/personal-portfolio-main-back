@@ -48,11 +48,11 @@ func main() {
 
 	jwtManager := security.NewJWTManager(config)
 
-	router := controllers.SetupRoutes(db, config, jwtManager)
+	routerSetup := controllers.SetupRoutes(db, config, jwtManager)
 
 	server := &http.Server{
 		Addr:         ":" + config.Port,
-		Handler:      router,
+		Handler:      routerSetup.Router,
 		ReadTimeout:  config.ReadTimeout,
 		WriteTimeout: config.WriteTimeout,
 	}
@@ -79,6 +79,9 @@ func main() {
 	} else {
 		slog.Info("Server stopped gracefully")
 	}
+
+	routerSetup.RateLimiter.Stop()
+	slog.Info("Rate limiter cleanup routine stopped")
 
 	if err := database.CloseDB(gormDB); err != nil {
 		slog.Error("Error closing database connection", "error", err)
