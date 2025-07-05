@@ -3,20 +3,25 @@ package configuration
 import (
 	"log/slog"
 	"os"
+	"safehouse-main-back/src/internal/secrets"
+	"strconv"
 	"time"
 )
 
 type Config struct {
-	Environment         string
-	EnableHTTPSRedirect bool
-	Port                string
-	FrontendURL         string
-	DatabaseTimeout     time.Duration
-	ReadTimeout         time.Duration
-	WriteTimeout        time.Duration
+	Environment          string
+	EnableHTTPSRedirect  bool
+	Port                 string
+	FrontendURL          string
+	DatabaseTimeout      time.Duration
+	ReadTimeout          time.Duration
+	WriteTimeout         time.Duration
+	JWTSigningKey        string
+	FrontendAuthKey      string
+	JWTExpirationMinutes int
 }
 
-func LoadConfig() Config {
+func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	env := getEnvOrDefault("ENV", "development")
 
 	isProd := env == "production"
@@ -45,14 +50,24 @@ func LoadConfig() Config {
 		writeTimeout = 1 * time.Second
 	}
 
+	jwtExpirationStr := getEnvOrDefault("JWT_EXPIRATION_MINUTES", "30")
+	jwtExpiration, err := strconv.Atoi(jwtExpirationStr)
+	if err != nil {
+		slog.Warn("Invalid JWT_EXPIRATION_MINUTES value, falling back to default", "value", jwtExpirationStr, "default", "30")
+		jwtExpiration = 30
+	}
+
 	return Config{
-		Environment:         env,
-		EnableHTTPSRedirect: isProd,
-		FrontendURL:         frontendURL,
-		Port:                port,
-		DatabaseTimeout:     dbTimeout,
-		ReadTimeout:         readTimeout,
-		WriteTimeout:        writeTimeout,
+		Environment:          env,
+		EnableHTTPSRedirect:  isProd,
+		FrontendURL:          frontendURL,
+		Port:                 port,
+		DatabaseTimeout:      dbTimeout,
+		ReadTimeout:          readTimeout,
+		WriteTimeout:         writeTimeout,
+		JWTSigningKey:        appSecrets.JWTSigningKey,
+		FrontendAuthKey:      appSecrets.FrontendAuthKey,
+		JWTExpirationMinutes: jwtExpiration,
 	}
 }
 

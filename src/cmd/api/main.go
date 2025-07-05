@@ -10,18 +10,45 @@ import (
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/controllers"
 	"safehouse-main-back/src/internal/database"
+	"safehouse-main-back/src/internal/secrets"
+	"safehouse-main-back/src/internal/security"
 	"syscall"
 	"time"
 )
 
 func main() {
+	ctx := context.Background()
+
+	secretManager, err := secrets.NewSecretManager(ctx)
+	if err != nil {
+		slog.Error("Failed to initialize secret manager", "error", err)
+		os.Exit(1)
+	}
+
+	defer func(secretManager *secrets.SecretManager) {
+		err := secretManager.Close()
+		if err != nil {
+			slog.Error("Failed to Close secret manager", "error", err)
+			os.Exit(1)
+		}
+	}(secretManager)
+
+	appSecrets, err := secretManager.LoadAppSecrets(ctx)
+	if err != nil {
+		slog.Error("Failed to load application secrets", "error", err)
+		os.Exit(1)
+	}
+
 	gormDB := database.InitDB()
 	db := database.NewPostgresDB(gormDB)
 
 	database.ValidateDBSchema(gormDB)
 
-	config := configuration.LoadConfig()
-	router := controllers.SetupRoutes(db)
+	config := configuration.LoadConfig(appSecrets)
+
+	jwtManager := security.NewJWTManager(config)
+
+	router := controllers.SetupRoutes(db, config, jwtManager)
 
 	server := &http.Server{
 		Addr:         ":" + config.Port,

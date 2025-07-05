@@ -23,7 +23,7 @@ func NewTechController(db database.Database, config configuration.Config) *TechC
 	}
 }
 
-func (tc *TechController) RegisterRoutes(router *gin.Engine) {
+func (tc *TechController) RegisterRoutes(router gin.IRouter) {
 	router.GET("/tech/projects", tc.handleProjects)
 }
 

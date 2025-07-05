@@ -23,7 +23,7 @@ func NewFinanceController(db database.Database, config configuration.Config) *Fi
 	}
 }
 
-func (fc *FinanceController) RegisterRoutes(router *gin.Engine) {
+func (fc *FinanceController) RegisterRoutes(router gin.IRouter) {
 	router.GET("/finance/projects", fc.handleProjects)
 }
 

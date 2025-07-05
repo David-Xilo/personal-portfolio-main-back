@@ -22,13 +22,14 @@ func getCORSConfig(config configuration.Config) cors.Config {
 		"x-client-version",
 		"origin",
 		"accept",
+		"authorization",
 	}
 
 	return cors.Config{
 		AllowOrigins: []string{
 			config.FrontendURL,
 		},
-		AllowMethods:     []string{"GET", "OPTIONS"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     allowedHeaders,
 		AllowCredentials: true,
 	}

@@ -26,7 +26,7 @@ func NewAboutController(db database.Database, config configuration.Config) *Abou
 	}
 }
 
-func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
+func (ac *AboutController) RegisterRoutes(router gin.IRouter) {
 	router.GET("/about/contact", ac.handleContactRequest)
 	router.GET("/about/reviews/carousel", ac.handleReviewsCarouselRequest)
 }

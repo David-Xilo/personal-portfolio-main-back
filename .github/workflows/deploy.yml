@@ -1,31 +1,208 @@
-name: Deploy Infrastructure
+name: Build and Push Go Backend
+
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+          - dev
+      tag_version:
+        description: 'Optional: Custom tag version (e.g., v1.0.0)'
+        required: false
+        type: string
+
+env:
+  PROJECT_ID: personal-portfolio-safehouse
+  SERVICE_NAME: safehouse-app
+  REGION: us-central1
 
 jobs:
-  terraform:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Run security scan
+        run: |
+          go install github.com/securecodewarrior/sast-scan@latest
+          sast-scan --type go --src . --out gosec-report.sarif || true
+        continue-on-error: true
+
+      - name: Lint code
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
+    permissions:
+      contents: read
+      id-token: write  # Required for Workload Identity Federation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud using Workload Identity
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: projects/942519139037/locations/global/workloadIdentityPools/safehouse-github-pool/providers/safehouse-github-provider
+          service_account: safehouse-terraform-cicd@personal-portfolio-safehouse.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker
+
+#      - name: Fetch secrets from Google Secret Manager
+#        id: secrets
+#        run: |
+#          # Example: Fetch any secrets your build process might need
+#          # DEMO_SECRET=$(gcloud secrets versions access latest --secret="github-actions-demo-secret")
+#          # echo "demo_secret=${DEMO_SECRET}" >> $GITHUB_OUTPUT
+#
+#          # Add any other secrets your application needs during build
+#          # API_KEY=$(gcloud secrets versions access latest --secret="api-key")
+#          # echo "api_key=${API_KEY}" >> $GITHUB_OUTPUT
+#
+#          echo "Secrets fetched successfully"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Generate image tags
+        id: meta
+        run: |
+          # Generate multiple tags based on manual input
+          TAGS=""
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+          CUSTOM_TAG="${{ github.event.inputs.tag_version }}"
+          
+          # Always tag with commit SHA
+          TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }},"
+          
+          # Tag based on selected environment
+          if [[ "$ENVIRONMENT" == "prod" ]]; then
+            TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest,"
+          elif [[ "$ENVIRONMENT" == "dev" ]]; then
+            TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:dev,"
+          fi
+          
+          # Add custom tag if provided
+          if [[ -n "$CUSTOM_TAG" ]]; then
+            TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${CUSTOM_TAG},"
+          fi
+          
+          # Remove trailing comma
+          TAGS=${TAGS%,}
+          
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "Generated tags: ${TAGS}"
+          
+          # Extract primary tag for deployment reference
+          PRIMARY_TAG=$(echo $TAGS | cut -d',' -f1)
+          echo "primary_tag=${PRIMARY_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+      - name: Output deployment info
+        run: |
+          echo "## 🚀 Manual Deployment Information" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Custom Tag:** ${{ github.event.inputs.tag_version || 'None' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Built images:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Primary deployment tag:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.primary_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**To deploy manually:**" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "# Update main.tf with:" >> $GITHUB_STEP_SUMMARY
+          echo "image = \"${{ steps.meta.outputs.primary_tag }}\"" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Or get latest deployment info:" >> $GITHUB_STEP_SUMMARY
+          echo "gcloud secrets versions access latest --secret=\"safehouse-latest-deployment\"" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "# Then apply:" >> $GITHUB_STEP_SUMMARY
+          echo "terraform plan" >> $GITHUB_STEP_SUMMARY
+          echo "terraform apply" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+  security-scan:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+
     permissions:
       contents: read
       id-token: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: Authenticate to Google Cloud using Workload Identity
+        uses: google-github-actions/auth@v1
         with:
-          workload_identity_provider: 'projects/942519139037/locations/global/workloadIdentityPools/safehouse-github-pool/providers/safehouse-github-provider'
-          service_account: 'safehouse-terraform-cicd@personal-portfolio-safehouse.iam.gserviceaccount.com'
+          workload_identity_provider: projects/942519139037/locations/global/workloadIdentityPools/safehouse-github-pool/providers/safehouse-github-provider
+          service_account: safehouse-terraform-cicd@personal-portfolio-safehouse.iam.gserviceaccount.com
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.0
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
 
-      - name: Deploy Infrastructure
+      - name: Configure Docker for GCR
+        run: gcloud auth configure-docker
+
+      - name: Scan image for vulnerabilities
         run: |
-          chmod +x deploy.sh
-          ./deploy.sh
+          # Get the latest deployment info to scan the right image
+          DEPLOYMENT_INFO=$(gcloud secrets versions access latest --secret="safehouse-latest-deployment")
+          IMAGE=$(echo "$DEPLOYMENT_INFO" | jq -r '.image')
+          
+          echo "Scanning image: $IMAGE"
+          
+          # Scan using gcloud (if available)
+          gcloud container images scan $IMAGE --remote || echo "Vulnerability scanning not available"
+          
+          # Alternative: use trivy for scanning
+          docker run --rm aquasec/trivy:latest image $IMAGE

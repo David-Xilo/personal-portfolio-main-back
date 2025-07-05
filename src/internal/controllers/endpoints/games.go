@@ -27,7 +27,7 @@ type GamesFilter struct {
 	Genre string `json:"genre"`
 }
 
-func (gc *GamesController) RegisterRoutes(router *gin.Engine) {
+func (gc *GamesController) RegisterRoutes(router gin.IRouter) {
 	router.GET("/games/projects", gc.handleProjects)
 	router.GET("/games/played/carousel", gc.handleGamesPlayedCarousel)
 }

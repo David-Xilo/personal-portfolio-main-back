@@ -24,22 +24,29 @@ import (
 	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/middleware"
+	"safehouse-main-back/src/internal/security"
 	"time"
 )
 
 type Controller interface {
-	RegisterRoutes(router *gin.Engine)
+	RegisterRoutes(router gin.IRouter)
 }
 
-func SetupRoutes(db database.Database) *gin.Engine {
-	config := configuration.LoadConfig()
-
-	controllers := getControllers(db, config)
+func SetupRoutes(db database.Database, config configuration.Config, jwtManager *security.JWTManager) *gin.Engine {
+	controllers := getControllers(db, config, jwtManager)
 	router := createRouter(config)
 
 	addHealthEndpoint(router)
 
-	registerAllRoutes(router, controllers)
+	// Add auth routes (no JWT required for token endpoint)
+	authController := endpoints.NewAuthController(config, jwtManager)
+	authController.RegisterRoutes(router)
+
+	// Create protected group for all other routes
+	protected := router.Group("/")
+	protected.Use(middleware.JWTAuthMiddleware(jwtManager))
+
+	registerProtectedRoutes(protected, controllers)
 
 	swaggerconfig.AddSwaggerEndpoint(router)
 
@@ -65,7 +72,7 @@ func createRouter(config configuration.Config) *gin.Engine {
 	return router
 }
 
-func getControllers(db database.Database, config configuration.Config) []Controller {
+func getControllers(db database.Database, config configuration.Config, jwtManager *security.JWTManager) []Controller {
 	var controllers []Controller
 
 	aboutController := endpoints.NewAboutController(db, config)
@@ -92,7 +99,7 @@ func addHealthEndpoint(router *gin.Engine) {
 	})
 }
 
-func registerAllRoutes(router *gin.Engine, controllers []Controller) {
+func registerProtectedRoutes(router *gin.RouterGroup, controllers []Controller) {
 	for _, controller := range controllers {
 		controller.RegisterRoutes(router)
 	}

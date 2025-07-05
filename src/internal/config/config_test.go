@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"os"
+	"safehouse-main-back/src/internal/secrets"
 	"testing"
 	"time"
 
@@ -43,7 +44,7 @@ func TestGetEnvOrDefault(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Clean up before test
 			os.Unsetenv(tt.key)
-			
+
 			// Set environment variable if provided
 			if tt.envValue != "" {
 				os.Setenv(tt.key, tt.envValue)
@@ -63,7 +64,11 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 		os.Unsetenv(env)
 	}
 
-	config := LoadConfig()
+	mockSecrets := &secrets.AppSecrets{
+		JWTSigningKey:   "test-jwt-key",
+		FrontendAuthKey: "test-auth-key",
+	}
+	config := LoadConfig(mockSecrets)
 
 	assert.Equal(t, "development", config.Environment)
 	assert.False(t, config.EnableHTTPSRedirect)
@@ -79,7 +84,11 @@ func TestLoadConfig_ProductionEnvironment(t *testing.T) {
 	os.Setenv("ENV", "production")
 	defer os.Unsetenv("ENV")
 
-	config := LoadConfig()
+	mockSecrets := &secrets.AppSecrets{
+		JWTSigningKey:   "test-jwt-key",
+		FrontendAuthKey: "test-auth-key",
+	}
+	config := LoadConfig(mockSecrets)
 
 	assert.Equal(t, "production", config.Environment)
 	assert.True(t, config.EnableHTTPSRedirect)
@@ -90,7 +99,7 @@ func TestLoadConfig_CustomValues(t *testing.T) {
 	envVars := map[string]string{
 		"ENV":              "staging",
 		"FRONTEND_URL":     "https://example.com",
-		"PORT":            "8080",
+		"PORT":             "8080",
 		"DATABASE_TIMEOUT": "30s",
 		"READ_TIMEOUT":     "15s",
 		"WRITE_TIMEOUT":    "5s",
@@ -101,7 +110,11 @@ func TestLoadConfig_CustomValues(t *testing.T) {
 		defer os.Unsetenv(key)
 	}
 
-	config := LoadConfig()
+	mockSecrets := &secrets.AppSecrets{
+		JWTSigningKey:   "test-jwt-key",
+		FrontendAuthKey: "test-auth-key",
+	}
+	config := LoadConfig(mockSecrets)
 
 	assert.Equal(t, "staging", config.Environment)
 	assert.False(t, config.EnableHTTPSRedirect) // Only "production" enables HTTPS redirect
@@ -151,7 +164,11 @@ func TestLoadConfig_InvalidTimeouts(t *testing.T) {
 			os.Setenv(tt.envVar, tt.value)
 			defer os.Unsetenv(tt.envVar)
 
-			config := LoadConfig()
+			mockSecrets := &secrets.AppSecrets{
+				JWTSigningKey:   "test-jwt-key",
+				FrontendAuthKey: "test-auth-key",
+			}
+			config := LoadConfig(mockSecrets)
 
 			switch tt.envVar {
 			case "DATABASE_TIMEOUT":
@@ -204,7 +221,11 @@ func TestLoadConfig_ValidTimeouts(t *testing.T) {
 			os.Setenv(tt.envVar, tt.value)
 			defer os.Unsetenv(tt.envVar)
 
-			config := LoadConfig()
+			mockSecrets := &secrets.AppSecrets{
+				JWTSigningKey:   "test-jwt-key",
+				FrontendAuthKey: "test-auth-key",
+			}
+			config := LoadConfig(mockSecrets)
 
 			switch tt.envVar {
 			case "DATABASE_TIMEOUT":
