@@ -10,14 +10,17 @@ import (
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 )
 
+const JwtSecretName = "safehouse-jwt-signing-key"
+const FrontendAuthSecretName = "safehouse-frontend-auth-key"
+
 type SecretManager struct {
 	client    *secretmanager.Client
 	projectID string
 }
 
 type AppSecrets struct {
-	JWTSigningKey    string
-	FrontendAuthKey  string
+	JWTSigningKey   string
+	FrontendAuthKey string
 }
 
 func NewSecretManager(ctx context.Context) (*SecretManager, error) {
@@ -57,18 +60,18 @@ func (sm *SecretManager) getSecret(ctx context.Context, secretName string) (stri
 func (sm *SecretManager) LoadAppSecrets(ctx context.Context) (*AppSecrets, error) {
 	slog.Info("Loading secrets from Google Cloud Secret Manager")
 
-	jwtKey, err := sm.getSecret(ctx, "jwt-signing-key")
+	jwtKey, err := sm.getSecret(ctx, JwtSecretName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load JWT signing key: %w", err)
 	}
 
-	frontendKey, err := sm.getSecret(ctx, "frontend-auth-key")
+	frontendKey, err := sm.getSecret(ctx, FrontendAuthSecretName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load frontend auth key: %w", err)
 	}
 
 	slog.Info("Successfully loaded secrets from Google Cloud Secret Manager")
-	
+
 	return &AppSecrets{
 		JWTSigningKey:   jwtKey,
 		FrontendAuthKey: frontendKey,
