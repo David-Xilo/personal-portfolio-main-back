@@ -44,13 +44,10 @@ func SetupRoutes(db database.Database, config configuration.Config, jwtManager *
 	router := routerSetup.Router
 
 	addHealthEndpoint(router)
-	addMonitoringEndpoints(router, routerSetup.RateLimiter)
 
-	// Add auth routes (no JWT required for token endpoint)
 	authController := endpoints.NewAuthController(config, jwtManager)
 	authController.RegisterRoutes(router)
 
-	// Create protected group for all other routes
 	protected := router.Group("/")
 	protected.Use(middleware.JWTAuthMiddleware(jwtManager))
 
@@ -106,17 +103,6 @@ func addHealthEndpoint(router *gin.Engine) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":    "healthy",
 			"timestamp": time.Now().Unix(),
-		})
-	})
-}
-
-func addMonitoringEndpoints(router *gin.Engine, rateLimiter *middleware.IPRateLimiter) {
-	// Add rate limiter stats endpoint for monitoring
-	router.GET("/internal/stats/rate-limiter", func(c *gin.Context) {
-		stats := rateLimiter.GetStats()
-		c.JSON(http.StatusOK, gin.H{
-			"rate_limiter": stats,
-			"timestamp":    time.Now().Unix(),
 		})
 	})
 }

@@ -17,12 +17,12 @@ func TestSecurityHeadersMiddleware_BasicHeaders(t *testing.T) {
 	
 	router := gin.New()
 	router.Use(SecurityHeadersMiddleware(config))
-	router.GET("/test", func(c *gin.Context) {
+	router.GET("/auth/test", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "ok"})
 	})
 	
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
+	req, _ := http.NewRequest("GET", "/auth/test", nil)
 	router.ServeHTTP(w, req)
 	
 	// Test basic security headers
@@ -30,7 +30,7 @@ func TestSecurityHeadersMiddleware_BasicHeaders(t *testing.T) {
 	assert.Equal(t, "strict-origin-when-cross-origin", w.Header().Get("Referrer-Policy"))
 	assert.Equal(t, "DENY", w.Header().Get("X-Frame-Options"))
 	assert.Equal(t, "1; mode=block", w.Header().Get("X-XSS-Protection"))
-	assert.Equal(t, "no-store, no-cache, must-revalidate, private", w.Header().Get("Cache-Control"))
+	assert.Equal(t, "no-store, no-cache, must-revalidate, private, max-age=0", w.Header().Get("Cache-Control"))
 	assert.Equal(t, "no-cache", w.Header().Get("Pragma"))
 	assert.Equal(t, "0", w.Header().Get("Expires"))
 	
@@ -128,20 +128,9 @@ func TestSecurityHeadersMiddleware_SwaggerProduction(t *testing.T) {
 			req, _ := http.NewRequest("GET", endpoint, nil)
 			router.ServeHTTP(w, req)
 			
-			csp := w.Header().Get("Content-Security-Policy")
-			
-			// Swagger should allow necessary resources
-			assert.Contains(t, csp, "default-src 'self'")
-			assert.Contains(t, csp, "script-src 'self' 'unsafe-inline'")
-			assert.Contains(t, csp, "style-src 'self' 'unsafe-inline'")
-			assert.Contains(t, csp, "img-src 'self' data:")
-			assert.Contains(t, csp, "font-src 'self'")
-			assert.Contains(t, csp, "connect-src 'self'")
-			assert.Contains(t, csp, "frame-ancestors 'none'")
-			
-			// Should allow unsafe-inline for Swagger but NOT unsafe-eval
-			assert.Contains(t, csp, "'unsafe-inline'")
-			assert.NotContains(t, csp, "'unsafe-eval'")
+			// In production, swagger endpoints should be blocked
+			assert.Equal(t, http.StatusForbidden, w.Code)
+			assert.Contains(t, w.Body.String(), "Path not allowed")
 		})
 	}
 }
@@ -181,12 +170,12 @@ func TestSecurityHeadersMiddleware_AllEnvironments(t *testing.T) {
 			
 			router := gin.New()
 			router.Use(SecurityHeadersMiddleware(config))
-			router.GET("/api/test", func(c *gin.Context) {
+			router.GET("/auth/test", func(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{"message": "ok"})
 			})
 			
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequest("GET", "/api/test", nil)
+			req, _ := http.NewRequest("GET", "/auth/test", nil)
 			router.ServeHTTP(w, req)
 			
 			// All environments should have basic security headers

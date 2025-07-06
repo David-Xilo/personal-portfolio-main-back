@@ -42,18 +42,13 @@ func HandleDatabaseError(c *gin.Context, err error) {
 
 	if errors.Is(err, context.DeadlineExceeded) {
 		apiError = ErrDatabaseTimeout
-		slog.Warn("Database timeout occurred", "path", c.Request.URL.Path, "error", err.Error())
+		slog.Warn("Database timeout occurred", "error", apiError)
 	} else if errors.Is(err, sql.ErrNoRows) || errors.Is(err, gorm.ErrRecordNotFound) {
 		apiError = ErrNotFound
-		slog.Info("Resource not found", "path", c.Request.URL.Path)
+		slog.Info("Resource not found", "error", apiError)
 	} else {
 		apiError = ErrInternalServer
-		// Log the actual error for debugging but don't expose it to clients
-		slog.Error("Database error occurred",
-			"path", c.Request.URL.Path,
-			"method", c.Request.Method,
-			"error", err.Error(),
-			"user_agent", c.GetHeader("User-Agent"))
+		slog.Error("Database error occurred", "error", apiError)
 	}
 
 	c.JSON(apiError.Status, apiError)

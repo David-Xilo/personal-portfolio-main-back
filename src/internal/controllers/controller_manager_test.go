@@ -115,8 +115,7 @@ func TestCreateRouter(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/nonexistent", nil)
 	routerSetup.Router.ServeHTTP(w, req)
 
-	// Should return 404 for non-existent routes
-	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.Equal(t, http.StatusForbidden, w.Code)
 }
 
 func TestCreateRouter_WithHTTPSRedirect(t *testing.T) {

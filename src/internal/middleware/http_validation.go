@@ -227,12 +227,22 @@ func ContainsControlCharacters(input string) bool {
 }
 
 func logSecurityEvent(c *gin.Context, eventType, details string) {
+
+	path := c.Request.URL.Path
+	if ContainsSuspiciousPattern(path) {
+		path = "[REDACTED]"
+	}
+
+	logDetails := details
+	if ContainsSuspiciousPattern(details) || ContainsControlCharacters(details) {
+		logDetails = "[REDACTED]"
+	}
+
 	slog.Warn("Security validation failed",
 		"event_type", eventType,
-		"details", details,
+		"details", logDetails,
 		"ip", c.ClientIP(),
-		"user_agent", c.GetHeader("User-Agent"),
-		"path", c.Request.URL.Path,
+		"path", path,
 		"method", c.Request.Method,
 	)
 }

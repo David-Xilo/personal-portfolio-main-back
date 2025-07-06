@@ -1,7 +1,8 @@
 package security
 
 import (
-	"fmt"
+	"errors"
+	"log/slog"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -39,7 +40,8 @@ func (j *JWTManager) GenerateToken() (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := token.SignedString(j.signingKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to sign token: %w", err)
+		slog.Error("Token generation failed")
+		return "", errors.New("token generation failed")
 	}
 
 	return signedToken, nil
@@ -48,18 +50,21 @@ func (j *JWTManager) GenerateToken() (string, error) {
 func (j *JWTManager) ValidateToken(tokenString string) (*JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			slog.Warn("Invalid JWT signing method detected")
+			return nil, errors.New("invalid token")
 		}
 		return j.signingKey, nil
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse token: %w", err)
+		slog.Warn("JWT token validation failed")
+		return nil, errors.New("invalid token")
 	}
 
 	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
 		return claims, nil
 	}
 
-	return nil, fmt.Errorf("invalid token claims")
+	slog.Warn("JWT token validation failed", "reason", "invalid_claims")
+	return nil, errors.New("invalid token")
 }

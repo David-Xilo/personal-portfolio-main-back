@@ -27,12 +27,12 @@ func InitDB() *gorm.DB {
 			slog.Info("Connected to the database successfully")
 			break
 		}
-		slog.Warn("Retrying to connect to the database", "attempt", i+1, "error", err)
+		slog.Warn("Retrying to connect to the database", "attempt", i+1)
 		time.Sleep(2 * time.Second)
 	}
 
 	if err != nil {
-		slog.Error("Failed to connect to the database", "attempts", maxRetries, "error", err)
+		slog.Error("Failed to connect to the database", "attempts", maxRetries)
 		os.Exit(1)
 	}
 

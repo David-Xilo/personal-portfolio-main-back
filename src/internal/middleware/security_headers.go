@@ -40,6 +40,23 @@ func SecurityHeadersMiddleware(config configuration.Config) gin.HandlerFunc {
 		c.Header("Pragma", "no-cache")
 		c.Header("Expires", "0")
 
+		c.Header("Server", "")              // Remove server identification
+		c.Header("X-Powered-By", "")        // Remove technology stack information
+		c.Header("X-AspNet-Version", "")    // Remove .NET version (if applicable)
+		c.Header("X-AspNetMvc-Version", "") // Remove MVC version (if applicable)
+
+		c.Header("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex")
+		c.Header("X-Permitted-Cross-Domain-Policies", "none")
+		c.Header("Cross-Origin-Embedder-Policy", "require-corp")
+		c.Header("Cross-Origin-Opener-Policy", "same-origin")
+		c.Header("Cross-Origin-Resource-Policy", "same-origin")
+
+		// Prevent caching of sensitive responses
+		if !isSwagger {
+			c.Header("Cache-Control", "no-store, no-cache, must-revalidate, private, max-age=0")
+			c.Header("Surrogate-Control", "no-store")
+		}
+
 		csp := getCSPPolicy(isSwagger)
 		c.Header("Content-Security-Policy", csp)
 
