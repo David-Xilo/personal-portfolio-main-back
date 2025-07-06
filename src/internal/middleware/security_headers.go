@@ -23,7 +23,7 @@ func SecurityHeadersMiddleware(config configuration.Config) gin.HandlerFunc {
 			errorMsg := fmt.Sprintf("Path not allowed %s", c.Request.URL.Path)
 			err := fmt.Errorf(errorMsg)
 
-			slog.Error("SecurityHeadersMiddleware: %v", err)
+			slog.Error("SecurityHeadersMiddleware", "error", err)
 
 			c.Error(err)
 

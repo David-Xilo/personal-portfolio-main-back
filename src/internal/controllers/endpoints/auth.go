@@ -1,11 +1,12 @@
 package endpoints
 
 import (
-	"net/http"
-	"safehouse-main-back/src/internal/security"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 	configuration "safehouse-main-back/src/internal/config"
+	"safehouse-main-back/src/internal/middleware"
+	"safehouse-main-back/src/internal/security"
+	"strings"
 )
 
 type AuthController struct {
@@ -52,6 +53,11 @@ func (ac *AuthController) handleTokenRequest(c *gin.Context) {
 		return
 	}
 
+	// Additional validation beyond struct tags
+	if !ac.validateAuthRequest(&req, c) {
+		return // validateAuthRequest handles the response
+	}
+
 	if req.AuthKey != ac.config.FrontendAuthKey {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Invalid authentication key",
@@ -71,4 +77,44 @@ func (ac *AuthController) handleTokenRequest(c *gin.Context) {
 		Token:     token,
 		ExpiresIn: ac.config.JWTExpirationMinutes * 60, // Convert to seconds
 	})
+}
+
+func (ac *AuthController) validateAuthRequest(req *AuthRequest, c *gin.Context) bool {
+	if len(req.AuthKey) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Authentication key cannot be empty",
+		})
+		return false
+	}
+
+	if len(req.AuthKey) > 256 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Authentication key too long",
+		})
+		return false
+	}
+
+	if middleware.ContainsSuspiciousPattern(req.AuthKey) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid authentication key format",
+		})
+		return false
+	}
+
+	if middleware.ContainsControlCharacters(req.AuthKey) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid characters in authentication key",
+		})
+		return false
+	}
+
+	// Check for null bytes
+	if strings.Contains(req.AuthKey, "\x00") {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid characters in authentication key",
+		})
+		return false
+	}
+
+	return true
 }
