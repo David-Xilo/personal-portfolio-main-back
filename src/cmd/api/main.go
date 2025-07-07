@@ -19,21 +19,21 @@ import (
 func main() {
 	ctx := context.Background()
 
-	secretManager, err := secrets.NewSecretManager(ctx)
+	secretProvider, err := secrets.NewSecretProvider(ctx)
 	if err != nil {
 		slog.Error("Failed to initialize secret manager", "error", err)
 		os.Exit(1)
 	}
 
-	defer func(secretManager *secrets.SecretManager) {
+	defer func(secretManager secrets.SecretProvider) {
 		err := secretManager.Close()
 		if err != nil {
 			slog.Error("Failed to Close secret manager", "error", err)
 			os.Exit(1)
 		}
-	}(secretManager)
+	}(secretProvider)
 
-	appSecrets, err := secretManager.LoadAppSecrets(ctx)
+	appSecrets, err := secretProvider.LoadAppSecrets(ctx)
 	if err != nil {
 		slog.Error("Failed to load application secrets", "error", err)
 		os.Exit(1)

@@ -5,25 +5,48 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 )
 
+// TODO create local secret store https://claude.ai/chat/7036fe28-a16f-4af0-b6c7-6063dafefc13
+
 const JwtSecretName = "safehouse-jwt-signing-key"
 const FrontendAuthSecretName = "safehouse-frontend-auth-key"
-
-type SecretManager struct {
-	client    *secretmanager.Client
-	projectID string
-}
 
 type AppSecrets struct {
 	JWTSigningKey   string
 	FrontendAuthKey string
 }
 
-func NewSecretManager(ctx context.Context) (*SecretManager, error) {
+type SecretProvider interface {
+	LoadAppSecrets(ctx context.Context) (*AppSecrets, error)
+	Close() error
+}
+
+func NewSecretProvider(ctx context.Context) (SecretProvider, error) {
+	secretMode := strings.ToLower(os.Getenv("SECRET_STORE_MODE"))
+
+	switch secretMode {
+	case "local", "development", "dev":
+		slog.Info("Using local secret provider for development")
+		return NewLocalSecretProvider()
+	case "gcp", "cloud", "production", "prod", "":
+		slog.Info("Using GCP Secret Manager")
+		return NewGCPSecretManager(ctx)
+	default:
+		return nil, fmt.Errorf("unknown SECRET_STORE_MODE: %s. Use 'local' or 'gcp'", secretMode)
+	}
+}
+
+type GCPSecretManager struct {
+	client    *secretmanager.Client
+	projectID string
+}
+
+func NewGCPSecretManager(ctx context.Context) (*GCPSecretManager, error) {
 	projectID := os.Getenv("GCP_PROJECT_ID")
 	if projectID == "" {
 		return nil, fmt.Errorf("GCP_PROJECT_ID environment variable not set")
@@ -34,17 +57,17 @@ func NewSecretManager(ctx context.Context) (*SecretManager, error) {
 		return nil, fmt.Errorf("failed to create secret manager client: %w", err)
 	}
 
-	return &SecretManager{
+	return &GCPSecretManager{
 		client:    client,
 		projectID: projectID,
 	}, nil
 }
 
-func (sm *SecretManager) Close() error {
+func (sm *GCPSecretManager) Close() error {
 	return sm.client.Close()
 }
 
-func (sm *SecretManager) getSecret(ctx context.Context, secretName string) (string, error) {
+func (sm *GCPSecretManager) getSecret(ctx context.Context, secretName string) (string, error) {
 	req := &secretmanagerpb.AccessSecretVersionRequest{
 		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/latest", sm.projectID, secretName),
 	}
@@ -57,7 +80,7 @@ func (sm *SecretManager) getSecret(ctx context.Context, secretName string) (stri
 	return string(result.Payload.Data), nil
 }
 
-func (sm *SecretManager) LoadAppSecrets(ctx context.Context) (*AppSecrets, error) {
+func (sm *GCPSecretManager) LoadAppSecrets(ctx context.Context) (*AppSecrets, error) {
 	slog.Info("Loading secrets from Google Cloud Secret Manager")
 
 	jwtKey, err := sm.getSecret(ctx, JwtSecretName)
