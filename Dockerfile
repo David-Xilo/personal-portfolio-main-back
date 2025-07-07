@@ -1,21 +1,17 @@
-FROM golang:1.24-alpine AS builder
+# Build stage
+FROM golang:1.24-alpine AS build
 
 WORKDIR /app
-
-RUN apk --no-cache add ca-certificates git
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-ARG BUILD_TIME
-ARG GIT_COMMIT
-ARG ENV=production
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN swag init -g src/internal/controllers/controller_manager.go -o docs
 
-RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags="-w -s -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT} -X main.Environment=${ENV}" \
-    -o main .
+RUN go build -o main ./src/cmd/api
 
 FROM alpine:latest
 
@@ -23,26 +19,12 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 
-COPY --from=builder /app/main .
+COPY --from=build /app/main .
 
-ARG ENV=production
-ARG GCP_PROJECT_ID
+COPY --from=build /app/docs ./docs
 
-ENV ENV=${ENV}
-ENV GCP_PROJECT_ID=${GCP_PROJECT_ID}
-
-ENV PORT=4000
-EXPOSE 4000
-
-
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
-
+RUN adduser -D -s /bin/sh appuser
 USER appuser
 
-# Health check
-#HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-#    CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
-
-# Start the application
+EXPOSE 4000
 CMD ["./main"]
