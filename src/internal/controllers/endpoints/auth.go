@@ -55,7 +55,7 @@ func (ac *AuthController) handleTokenRequest(c *gin.Context) {
 
 	// Additional validation beyond struct tags
 	if !ac.validateAuthRequest(&req, c) {
-		return // validateAuthRequest handles the response
+		return
 	}
 
 	if req.AuthKey != ac.config.FrontendAuthKey {
@@ -75,7 +75,7 @@ func (ac *AuthController) handleTokenRequest(c *gin.Context) {
 
 	c.JSON(http.StatusOK, AuthResponse{
 		Token:     token,
-		ExpiresIn: ac.config.JWTExpirationMinutes * 60, // Convert to seconds
+		ExpiresIn: ac.config.JWTExpirationMinutes * 60,
 	})
 }
 
@@ -83,13 +83,6 @@ func (ac *AuthController) validateAuthRequest(req *AuthRequest, c *gin.Context) 
 	if len(req.AuthKey) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Authentication key cannot be empty",
-		})
-		return false
-	}
-
-	if len(req.AuthKey) > 256 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Authentication key too long",
 		})
 		return false
 	}

@@ -67,7 +67,7 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		ReadTimeout:          readTimeout,
 		WriteTimeout:         writeTimeout,
 		JWTSigningKey:        appSecrets.JWTSigningKey,
-		FrontendAuthKey:      appSecrets.FrontendAuthKey,
+		FrontendAuthKey:      secrets.FrontendTokenAuth,
 		JWTExpirationMinutes: jwtExpiration,
 	}
 }

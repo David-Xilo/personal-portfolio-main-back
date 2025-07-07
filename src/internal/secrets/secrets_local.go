@@ -70,15 +70,9 @@ func (lsp *LocalSecretProvider) LoadAppSecrets(ctx context.Context) (*AppSecrets
 		return nil, fmt.Errorf("failed to load JWT signing key: %w", err)
 	}
 
-	frontendKey, err := lsp.getSecret(FrontendAuthSecretName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to load frontend auth key: %w", err)
-	}
-
 	slog.Info("Successfully loaded secrets from local provider")
 
 	return &AppSecrets{
-		JWTSigningKey:   jwtKey,
-		FrontendAuthKey: frontendKey,
+		JWTSigningKey: jwtKey,
 	}, nil
 }
