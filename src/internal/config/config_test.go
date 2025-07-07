@@ -51,7 +51,7 @@ func TestGetEnvOrDefault(t *testing.T) {
 				defer os.Unsetenv(tt.key)
 			}
 
-			result := getEnvOrDefault(tt.key, tt.defaultValue)
+			result := GetEnvOrDefault(tt.key, tt.defaultValue)
 			assert.Equal(t, tt.expected, result)
 		})
 	}

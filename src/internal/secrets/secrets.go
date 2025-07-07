@@ -1,17 +1,13 @@
 package secrets
 
 import (
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	"context"
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
-
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
-	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 )
-
-// TODO create local secret store https://claude.ai/chat/7036fe28-a16f-4af0-b6c7-6063dafefc13
 
 const JwtSecretName = "safehouse-jwt-signing-key"
 const FrontendAuthSecretName = "safehouse-frontend-auth-key"
@@ -27,17 +23,17 @@ type SecretProvider interface {
 }
 
 func NewSecretProvider(ctx context.Context) (SecretProvider, error) {
-	secretMode := strings.ToLower(os.Getenv("SECRET_STORE_MODE"))
+	secretMode := os.Getenv("ENV")
 
 	switch secretMode {
-	case "local", "development", "dev":
+	case "development":
 		slog.Info("Using local secret provider for development")
 		return NewLocalSecretProvider()
-	case "gcp", "cloud", "production", "prod", "":
+	case "production":
 		slog.Info("Using GCP Secret Manager")
 		return NewGCPSecretManager(ctx)
 	default:
-		return nil, fmt.Errorf("unknown SECRET_STORE_MODE: %s. Use 'local' or 'gcp'", secretMode)
+		return nil, fmt.Errorf("unknown ENV: %s", secretMode)
 	}
 }
 

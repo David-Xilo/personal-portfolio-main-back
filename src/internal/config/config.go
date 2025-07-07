@@ -22,21 +22,21 @@ type Config struct {
 }
 
 func LoadConfig(appSecrets *secrets.AppSecrets) Config {
-	env := getEnvOrDefault("ENV", "development")
+	env := GetEnvOrDefault("ENV", "development")
 
 	isProd := env == "production"
 
-	frontendURL := getEnvOrDefault("FRONTEND_URL", "http://localhost:3000")
-	port := getEnvOrDefault("PORT", "4000")
+	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:3000")
+	port := GetEnvOrDefault("PORT", "4000")
 
-	dbTimeoutStr := getEnvOrDefault("DATABASE_TIMEOUT", "10s")
+	dbTimeoutStr := GetEnvOrDefault("DATABASE_TIMEOUT", "10s")
 	dbTimeout, err := time.ParseDuration(dbTimeoutStr)
 	if err != nil {
 		slog.Warn("Invalid DATABASE_TIMEOUT value, falling back to default", "default", "10s")
 		dbTimeout = 10 * time.Second
 	}
 
-	readTimeoutStr := getEnvOrDefault("READ_TIMEOUT", "10s")
+	readTimeoutStr := GetEnvOrDefault("READ_TIMEOUT", "10s")
 	readTimeout, err := time.ParseDuration(readTimeoutStr)
 	if err != nil {
 		slog.Warn("Invalid READ_TIMEOUT value, falling back to default", "default", "10s")
@@ -44,14 +44,14 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	}
 
 	// I don't have writes at the moment, used to init the server
-	writeTimeoutStr := getEnvOrDefault("WRITE_TIMEOUT", "1s")
+	writeTimeoutStr := GetEnvOrDefault("WRITE_TIMEOUT", "1s")
 	writeTimeout, err := time.ParseDuration(writeTimeoutStr)
 	if err != nil {
 		slog.Warn("Invalid WRITE_TIMEOUT value, falling back to default", "default", "1s")
 		writeTimeout = 1 * time.Second
 	}
 
-	jwtExpirationStr := getEnvOrDefault("JWT_EXPIRATION_MINUTES", "30")
+	jwtExpirationStr := GetEnvOrDefault("JWT_EXPIRATION_MINUTES", "30")
 	jwtExpiration, err := strconv.Atoi(jwtExpirationStr)
 	if err != nil {
 		slog.Warn("Invalid JWT_EXPIRATION_MINUTES value, falling back to default", "default", "30")
@@ -72,7 +72,7 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	}
 }
 
-func getEnvOrDefault(key, defaultValue string) string {
+func GetEnvOrDefault(key, defaultValue string) string {
 	if value := os.Getenv(key); value != "" {
 		return value
 	}
