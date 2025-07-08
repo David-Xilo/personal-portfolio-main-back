@@ -106,3 +106,7 @@ func GetEnvOrDefault(key, defaultValue string) string {
 	}
 	return defaultValue
 }
+
+func (config *Config) IsProduction() bool {
+	return config.Environment == "production"
+}
