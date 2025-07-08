@@ -122,7 +122,7 @@ GET /swagger/*
 - **Description**: Swagger API documentation
 - **Authentication**: Not required (development only)
 
-## 🚀 Getting Started
+## Getting Started
 
 ### **Prerequisites**
 - Go 1.24 or higher
@@ -136,7 +136,7 @@ GET /swagger/*
 
 For development environment please check https://github.com/David-Xilo/safehouse-orchestration
 
-## 🧪 Testing
+## Testing
 
 ### **Essential Go Commands**
 
@@ -214,7 +214,7 @@ export ENV=development
 go run src/cmd/api/main.go
 ```
 
-## 🔐 Security Features
+## Security Features
 
 ### **Multi-Layer Security Architecture**
 
