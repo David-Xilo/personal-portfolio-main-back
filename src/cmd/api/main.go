@@ -10,22 +10,49 @@ import (
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/controllers"
 	"safehouse-main-back/src/internal/database"
+	"safehouse-main-back/src/internal/secrets"
+	"safehouse-main-back/src/internal/security"
 	"syscall"
 	"time"
 )
 
 func main() {
-	gormDB := database.InitDB()
+	ctx := context.Background()
+
+	secretProvider, err := secrets.NewSecretProvider(ctx)
+	if err != nil {
+		slog.Error("Failed to initialize secret manager", "error", err)
+		os.Exit(1)
+	}
+
+	defer func(secretManager secrets.SecretProvider) {
+		err := secretManager.Close()
+		if err != nil {
+			slog.Error("Failed to Close secret manager", "error", err)
+			os.Exit(1)
+		}
+	}(secretProvider)
+
+	appSecrets, err := secretProvider.LoadAppSecrets(ctx)
+	if err != nil {
+		slog.Error("Failed to load application secrets", "error", err)
+		os.Exit(1)
+	}
+
+	config := configuration.LoadConfig(appSecrets)
+
+	gormDB := database.InitDB(config)
 	db := database.NewPostgresDB(gormDB)
 
 	database.ValidateDBSchema(gormDB)
 
-	config := configuration.LoadConfig()
-	router := controllers.SetupRoutes(db)
+	jwtManager := security.NewJWTManager(config)
+
+	routerSetup := controllers.SetupRoutes(db, config, jwtManager)
 
 	server := &http.Server{
 		Addr:         ":" + config.Port,
-		Handler:      router,
+		Handler:      routerSetup.Router,
 		ReadTimeout:  config.ReadTimeout,
 		WriteTimeout: config.WriteTimeout,
 	}
@@ -52,6 +79,9 @@ func main() {
 	} else {
 		slog.Info("Server stopped gracefully")
 	}
+
+	routerSetup.RateLimiter.Stop()
+	slog.Info("Rate limiter cleanup routine stopped")
 
 	if err := database.CloseDB(gormDB); err != nil {
 		slog.Error("Error closing database connection", "error", err)

@@ -20,7 +20,7 @@ func (p *PostgresDB) GetContact() (*models.Contacts, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
-		panic(err)
+		return nil, err
 	}
 	return &contact, nil
 }
@@ -38,7 +38,7 @@ func (p *PostgresDB) GetProjects(projectType models.ProjectType) ([]*models.Proj
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
-		panic(err)
+		return nil, err
 	}
 
 	return projectGroups, nil
@@ -54,7 +54,7 @@ func (p *PostgresDB) GetGamesPlayed() ([]*models.GamesPlayed, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return []*models.GamesPlayed{}, nil
 		}
-		panic(err)
+		return nil, err
 	}
 
 	return gamesPlayed, nil

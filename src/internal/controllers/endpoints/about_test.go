@@ -53,7 +53,9 @@ func setupTestAboutController() (*AboutController, *MockDatabase) {
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
 		FrontendURL:         "http://localhost:3000",
-		DatabaseTimeout:     10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}

@@ -24,29 +24,41 @@ import (
 	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
 	"safehouse-main-back/src/internal/database"
 	"safehouse-main-back/src/internal/middleware"
+	"safehouse-main-back/src/internal/security"
 	"time"
 )
 
 type Controller interface {
-	RegisterRoutes(router *gin.Engine)
+	RegisterRoutes(router gin.IRouter)
 }
 
-func SetupRoutes(db database.Database) *gin.Engine {
-	config := configuration.LoadConfig()
+type RouterSetup struct {
+	Router      *gin.Engine
+	RateLimiter *middleware.IPRateLimiter
+}
 
-	controllers := getControllers(db, config)
-	router := createRouter(config)
+func SetupRoutes(db database.Database, config configuration.Config, jwtManager *security.JWTManager) *RouterSetup {
+	controllers := getControllers(db, config, jwtManager)
+	routerSetup := createRouter(config)
+
+	router := routerSetup.Router
 
 	addHealthEndpoint(router)
 
-	registerAllRoutes(router, controllers)
+	authController := endpoints.NewAuthController(config, jwtManager)
+	authController.RegisterRoutes(router)
+
+	protected := router.Group("/")
+	protected.Use(middleware.JWTAuthMiddleware(jwtManager))
+
+	registerProtectedRoutes(protected, controllers)
 
 	swaggerconfig.AddSwaggerEndpoint(router)
 
-	return router
+	return routerSetup
 }
 
-func createRouter(config configuration.Config) *gin.Engine {
+func createRouter(config configuration.Config) *RouterSetup {
 	router := gin.Default()
 
 	router.Use(middleware.BasicRequestValidationMiddleware())
@@ -62,10 +74,13 @@ func createRouter(config configuration.Config) *gin.Engine {
 
 	router.Use(middleware.GetCors(config))
 
-	return router
+	return &RouterSetup{
+		Router:      router,
+		RateLimiter: limiter,
+	}
 }
 
-func getControllers(db database.Database, config configuration.Config) []Controller {
+func getControllers(db database.Database, config configuration.Config, jwtManager *security.JWTManager) []Controller {
 	var controllers []Controller
 
 	aboutController := endpoints.NewAboutController(db, config)
@@ -92,7 +107,7 @@ func addHealthEndpoint(router *gin.Engine) {
 	})
 }
 
-func registerAllRoutes(router *gin.Engine, controllers []Controller) {
+func registerProtectedRoutes(router *gin.RouterGroup, controllers []Controller) {
 	for _, controller := range controllers {
 		controller.RegisterRoutes(router)
 	}

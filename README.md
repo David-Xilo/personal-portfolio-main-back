@@ -5,5 +5,3 @@ Backend microservice for safehouse personal website
 
 # Endpoints
 
-
-

@@ -26,7 +26,7 @@ func NewAboutController(db database.Database, config configuration.Config) *Abou
 	}
 }
 
-func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
+func (ac *AboutController) RegisterRoutes(router gin.IRouter) {
 	router.GET("/about/contact", ac.handleContactRequest)
 	router.GET("/about/reviews/carousel", ac.handleReviewsCarouselRequest)
 }
@@ -40,7 +40,7 @@ func (ac *AboutController) RegisterRoutes(router *gin.Engine) {
 // @Failure 404 {object} map[string]string
 // @Router /about/contact [get]
 func (ac *AboutController) handleContactRequest(ctx *gin.Context) {
-	contact, err := timeout.WithTimeout(ctx.Request.Context(), ac.config.DatabaseTimeout, func(dbCtx context.Context) (*models.Contacts, error) {
+	contact, err := timeout.WithTimeout(ctx.Request.Context(), ac.config.DatabaseConfig.DbTimeout, func(dbCtx context.Context) (*models.Contacts, error) {
 		return ac.db.GetContact()
 	})
 	if err != nil {

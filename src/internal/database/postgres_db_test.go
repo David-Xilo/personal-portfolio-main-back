@@ -208,8 +208,7 @@ func TestPostgresDB_GetGamesPlayed_OrderedByCreatedAt(t *testing.T) {
 	assert.Equal(t, "Old Game", games[1].Title)
 }
 
-// Test for error handling - we can't easily test panic scenarios in unit tests
-// but we can test the basic error conditions
+// Test for error handling - database errors should return error, not panic
 func TestPostgresDB_GetContact_DatabaseError(t *testing.T) {
 	db := setupTestDBForPostgres(t)
 
@@ -219,9 +218,9 @@ func TestPostgresDB_GetContact_DatabaseError(t *testing.T) {
 
 	postgresDB := NewPostgresDB(db)
 
-	// This should panic in the actual implementation, but we can't easily test panics
-	// In a real scenario, you might want to refactor to return errors instead of panicking
-	assert.Panics(t, func() {
-		postgresDB.GetContact()
-	})
+	// Should return error instead of panicking (security fix)
+	contact, err := postgresDB.GetContact()
+	assert.Error(t, err)
+	assert.Nil(t, contact)
+	assert.Contains(t, err.Error(), "database is closed")
 }
