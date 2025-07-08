@@ -23,7 +23,9 @@ func setupTestFinanceController() (*FinanceController, *MockDatabase) {
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
 		FrontendURL:         "http://localhost:3000",
-		DatabaseTimeout:     10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}
@@ -199,7 +201,9 @@ func TestFinanceController_HandleProjects_Timeout(t *testing.T) {
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
 		FrontendURL:         "http://localhost:3000",
-		DatabaseTimeout:     1 * time.Nanosecond, // Very short timeout
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 1 * time.Nanosecond, // Very short timeout
+		},
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}

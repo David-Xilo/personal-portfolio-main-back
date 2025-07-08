@@ -16,19 +16,21 @@ func TestRouterSetup_GracefulShutdown(t *testing.T) {
 	
 	mockDB := new(MockDatabase)
 	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey:   "test-jwt-key",
-		FrontendAuthKey: "test-auth-key",
+		JWTSigningKey: "test-jwt-key",
+		DbPassword:    "test-db-password",
 	}
 	config := configuration.Config{
 		Environment:          "test",
 		EnableHTTPSRedirect:  false,
 		Port:                 "4000",
 		FrontendURL:          "http://localhost:3000",
-		DatabaseTimeout:      10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:          10 * time.Second,
 		WriteTimeout:         1 * time.Second,
 		JWTSigningKey:        mockSecrets.JWTSigningKey,
-		FrontendAuthKey:      mockSecrets.FrontendAuthKey,
+		FrontendAuthKey:      secrets.FrontendTokenAuth,
 		JWTExpirationMinutes: 30,
 	}
 	jwtManager := security2.NewJWTManager(config)

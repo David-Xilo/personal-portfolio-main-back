@@ -39,12 +39,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	gormDB := database.InitDB()
+	config := configuration.LoadConfig(appSecrets)
+
+	gormDB := database.InitDB(config)
 	db := database.NewPostgresDB(gormDB)
 
 	database.ValidateDBSchema(gormDB)
-
-	config := configuration.LoadConfig(appSecrets)
 
 	jwtManager := security.NewJWTManager(config)
 

@@ -36,7 +36,7 @@ func (fc *FinanceController) RegisterRoutes(router gin.IRouter) {
 // @Failure 404 {object} map[string]string
 // @Router /finance/projects [get]
 func (fc *FinanceController) handleProjects(ctx *gin.Context) {
-	projects, err := timeout.WithTimeout(ctx.Request.Context(), fc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
+	projects, err := timeout.WithTimeout(ctx.Request.Context(), fc.config.DatabaseConfig.DbTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
 		return fc.db.GetProjects(models.ProjectTypeFinance)
 	})
 	if err != nil {

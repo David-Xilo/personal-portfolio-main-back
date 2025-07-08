@@ -40,10 +40,10 @@ func SecurityHeadersMiddleware(config configuration.Config) gin.HandlerFunc {
 		c.Header("Pragma", "no-cache")
 		c.Header("Expires", "0")
 
-		c.Header("Server", "")              // Remove server identification
-		c.Header("X-Powered-By", "")        // Remove technology stack information
-		c.Header("X-AspNet-Version", "")    // Remove .NET version (if applicable)
-		c.Header("X-AspNetMvc-Version", "") // Remove MVC version (if applicable)
+		c.Writer.Header().Del("Server")
+		c.Writer.Header().Del("X-Powered-By")
+		c.Writer.Header().Del("X-AspNet-Version")
+		c.Writer.Header().Del("X-AspNetMvc-Version")
 
 		c.Header("X-Robots-Tag", "noindex, nofollow, noarchive, nosnippet, notranslate, noimageindex")
 		c.Header("X-Permitted-Cross-Domain-Policies", "none")

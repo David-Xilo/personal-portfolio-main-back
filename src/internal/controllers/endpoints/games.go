@@ -41,7 +41,7 @@ func (gc *GamesController) RegisterRoutes(router gin.IRouter) {
 // @Failure 404 {object} map[string]string
 // @Router /games/projects [get]
 func (gc *GamesController) handleProjects(ctx *gin.Context) {
-	games, err := timeout.WithTimeout(ctx.Request.Context(), gc.config.DatabaseTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
+	games, err := timeout.WithTimeout(ctx.Request.Context(), gc.config.DatabaseConfig.DbTimeout, func(dbCtx context.Context) ([]*models.ProjectGroups, error) {
 		return gc.db.GetProjects(models.ProjectTypeGame)
 	})
 	if err != nil {

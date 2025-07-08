@@ -53,19 +53,21 @@ func TestSetupRoutes(t *testing.T) {
 	mockDB := new(MockDatabase)
 
 	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey:   "test-jwt-key",
-		FrontendAuthKey: "test-auth-key",
+		JWTSigningKey: "test-jwt-key",
+		DbPassword:    "test-db-password",
 	}
 	config := configuration.Config{
 		Environment:          "test",
 		EnableHTTPSRedirect:  false,
 		Port:                 "4000",
 		FrontendURL:          "http://localhost:3000",
-		DatabaseTimeout:      10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:          10 * time.Second,
 		WriteTimeout:         1 * time.Second,
 		JWTSigningKey:        mockSecrets.JWTSigningKey,
-		FrontendAuthKey:      mockSecrets.FrontendAuthKey,
+		FrontendAuthKey:      secrets.FrontendTokenAuth,
 		JWTExpirationMinutes: 30,
 	}
 	jwtManager := security2.NewJWTManager(config)
@@ -99,7 +101,9 @@ func TestCreateRouter(t *testing.T) {
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
 		FrontendURL:         "http://localhost:3000",
-		DatabaseTimeout:     10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}
@@ -126,7 +130,9 @@ func TestCreateRouter_WithHTTPSRedirect(t *testing.T) {
 		EnableHTTPSRedirect: true,
 		Port:                "4000",
 		FrontendURL:         "https://example.com",
-		DatabaseTimeout:     10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}
@@ -145,17 +151,19 @@ func TestGetControllers(t *testing.T) {
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
 		FrontendURL:         "http://localhost:3000",
-		DatabaseTimeout:     10 * time.Second,
+		DatabaseConfig: configuration.DbConfig{
+			DbTimeout: 10 * time.Second,
+		},
 		ReadTimeout:         10 * time.Second,
 		WriteTimeout:        1 * time.Second,
 	}
 
 	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey:   "test-jwt-key",
-		FrontendAuthKey: "test-auth-key",
+		JWTSigningKey: "test-jwt-key",
+		DbPassword:    "test-db-password",
 	}
 	config.JWTSigningKey = mockSecrets.JWTSigningKey
-	config.FrontendAuthKey = mockSecrets.FrontendAuthKey
+	config.FrontendAuthKey = secrets.FrontendTokenAuth
 	config.JWTExpirationMinutes = 30
 	jwtManager := security2.NewJWTManager(config)
 

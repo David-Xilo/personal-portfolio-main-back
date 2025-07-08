@@ -39,7 +39,7 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	port := GetEnvOrDefault("PORT", "4000")
 
 	dbHost := GetEnvOrDefault("DB_HOST", "postgres-dev")
-	dbUser := GetEnvOrDefault("DB_HOST", "dev_user")
+	dbUser := GetEnvOrDefault("DB_USER", "dev_user")
 	dbName := GetEnvOrDefault("DB_NAME", "dev_db")
 
 	dbPortStr := GetEnvOrDefault("DB_PORT", "5432")
