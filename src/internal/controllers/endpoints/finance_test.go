@@ -26,8 +26,8 @@ func setupTestFinanceController() (*FinanceController, *MockDatabase) {
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
-		ReadTimeout:         10 * time.Second,
-		WriteTimeout:        1 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 1 * time.Second,
 	}
 
 	controller := NewFinanceController(mockDB, config)
@@ -204,8 +204,8 @@ func TestFinanceController_HandleProjects_Timeout(t *testing.T) {
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 1 * time.Nanosecond, // Very short timeout
 		},
-		ReadTimeout:         10 * time.Second,
-		WriteTimeout:        1 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 1 * time.Second,
 	}
 
 	controller := NewFinanceController(mockDB, config)

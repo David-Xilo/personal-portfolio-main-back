@@ -41,7 +41,7 @@ func TestNoPanicOnDatabaseErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create a database connection that will fail
 			db := setupTestDBForPostgres(t)
-			
+
 			// Close the database to simulate connection error
 			sqlDB, _ := db.DB()
 			sqlDB.Close()
@@ -79,7 +79,7 @@ func TestDatabaseErrorTypes(t *testing.T) {
 	// Test that Find operations handle empty results properly
 	t.Run("GetGamesPlayed handles empty results", func(t *testing.T) {
 		games, err := postgresDB.GetGamesPlayed()
-		assert.NoError(t, err) // Empty results should not error
+		assert.NoError(t, err)  // Empty results should not error
 		assert.NotNil(t, games) // Should return empty slice, not nil
 	})
 }

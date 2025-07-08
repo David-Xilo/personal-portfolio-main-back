@@ -10,7 +10,7 @@ import (
 func TestGamesPlayed_TableName(t *testing.T) {
 	game := GamesPlayed{}
 	tableName := game.TableName()
-	
+
 	assert.Equal(t, "games_played", tableName)
 }
 
@@ -94,13 +94,13 @@ func TestToGamesPlayedListDTO(t *testing.T) {
 	// Assertions
 	assert.NotNil(t, dtoList)
 	assert.Len(t, dtoList, 2)
-	
+
 	// Check first game
 	assert.Equal(t, "Game 1", dtoList[0].Title)
 	assert.Equal(t, GameGenres("Action"), dtoList[0].Genre)
 	assert.Equal(t, 5, dtoList[0].Rating)
 	assert.Equal(t, "First game", dtoList[0].Description)
-	
+
 	// Check second game
 	assert.Equal(t, "Game 2", dtoList[1].Title)
 	assert.Equal(t, GameGenres("RPG"), dtoList[1].Genre)

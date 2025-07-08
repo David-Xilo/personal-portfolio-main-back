@@ -57,10 +57,10 @@ func TestSetupRoutes(t *testing.T) {
 		DbPassword:    "test-db-password",
 	}
 	config := configuration.Config{
-		Environment:          "test",
-		EnableHTTPSRedirect:  false,
-		Port:                 "4000",
-		FrontendURL:          "http://localhost:3000",
+		Environment:         "test",
+		EnableHTTPSRedirect: false,
+		Port:                "4000",
+		FrontendURL:         "http://localhost:3000",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
@@ -104,8 +104,8 @@ func TestCreateRouter(t *testing.T) {
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
-		ReadTimeout:         10 * time.Second,
-		WriteTimeout:        1 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 1 * time.Second,
 	}
 
 	routerSetup := createRouter(config)
@@ -133,8 +133,8 @@ func TestCreateRouter_WithHTTPSRedirect(t *testing.T) {
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
-		ReadTimeout:         10 * time.Second,
-		WriteTimeout:        1 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 1 * time.Second,
 	}
 
 	routerSetup := createRouter(config)
@@ -154,8 +154,8 @@ func TestGetControllers(t *testing.T) {
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
-		ReadTimeout:         10 * time.Second,
-		WriteTimeout:        1 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 1 * time.Second,
 	}
 
 	mockSecrets := &secrets.AppSecrets{

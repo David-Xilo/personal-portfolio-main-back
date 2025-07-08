@@ -63,7 +63,7 @@ func TestInformationDisclosureHeaders(t *testing.T) {
 		assert.Contains(t, cacheControl, "must-revalidate")
 		assert.Contains(t, cacheControl, "private")
 		assert.Contains(t, cacheControl, "max-age=0")
-		
+
 		assert.Equal(t, "no-store", w.Header().Get("Surrogate-Control"))
 	})
 
@@ -127,7 +127,7 @@ func TestErrorResponseInformationDisclosure(t *testing.T) {
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusForbidden, w.Code)
-		
+
 		// Error message should be generic and not expose internal paths
 		response := w.Body.String()
 		assert.Contains(t, response, "Path not allowed")
@@ -155,7 +155,7 @@ func TestLogSecurityEventInformationDisclosure(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.Contains(t, w.Body.String(), "Invalid URL path")
-		
+
 		// The actual malicious content should not be in the response
 		assert.NotContains(t, w.Body.String(), "<script>")
 		assert.NotContains(t, w.Body.String(), "alert")
@@ -175,25 +175,25 @@ func TestLogSecurityEventInformationDisclosure(t *testing.T) {
 
 func TestGenericErrorMessages(t *testing.T) {
 	// Test that error messages don't expose sensitive implementation details
-	
+
 	testCases := []struct {
-		name           string
-		inputError     string
+		name             string
+		inputError       string
 		shouldNotContain []string
 	}{
 		{
-			name:       "Database connection error",
-			inputError: "failed to connect: host=localhost password=secret123 dbname=test",
+			name:             "Database connection error",
+			inputError:       "failed to connect: host=localhost password=secret123 dbname=test",
 			shouldNotContain: []string{"password=secret123", "localhost", "test"},
 		},
 		{
-			name:       "JWT validation error",
-			inputError: "unexpected signing method: HS512",
+			name:             "JWT validation error",
+			inputError:       "unexpected signing method: HS512",
 			shouldNotContain: []string{"HS512", "signing method"},
 		},
 		{
-			name:       "File system error",
-			inputError: "open /etc/passwd: permission denied",
+			name:             "File system error",
+			inputError:       "open /etc/passwd: permission denied",
 			shouldNotContain: []string{"/etc/passwd", "permission denied"},
 		},
 	}

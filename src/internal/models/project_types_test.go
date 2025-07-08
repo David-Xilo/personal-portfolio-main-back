@@ -33,20 +33,20 @@ func TestProjectTypeComparison(t *testing.T) {
 func TestProjectTypeAssignment(t *testing.T) {
 	// Test variable assignment
 	var projectType ProjectType
-	
+
 	// Default zero value should be empty string, not undefined
 	assert.Equal(t, ProjectType(""), projectType)
-	
+
 	// Assign each type
 	projectType = ProjectTypeUndefined
 	assert.Equal(t, ProjectTypeUndefined, projectType)
-	
+
 	projectType = ProjectTypeTech
 	assert.Equal(t, ProjectTypeTech, projectType)
-	
+
 	projectType = ProjectTypeGame
 	assert.Equal(t, ProjectTypeGame, projectType)
-	
+
 	projectType = ProjectTypeFinance
 	assert.Equal(t, ProjectTypeFinance, projectType)
 }
@@ -59,11 +59,11 @@ func TestProjectTypeValidation(t *testing.T) {
 		ProjectTypeGame,
 		ProjectTypeFinance,
 	}
-	
+
 	for _, validType := range validTypes {
 		assert.NotEmpty(t, string(validType))
 	}
-	
+
 	// Test that custom values work (though they might not be valid in business logic)
 	customType := ProjectType("custom")
 	assert.Equal(t, "custom", string(customType))
@@ -76,7 +76,7 @@ func TestProjectTypeInSlice(t *testing.T) {
 		ProjectTypeGame,
 		ProjectTypeFinance,
 	}
-	
+
 	assert.Len(t, types, 3)
 	assert.Contains(t, types, ProjectTypeTech)
 	assert.Contains(t, types, ProjectTypeGame)

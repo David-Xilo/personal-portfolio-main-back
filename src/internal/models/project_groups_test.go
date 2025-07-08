@@ -18,7 +18,7 @@ func TestToProjectGroupsDTO(t *testing.T) {
 			LinkToGit:      "https://github.com/user/tech1",
 		},
 	}
-	
+
 	gameRepos := []GameRepositories{
 		{
 			ID:             2,
@@ -29,7 +29,7 @@ func TestToProjectGroupsDTO(t *testing.T) {
 			LinkToStore:    "https://store.com/game1",
 		},
 	}
-	
+
 	financeRepos := []FinanceRepositories{
 		{
 			ID:             3,
@@ -110,7 +110,7 @@ func TestToProjectGroupsDTOList(t *testing.T) {
 		},
 		{
 			ID:          2,
-			Title:       "Project Group 2", 
+			Title:       "Project Group 2",
 			Description: "Second project group",
 			ProjectType: "game",
 			CreatedAt:   time.Date(2023, time.January, 1, 12, 0, 0, 0, time.UTC),
@@ -123,12 +123,12 @@ func TestToProjectGroupsDTOList(t *testing.T) {
 	// Assertions
 	assert.NotNil(t, dtoList)
 	assert.Len(t, dtoList, 2)
-	
+
 	// Check first project group
 	assert.Equal(t, "Project Group 1", dtoList[0].Title)
 	assert.Equal(t, "First project group", dtoList[0].Description)
 	assert.Equal(t, "tech", dtoList[0].ProjectType)
-	
+
 	// Check second project group
 	assert.Equal(t, "Project Group 2", dtoList[1].Title)
 	assert.Equal(t, "Second project group", dtoList[1].Description)
@@ -200,17 +200,17 @@ func TestProjectGroupsDTOStruct(t *testing.T) {
 func TestProjectGroupsRelationships(t *testing.T) {
 	// Test that the struct has the expected relationship fields
 	projectGroup := ProjectGroups{}
-	
+
 	// These slices start as nil or empty
 	assert.Len(t, projectGroup.TechRepositories, 0)
 	assert.Len(t, projectGroup.GameRepositories, 0)
 	assert.Len(t, projectGroup.FinanceRepositories, 0)
-	
+
 	// Test that we can assign to them
 	projectGroup.TechRepositories = []TechRepositories{{Title: "Test"}}
 	projectGroup.GameRepositories = []GameRepositories{{Title: "Test"}}
 	projectGroup.FinanceRepositories = []FinanceRepositories{{Title: "Test"}}
-	
+
 	assert.Len(t, projectGroup.TechRepositories, 1)
 	assert.Len(t, projectGroup.GameRepositories, 1)
 	assert.Len(t, projectGroup.FinanceRepositories, 1)

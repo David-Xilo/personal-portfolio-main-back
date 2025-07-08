@@ -82,12 +82,12 @@ func TestLocalSecretProvider_getSecret(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
-		name         string
-		secretsPath  string
-		secretName   string
-		envValue     string
-		expectError  bool
-		expectedVal  string
+		name        string
+		secretsPath string
+		secretName  string
+		envValue    string
+		expectError bool
+		expectedVal string
 	}{
 		{
 			name:        "reads secret from file",
@@ -150,10 +150,10 @@ func TestLocalSecretProvider_LoadAppSecrets(t *testing.T) {
 	// Create secret files
 	jwtSecret := "test-jwt-key"
 	dbPassword := "test-db-password"
-	
+
 	err = os.WriteFile(filepath.Join(tempDir, JwtSecretName), []byte(jwtSecret), 0644)
 	require.NoError(t, err)
-	
+
 	err = os.WriteFile(filepath.Join(tempDir, DbSecretName), []byte(dbPassword), 0644)
 	require.NoError(t, err)
 
@@ -174,7 +174,7 @@ func TestLocalSecretProvider_LoadAppSecrets_EnvironmentFallback(t *testing.T) {
 	// Set environment variables
 	jwtSecret := "env-jwt-key"
 	dbPassword := "env-db-password"
-	
+
 	os.Setenv("SAFEHOUSE_JWT_SIGNING_KEY", jwtSecret)
 	os.Setenv("SAFEHOUSE_DB_PASSWORD", dbPassword)
 	defer os.Unsetenv("SAFEHOUSE_JWT_SIGNING_KEY")
@@ -227,7 +227,7 @@ func TestNewLocalSecretProvider(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			os.Unsetenv("SECRETS_PATH")
-			
+
 			if tt.secretsPath != "" {
 				os.Setenv("SECRETS_PATH", tt.secretsPath)
 				defer os.Unsetenv("SECRETS_PATH")
@@ -237,7 +237,7 @@ func TestNewLocalSecretProvider(t *testing.T) {
 
 			assert.NoError(t, err)
 			assert.NotNil(t, provider)
-			
+
 			// Since the directory likely doesn't exist, it should be empty
 			if _, err := os.Stat(tt.expectPath); os.IsNotExist(err) {
 				assert.Empty(t, provider.secretsPath)

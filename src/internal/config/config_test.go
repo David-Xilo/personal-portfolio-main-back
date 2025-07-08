@@ -274,10 +274,10 @@ func TestConfig_Struct(t *testing.T) {
 func TestLoadConfig_DatabaseConfig(t *testing.T) {
 	// Set custom database environment variables
 	envVars := map[string]string{
-		"DB_HOST": "custom-host",
-		"DB_USER": "custom-user",
-		"DB_NAME": "custom-db",
-		"DB_PORT": "3306",
+		"DB_HOST":          "custom-host",
+		"DB_USER":          "custom-user",
+		"DB_NAME":          "custom-db",
+		"DB_PORT":          "3306",
 		"DATABASE_TIMEOUT": "20s",
 	}
 
@@ -341,7 +341,7 @@ func TestLoadConfig_JWTExpiration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			os.Unsetenv("JWT_EXPIRATION_MINUTES")
-			
+
 			if tt.envValue != "" {
 				os.Setenv("JWT_EXPIRATION_MINUTES", tt.envValue)
 				defer os.Unsetenv("JWT_EXPIRATION_MINUTES")
