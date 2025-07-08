@@ -15,13 +15,22 @@ const maxRetries = 15
 
 func InitDB(config configuration.Config) *gorm.DB {
 
+	var sslMode string
+	if config.IsProduction() {
+		sslMode = "required"
+	} else {
+		sslMode = "disable"
+	}
+
+	// postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
 	dbConfig := config.DatabaseConfig
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=required",
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		dbConfig.DbUser,
 		dbConfig.DbPassword,
 		dbConfig.DbHost,
 		dbConfig.DbPort,
-		dbConfig.DbName)
+		dbConfig.DbName,
+		sslMode)
 
 	var db *gorm.DB
 	var err error
