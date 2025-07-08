@@ -70,9 +70,15 @@ func (lsp *LocalSecretProvider) LoadAppSecrets(ctx context.Context) (*AppSecrets
 		return nil, fmt.Errorf("failed to load JWT signing key: %w", err)
 	}
 
+	dbPassword, err := lsp.getSecret(DbSecretName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load JWT signing key: %w", err)
+	}
+
 	slog.Info("Successfully loaded secrets from local provider")
 
 	return &AppSecrets{
 		JWTSigningKey: jwtKey,
+		DbPassword:    dbPassword,
 	}, nil
 }

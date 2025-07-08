@@ -1,23 +1,27 @@
 package database
 
 import (
+	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log/slog"
 	"os"
+	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/models"
 	"time"
 )
 
 const maxRetries = 15
 
-func InitDB() *gorm.DB {
+func InitDB(config configuration.Config) *gorm.DB {
 
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		slog.Error("DATABASE_URL environment variable not set")
-		os.Exit(1)
-	}
+	dbConfig := config.DatabaseConfig
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=required",
+		dbConfig.DbUser,
+		dbConfig.DbPassword,
+		dbConfig.DbHost,
+		dbConfig.DbPort,
+		dbConfig.DbName)
 
 	var db *gorm.DB
 	var err error

@@ -11,10 +11,12 @@ import (
 
 // It doesnt make sense to have JWT without credentials, but I'm leaving it here in case I want to create credentials later
 const JwtSecretName = "safehouse-jwt-signing-key"
+const DbSecretName = "safehouse-db-password"
 const FrontendTokenAuth = "safehouse-frontend"
 
 type AppSecrets struct {
 	JWTSigningKey string
+	DbPassword    string
 }
 
 type SecretProvider interface {
@@ -84,9 +86,15 @@ func (sm *GCPSecretManager) LoadAppSecrets(ctx context.Context) (*AppSecrets, er
 		return nil, fmt.Errorf("failed to load JWT signing key: %w", err)
 	}
 
+	dbPassword, err := sm.getSecret(ctx, DbSecretName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load JWT signing key: %w", err)
+	}
+
 	slog.Info("Successfully loaded secrets from Google Cloud Secret Manager")
 
 	return &AppSecrets{
 		JWTSigningKey: jwtKey,
+		DbPassword:    dbPassword,
 	}, nil
 }

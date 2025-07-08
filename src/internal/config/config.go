@@ -13,12 +13,21 @@ type Config struct {
 	EnableHTTPSRedirect  bool
 	Port                 string
 	FrontendURL          string
-	DatabaseTimeout      time.Duration
+	DatabaseConfig       DbConfig
 	ReadTimeout          time.Duration
 	WriteTimeout         time.Duration
 	JWTSigningKey        string
 	FrontendAuthKey      string
 	JWTExpirationMinutes int
+}
+
+type DbConfig struct {
+	DbHost     string
+	DbName     string
+	DbUser     string
+	DbPort     string
+	DbPassword string
+	DbTimeout  time.Duration
 }
 
 func LoadConfig(appSecrets *secrets.AppSecrets) Config {
@@ -28,6 +37,16 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 
 	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:3000")
 	port := GetEnvOrDefault("PORT", "4000")
+
+	dbHost := GetEnvOrDefault("DB_HOST", "postgres-dev")
+	dbUser := GetEnvOrDefault("DB_HOST", "dev_user")
+	dbName := GetEnvOrDefault("DB_NAME", "dev_db")
+
+	dbPortStr := GetEnvOrDefault("DB_PORT", "5432")
+	_, err := strconv.Atoi(dbPortStr)
+	if err != nil {
+		slog.Warn("Invalid DB_PORT value, falling back to default", "default", "5432")
+	}
 
 	dbTimeoutStr := GetEnvOrDefault("DATABASE_TIMEOUT", "10s")
 	dbTimeout, err := time.ParseDuration(dbTimeoutStr)
@@ -58,12 +77,21 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		jwtExpiration = 30
 	}
 
+	dbConfig := DbConfig{
+		DbHost:     dbHost,
+		DbName:     dbName,
+		DbUser:     dbUser,
+		DbPort:     dbPortStr,
+		DbPassword: appSecrets.DbPassword,
+		DbTimeout:  dbTimeout,
+	}
+
 	return Config{
 		Environment:          env,
 		EnableHTTPSRedirect:  isProd,
 		FrontendURL:          frontendURL,
 		Port:                 port,
-		DatabaseTimeout:      dbTimeout,
+		DatabaseConfig:       dbConfig,
 		ReadTimeout:          readTimeout,
 		WriteTimeout:         writeTimeout,
 		JWTSigningKey:        appSecrets.JWTSigningKey,
