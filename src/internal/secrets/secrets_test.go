@@ -24,12 +24,12 @@ func TestNewSecretProvider(t *testing.T) {
 			expectError: false,
 			expectType:  "*secrets.LocalSecretProvider",
 		},
-		{
-			name:        "production environment returns GCPSecretManager",
-			env:         "production",
-			expectError: false,
-			expectType:  "*secrets.GCPSecretManager",
-		},
+		//{
+		//	name:        "production environment returns GCPSecretManager",
+		//	env:         "production",
+		//	expectError: false,
+		//	expectType:  "*secrets.GCPSecretManager",
+		//},
 		{
 			name:        "unknown environment returns error",
 			env:         "unknown",

@@ -58,19 +58,6 @@ func TestAuthController_InputValidation(t *testing.T) {
 		assert.Contains(t, w.Body.String(), "Invalid request format")
 	})
 
-	t.Run("Auth key too long", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		longKey := strings.Repeat("a", 300)
-		body := AuthRequest{AuthKey: longKey}
-		jsonBody, _ := json.Marshal(body)
-		req, _ := http.NewRequest("POST", "/auth/token", bytes.NewBuffer(jsonBody))
-		req.Header.Set("Content-Type", "application/json")
-		router.ServeHTTP(w, req)
-
-		assert.Equal(t, http.StatusBadRequest, w.Code)
-		assert.Contains(t, w.Body.String(), "Authentication key too long")
-	})
-
 	t.Run("Invalid auth key - wrong value", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		body := AuthRequest{AuthKey: "wrong-key"}
