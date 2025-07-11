@@ -22,7 +22,7 @@ func setupTestGamesController() (*GamesController, *MockDatabase) {
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
-		FrontendURL:         "http://localhost:3000",
+		FrontendURL:         "http://localhost:80",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},

@@ -72,7 +72,7 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 
 	assert.Equal(t, "development", config.Environment)
 	assert.False(t, config.EnableHTTPSRedirect)
-	assert.Equal(t, "http://localhost:3000", config.FrontendURL)
+	assert.Equal(t, "http://localhost:80", config.FrontendURL)
 	assert.Equal(t, "4000", config.Port)
 	assert.Equal(t, 10*time.Second, config.DatabaseConfig.DbTimeout)
 	assert.Equal(t, "postgres-dev", config.DatabaseConfig.DbHost)
@@ -248,7 +248,7 @@ func TestConfig_Struct(t *testing.T) {
 	config := Config{
 		Environment:         "test",
 		EnableHTTPSRedirect: true,
-		Port:                "3000",
+		Port:                "80",
 		FrontendURL:         "http://test.com",
 		DatabaseConfig: DbConfig{
 			DbHost:     "test-host",
@@ -264,7 +264,7 @@ func TestConfig_Struct(t *testing.T) {
 
 	assert.Equal(t, "test", config.Environment)
 	assert.True(t, config.EnableHTTPSRedirect)
-	assert.Equal(t, "3000", config.Port)
+	assert.Equal(t, "80", config.Port)
 	assert.Equal(t, "http://test.com", config.FrontendURL)
 	assert.Equal(t, 5*time.Second, config.DatabaseConfig.DbTimeout)
 	assert.Equal(t, 15*time.Second, config.ReadTimeout)

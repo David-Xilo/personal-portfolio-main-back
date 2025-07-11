@@ -22,7 +22,7 @@ func setupTestTechController() (*TechController, *MockDatabase) {
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
-		FrontendURL:         "http://localhost:3000",
+		FrontendURL:         "http://localhost:80",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
@@ -200,7 +200,7 @@ func TestTechController_HandleProjects_Timeout(t *testing.T) {
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
-		FrontendURL:         "http://localhost:3000",
+		FrontendURL:         "http://localhost:80",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 1 * time.Nanosecond, // Very short timeout
 		},
