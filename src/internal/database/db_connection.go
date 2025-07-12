@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log/slog"
+	"net/url"
 	"os"
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/models"
@@ -23,9 +24,11 @@ func InitDB(config configuration.Config) *gorm.DB {
 	}
 
 	dbConfig := config.DatabaseConfig
+	encodedPassword := url.QueryEscape(dbConfig.DbPassword)
+
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		dbConfig.DbUser,
-		dbConfig.DbPassword,
+		encodedPassword,
 		dbConfig.DbHost,
 		dbConfig.DbPort,
 		dbConfig.DbName,
@@ -39,7 +42,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 			slog.Info("Connected to the database successfully")
 			break
 		}
-		slog.Warn("Retrying to connect to the database", "attempt", i+1, "error", err)
+		slog.Warn("Retrying to connect to the database", "attempt", i+1)
 		time.Sleep(2 * time.Second)
 	}
 
