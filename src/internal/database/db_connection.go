@@ -44,7 +44,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 	}
 
 	if err != nil {
-		slog.Error("Failed to connect to the database", "attempts", maxRetries)
+		slog.Error("Failed to connect to the database", "attempts", maxRetries, "error", err)
 		os.Exit(1)
 	}
 
