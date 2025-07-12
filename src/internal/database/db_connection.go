@@ -22,7 +22,6 @@ func InitDB(config configuration.Config) *gorm.DB {
 		sslMode = "disable"
 	}
 
-	// postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
 	dbConfig := config.DatabaseConfig
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		dbConfig.DbUser,
@@ -40,7 +39,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 			slog.Info("Connected to the database successfully")
 			break
 		}
-		slog.Warn("Retrying to connect to the database", "attempt", i+1)
+		slog.Warn("Retrying to connect to the database", "attempt", i+1, "error", err)
 		time.Sleep(2 * time.Second)
 	}
 
