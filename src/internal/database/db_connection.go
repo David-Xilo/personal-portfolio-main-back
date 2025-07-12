@@ -18,7 +18,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 
 	var sslMode string
 	if config.IsProduction() {
-		sslMode = "required"
+		sslMode = "require"
 	} else {
 		sslMode = "disable"
 	}
