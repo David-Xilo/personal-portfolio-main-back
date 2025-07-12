@@ -73,7 +73,7 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 	assert.Equal(t, "development", config.Environment)
 	assert.False(t, config.EnableHTTPSRedirect)
 	assert.Equal(t, "http://localhost:80", config.FrontendURL)
-	assert.Equal(t, "4000", config.Port)
+	assert.Equal(t, "8080", config.Port)
 	assert.Equal(t, 10*time.Second, config.DatabaseConfig.DbTimeout)
 	assert.Equal(t, "postgres-dev", config.DatabaseConfig.DbHost)
 	assert.Equal(t, "dev_user", config.DatabaseConfig.DbUser)

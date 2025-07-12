@@ -198,7 +198,7 @@ go mod verify
 docker build -t safehouse-backend .
 
 # Run container
-docker run -p 4000:4000 \
+docker run -p 8080:8080 \
   -e ENV=development \
   -e GCP_PROJECT_ID=your-project \
   safehouse-backend

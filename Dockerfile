@@ -26,5 +26,5 @@ COPY --from=build /app/docs ./docs
 RUN adduser -D -s /bin/sh appuser
 USER appuser
 
-EXPOSE 4000
+EXPOSE 8080
 CMD ["./main"]

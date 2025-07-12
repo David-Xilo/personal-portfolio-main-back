@@ -36,7 +36,7 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	isProd := env == "production"
 
 	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:80")
-	port := GetEnvOrDefault("PORT", "4000")
+	port := GetEnvOrDefault("PORT", "8080")
 
 	dbHost := GetEnvOrDefault("DB_HOST", "postgres-dev")
 	dbUser := GetEnvOrDefault("DB_USER", "dev_user")
