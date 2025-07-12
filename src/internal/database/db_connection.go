@@ -20,11 +20,11 @@ func InitDB(config configuration.Config) *gorm.DB {
 	encodedPassword := url.QueryEscape(dbConfig.DbPassword)
 	var dsn string
 	if config.IsProduction() {
-		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
+		dsn = fmt.Sprintf("postgres://%s:%s@/%s?host=%s&sslmode=disable",
 			dbConfig.DbUser,
 			encodedPassword,
-			dbConfig.DbHost,
-			dbConfig.DbName)
+			dbConfig.DbName,
+			dbConfig.DbHost)
 	} else {
 		dsn = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 			dbConfig.DbUser,
