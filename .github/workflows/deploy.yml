@@ -11,16 +11,12 @@ on:
         options:
           - prod
       tag_version:
-        description: 'Optional: Custom tag version (e.g., v1.0.0)'
+        description: 'Custom tag version (e.g., v1.0.0)'
         required: true
         type: string
 
 env:
-  PROJECT_ID: personal-portfolio-safehouse
-  SERVICE_NAME: safehouse-backend-main
-  REGION: us-central1
-  SERVICE_ACCOUNT_EMAIL: 'safehouse-terraform-cicd@personal-portfolio-safehouse.iam.gserviceaccount.com'
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/942519139037/locations/global/workloadIdentityPools/safehouse-github-pool/providers/safehouse-github-provider'
+  DOCKER_HUB_REPO: xilo/safehouse-backend-main
 
 jobs:
   test:
@@ -55,25 +51,15 @@ jobs:
       image: ${{ steps.meta.outputs.primary_tag }}
       all_tags: ${{ steps.meta.outputs.tags }}
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud using Workload Identity
-        uses: google-github-actions/auth@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -86,18 +72,18 @@ jobs:
           CUSTOM_TAG="${{ github.event.inputs.tag_version }}"
           
           # Always tag with commit SHA
-          TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }},"
+          TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:${{ github.sha }},"
           
           # Tag based on environment
           if [[ "$ENVIRONMENT" == "prod" ]]; then
-            TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:latest,"
+            TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:latest,"
           elif [[ "$ENVIRONMENT" == "dev" ]]; then
-            TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:dev,"
+            TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:dev,"
           fi
           
           # Add custom tag if provided
           if [[ -n "$CUSTOM_TAG" ]]; then
-            TAGS="${TAGS}gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${CUSTOM_TAG},"
+            TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:${CUSTOM_TAG},"
           fi
           
           # Remove trailing comma
@@ -122,7 +108,6 @@ jobs:
           platforms: linux/amd64
           build-args: |
             ENV=${{ github.event.inputs.environment }}
-            GCP_PROJECT_ID=${{ env.PROJECT_ID }}
             BUILD_TIME=${{ github.run_number }}
             GIT_COMMIT=${{ github.sha }}
 
@@ -144,59 +129,25 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "${{ steps.meta.outputs.primary_tag }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "1. **Deploy via Infrastructure workflow** (Recommended)" >> $GITHUB_STEP_SUMMARY
-          echo "   - Go to 'Infrastructure Deployment' workflow" >> $GITHUB_STEP_SUMMARY
-          echo "   - Select 'apply' action and confirm with 'yes'" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "2. **Or use deployment helper:**" >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "cd terraform" >> $GITHUB_STEP_SUMMARY
-          echo "./get-latest-image.sh deploy" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "3. **Or manually update Terraform:**" >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "# Update main.tf with:" >> $GITHUB_STEP_SUMMARY
-          echo "image = \"${{ steps.meta.outputs.primary_tag }}\"" >> $GITHUB_STEP_SUMMARY
-          echo "terraform plan && terraform apply" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
   security-scan:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Scan built image for vulnerabilities
         run: |
-          # Get the image from the previous job output
           IMAGE="${{ needs.build-and-push.outputs.image }}"
           
           echo "🔍 Scanning image: $IMAGE"
           echo "📋 All built tags: ${{ needs.build-and-push.outputs.all_tags }}"
-          
-          # GCP vulnerability scanning (if available)
-          echo "Running GCP vulnerability scan..."
-          gcloud container images scan $IMAGE --remote || echo "⚠️ GCP vulnerability scanning not available in this region"
           
           # Trivy security scan
           echo "🔍 Running Trivy security scan..."
