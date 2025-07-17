@@ -69,21 +69,19 @@ func InitDB(config configuration.Config) *gorm.DB {
 func buildPasswordDSN(config configuration.Config) (string, error) {
 
 	dbConfig := config.DatabaseConfig
-	encodedPassword := url.QueryEscape(dbConfig.DbPassword)
+	userInfo := url.UserPassword(dbConfig.DbUser, dbConfig.DbPassword)
 
 	if config.IsProduction() {
 		// Cloud Run with Cloud SQL Proxy
 		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-			dbConfig.DbUser,
-			encodedPassword,
+			userInfo.String(),
 			dbConfig.DbHost,
 			dbConfig.DbPort,
 			dbConfig.DbName), nil
 	} else {
 		// Local development
 		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-			dbConfig.DbUser,
-			encodedPassword,
+			userInfo.String(),
 			dbConfig.DbHost,
 			dbConfig.DbPort,
 			dbConfig.DbName), nil
