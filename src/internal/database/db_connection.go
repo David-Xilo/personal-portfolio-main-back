@@ -6,7 +6,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log/slog"
-	"net/url"
 	"os"
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/models"
@@ -69,19 +68,18 @@ func InitDB(config configuration.Config) *gorm.DB {
 func buildPasswordDSN(config configuration.Config) (string, error) {
 
 	dbConfig := config.DatabaseConfig
-	userInfo := url.UserPassword(dbConfig.DbUser, dbConfig.DbPassword)
 
 	if config.IsProduction() {
-		// Cloud Run with Cloud SQL Proxy
-		return fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable",
-			userInfo.String(),
+		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			dbConfig.DbUser,
+			dbConfig.DbPassword, // No escaping needed!
 			dbConfig.DbHost,
 			dbConfig.DbPort,
 			dbConfig.DbName), nil
 	} else {
-		// Local development
-		return fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable",
-			userInfo.String(),
+		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			dbConfig.DbUser,
+			dbConfig.DbPassword, // No escaping needed!
 			dbConfig.DbHost,
 			dbConfig.DbPort,
 			dbConfig.DbName), nil
