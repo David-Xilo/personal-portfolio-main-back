@@ -73,7 +73,7 @@ func buildPasswordDSN(config configuration.Config) (string, error) {
 
 	if config.IsProduction() {
 		// Cloud Run with Cloud SQL Proxy
-		return fmt.Sprintf("postgres://%s:%s@/%s?host=%s&sslmode=disable",
+		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 			dbConfig.DbUser,
 			encodedPassword,
 			dbConfig.DbHost,
