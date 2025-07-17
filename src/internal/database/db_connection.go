@@ -47,7 +47,11 @@ func InitDB(config configuration.Config) *gorm.DB {
 		}
 		if i < maxRetries-1 {
 			waitTime := time.Duration(i+1) * 2 * time.Second
-			slog.Warn("Retrying to connect to the database", "attempt", i+1, "wait_seconds", waitTime.Seconds(), "error", err.Error())
+			slog.Warn("Connection failed, retrying...",
+				"attempt", i+1,
+				"max_retries", maxRetries,
+				"wait_seconds", waitTime.Seconds(),
+				"error", err.Error())
 			time.Sleep(waitTime)
 		}
 	}
@@ -106,7 +110,7 @@ func buildIAMDSN(config configuration.Config) string {
 }
 
 func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
-	slog.Debug("Attempting database connection", "attempt", attempt)
+	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout", "30s")
 
 	// Create a context with timeout for the connection attempt
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -116,27 +120,36 @@ func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
 		Logger: nil, // Disable GORM's default logger to avoid log spam
 	}
 
+	slog.Info("Opening GORM connection...")
 	db, err := gorm.Open(postgres.Open(dsn), config)
 	if err != nil {
+		slog.Error("GORM Open failed", "error", err, "attempt", attempt)
 		return nil, fmt.Errorf("gorm.Open failed: %w", err)
 	}
+	slog.Info("GORM connection opened successfully")
 
 	// Get the underlying sql.DB
+	slog.Info("Getting underlying SQL DB...")
 	sqlDB, err := db.DB()
 	if err != nil {
+		slog.Error("Failed to get underlying sql.DB", "error", err)
 		return nil, fmt.Errorf("failed to get underlying sql.DB: %w", err)
 	}
 
 	// Configure connection pool
+	slog.Info("Configuring connection pool...")
 	sqlDB.SetMaxOpenConns(10)
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	// Test the connection with context
+	slog.Info("Pinging database...")
 	if err := sqlDB.PingContext(ctx); err != nil {
+		slog.Error("Database ping failed", "error", err, "attempt", attempt)
 		sqlDB.Close()
 		return nil, fmt.Errorf("ping failed: %w", err)
 	}
+	slog.Info("Database ping successful", "attempt", attempt)
 
 	return db, nil
 }
