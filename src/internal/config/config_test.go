@@ -79,7 +79,7 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 	assert.Equal(t, "dev_user", config.DatabaseConfig.DbUser)
 	assert.Equal(t, "dev_db", config.DatabaseConfig.DbName)
 	assert.Equal(t, "5432", config.DatabaseConfig.DbPort)
-	assert.Equal(t, "test-db-password", config.DatabaseConfig.DbPassword)
+	// DbPassword is no longer part of DbConfig struct - it's used internally in LoadConfig
 	assert.Equal(t, 10*time.Second, config.ReadTimeout)
 	assert.Equal(t, 1*time.Second, config.WriteTimeout)
 }
@@ -255,7 +255,7 @@ func TestConfig_Struct(t *testing.T) {
 			DbName:     "test-db",
 			DbUser:     "test-user",
 			DbPort:     "5432",
-			DbPassword: "test-password",
+			// DbPassword removed from DbConfig struct
 			DbTimeout:  5 * time.Second,
 		},
 		ReadTimeout:  15 * time.Second,
@@ -296,7 +296,7 @@ func TestLoadConfig_DatabaseConfig(t *testing.T) {
 	assert.Equal(t, "custom-user", config.DatabaseConfig.DbUser)
 	assert.Equal(t, "custom-db", config.DatabaseConfig.DbName)
 	assert.Equal(t, "3306", config.DatabaseConfig.DbPort)
-	assert.Equal(t, "secret-password", config.DatabaseConfig.DbPassword)
+	// DbPassword is no longer part of DbConfig struct - it's used internally in LoadConfig
 	assert.Equal(t, 20*time.Second, config.DatabaseConfig.DbTimeout)
 }
 

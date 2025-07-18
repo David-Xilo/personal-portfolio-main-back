@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"safehouse-main-back/src/internal/secrets"
@@ -22,11 +23,12 @@ type Config struct {
 }
 
 type DbConfig struct {
+	DbUrl      string
+	UseIAMAuth bool
 	DbHost     string
 	DbName     string
 	DbUser     string
 	DbPort     string
-	DbPassword string
 	DbTimeout  time.Duration
 }
 
@@ -34,6 +36,9 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	env := GetEnvOrDefault("ENV", "development")
 
 	isProd := env == "production"
+
+	useIAMAuthStr := GetEnvOrDefault("USE_IAM_DB_AUTH", "false")
+	useIAMAuth := useIAMAuthStr == "true"
 
 	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:80")
 	port := GetEnvOrDefault("PORT", "8080")
@@ -43,6 +48,15 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	dbName := GetEnvOrDefault("DB_NAME", "dev_db")
 
 	dbPortStr := GetEnvOrDefault("DB_PORT", "5432")
+
+	defaultDbUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		dbUser,
+		appSecrets.DbPassword, // No escaping needed!
+		dbHost,
+		dbPortStr,
+		dbName)
+	dburl := GetEnvOrDefault("DATABASE_URL", defaultDbUrl)
+
 	_, err := strconv.Atoi(dbPortStr)
 	if err != nil {
 		slog.Warn("Invalid DB_PORT value, falling back to default", "default", "5432")
@@ -78,11 +92,12 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	}
 
 	dbConfig := DbConfig{
+		DbUrl:      dburl,
+		UseIAMAuth: useIAMAuth,
 		DbHost:     dbHost,
 		DbName:     dbName,
 		DbUser:     dbUser,
 		DbPort:     dbPortStr,
-		DbPassword: appSecrets.DbPassword,
 		DbTimeout:  dbTimeout,
 	}
 

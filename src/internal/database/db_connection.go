@@ -19,21 +19,15 @@ func InitDB(config configuration.Config) *gorm.DB {
 	//dbConfig := config.DatabaseConfig
 	//encodedPassword := url.QueryEscape(dbConfig.DbPassword)
 
-	useIAMAuth := os.Getenv("USE_IAM_DB_AUTH") == "true"
-
 	var dsn string
 	var err error
 
-	if useIAMAuth {
+	if config.DatabaseConfig.UseIAMAuth {
 		slog.Info("Using IAM authentication for database connection")
 		dsn = buildIAMDSN(config)
 	} else {
 		slog.Info("Using password authentication for database connection")
-		dsn, err = buildPasswordDSN(config)
-		if err != nil {
-			slog.Error("Failed to build password DSN", "error", err)
-			os.Exit(1)
-		}
+		dsn = config.DatabaseConfig.DbUrl
 	}
 
 	slog.Info("Attempting to connect to database", "dsn_pattern", maskPassword(dsn))
@@ -67,27 +61,6 @@ func InitDB(config configuration.Config) *gorm.DB {
 	}
 
 	return db
-}
-
-func buildPasswordDSN(config configuration.Config) (string, error) {
-
-	dbConfig := config.DatabaseConfig
-
-	if config.IsProduction() {
-		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-			dbConfig.DbUser,
-			dbConfig.DbPassword, // No escaping needed!
-			dbConfig.DbHost,
-			dbConfig.DbPort,
-			dbConfig.DbName), nil
-	} else {
-		return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-			dbConfig.DbUser,
-			dbConfig.DbPassword, // No escaping needed!
-			dbConfig.DbHost,
-			dbConfig.DbPort,
-			dbConfig.DbName), nil
-	}
 }
 
 func buildIAMDSN(config configuration.Config) string {
