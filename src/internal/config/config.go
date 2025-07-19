@@ -32,7 +32,7 @@ type DbConfig struct {
 	DbTimeout  time.Duration
 }
 
-func LoadConfig(appSecrets *secrets.AppSecrets) Config {
+func LoadConfig() Config {
 	env := GetEnvOrDefault("ENV", "development")
 
 	isProd := env == "production"
@@ -46,12 +46,13 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	dbHost := GetEnvOrDefault("DB_HOST", "postgres-dev")
 	dbUser := GetEnvOrDefault("DB_USER", "dev_user")
 	dbName := GetEnvOrDefault("DB_NAME", "dev_db")
+	dbPassword := GetEnvOrDefault("DB_PASSWORD", "dev_password")
 
 	dbPortStr := GetEnvOrDefault("DB_PORT", "5432")
 
 	defaultDbUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbUser,
-		appSecrets.DbPassword, // No escaping needed!
+		dbPassword,
 		dbHost,
 		dbPortStr,
 		dbName)
@@ -91,6 +92,8 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		jwtExpiration = 30
 	}
 
+	jwtSigning := GetEnvOrDefault("JWT_SIGNING_KEY", "dev_jwt_signing_key")
+
 	dbConfig := DbConfig{
 		DbUrl:      dburl,
 		UseIAMAuth: useIAMAuth,
@@ -109,7 +112,7 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		DatabaseConfig:       dbConfig,
 		ReadTimeout:          readTimeout,
 		WriteTimeout:         writeTimeout,
-		JWTSigningKey:        appSecrets.JWTSigningKey,
+		JWTSigningKey:        jwtSigning,
 		FrontendAuthKey:      secrets.FrontendTokenAuth,
 		JWTExpirationMinutes: jwtExpiration,
 	}

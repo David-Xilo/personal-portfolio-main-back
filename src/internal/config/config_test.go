@@ -2,7 +2,6 @@ package configuration
 
 import (
 	"os"
-	"safehouse-main-back/src/internal/secrets"
 	"testing"
 	"time"
 
@@ -64,11 +63,11 @@ func TestLoadConfig_DefaultValues(t *testing.T) {
 		os.Unsetenv(env)
 	}
 
-	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey: "test-jwt-key",
-		DbPassword:    "test-db-password",
-	}
-	config := LoadConfig(mockSecrets)
+	//mockSecrets := &secrets.AppSecrets{
+	//	JWTSigningKey: "test-jwt-key",
+	//	DbPassword:    "test-db-password",
+	//}
+	config := LoadConfig()
 
 	assert.Equal(t, "development", config.Environment)
 	assert.False(t, config.EnableHTTPSRedirect)
@@ -89,11 +88,11 @@ func TestLoadConfig_ProductionEnvironment(t *testing.T) {
 	os.Setenv("ENV", "production")
 	defer os.Unsetenv("ENV")
 
-	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey: "test-jwt-key",
-		DbPassword:    "test-db-password",
-	}
-	config := LoadConfig(mockSecrets)
+	//mockSecrets := &secrets.AppSecrets{
+	//	JWTSigningKey: "test-jwt-key",
+	//	DbPassword:    "test-db-password",
+	//}
+	config := LoadConfig()
 
 	assert.Equal(t, "production", config.Environment)
 	assert.True(t, config.EnableHTTPSRedirect)
@@ -115,11 +114,11 @@ func TestLoadConfig_CustomValues(t *testing.T) {
 		defer os.Unsetenv(key)
 	}
 
-	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey: "test-jwt-key",
-		DbPassword:    "test-db-password",
-	}
-	config := LoadConfig(mockSecrets)
+	//mockSecrets := &secrets.AppSecrets{
+	//	JWTSigningKey: "test-jwt-key",
+	//	DbPassword:    "test-db-password",
+	//}
+	config := LoadConfig()
 
 	assert.Equal(t, "staging", config.Environment)
 	assert.False(t, config.EnableHTTPSRedirect) // Only "production" enables HTTPS redirect
@@ -169,11 +168,11 @@ func TestLoadConfig_InvalidTimeouts(t *testing.T) {
 			os.Setenv(tt.envVar, tt.value)
 			defer os.Unsetenv(tt.envVar)
 
-			mockSecrets := &secrets.AppSecrets{
-				JWTSigningKey: "test-jwt-key",
-				DbPassword:    "test-db-password",
-			}
-			config := LoadConfig(mockSecrets)
+			//mockSecrets := &secrets.AppSecrets{
+			//	JWTSigningKey: "test-jwt-key",
+			//	DbPassword:    "test-db-password",
+			//}
+			config := LoadConfig()
 
 			switch tt.envVar {
 			case "DATABASE_TIMEOUT":
@@ -226,11 +225,11 @@ func TestLoadConfig_ValidTimeouts(t *testing.T) {
 			os.Setenv(tt.envVar, tt.value)
 			defer os.Unsetenv(tt.envVar)
 
-			mockSecrets := &secrets.AppSecrets{
-				JWTSigningKey: "test-jwt-key",
-				DbPassword:    "test-db-password",
-			}
-			config := LoadConfig(mockSecrets)
+			//mockSecrets := &secrets.AppSecrets{
+			//	JWTSigningKey: "test-jwt-key",
+			//	DbPassword:    "test-db-password",
+			//}
+			config := LoadConfig()
 
 			switch tt.envVar {
 			case "DATABASE_TIMEOUT":
@@ -251,12 +250,12 @@ func TestConfig_Struct(t *testing.T) {
 		Port:                "80",
 		FrontendURL:         "http://test.com",
 		DatabaseConfig: DbConfig{
-			DbHost:     "test-host",
-			DbName:     "test-db",
-			DbUser:     "test-user",
-			DbPort:     "5432",
+			DbHost: "test-host",
+			DbName: "test-db",
+			DbUser: "test-user",
+			DbPort: "5432",
 			// DbPassword removed from DbConfig struct
-			DbTimeout:  5 * time.Second,
+			DbTimeout: 5 * time.Second,
 		},
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 2 * time.Second,
@@ -286,11 +285,11 @@ func TestLoadConfig_DatabaseConfig(t *testing.T) {
 		defer os.Unsetenv(key)
 	}
 
-	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey: "test-jwt-key",
-		DbPassword:    "secret-password",
-	}
-	config := LoadConfig(mockSecrets)
+	//mockSecrets := &secrets.AppSecrets{
+	//	JWTSigningKey: "test-jwt-key",
+	//	DbPassword:    "secret-password",
+	//}
+	config := LoadConfig()
 
 	assert.Equal(t, "custom-host", config.DatabaseConfig.DbHost)
 	assert.Equal(t, "custom-user", config.DatabaseConfig.DbUser)
@@ -305,11 +304,11 @@ func TestLoadConfig_InvalidDBPort(t *testing.T) {
 	os.Setenv("DB_PORT", "invalid-port")
 	defer os.Unsetenv("DB_PORT")
 
-	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey: "test-jwt-key",
-		DbPassword:    "test-password",
-	}
-	config := LoadConfig(mockSecrets)
+	//mockSecrets := &secrets.AppSecrets{
+	//	JWTSigningKey: "test-jwt-key",
+	//	DbPassword:    "test-password",
+	//}
+	config := LoadConfig()
 
 	// Should still use the invalid port string but log warning
 	assert.Equal(t, "invalid-port", config.DatabaseConfig.DbPort)
@@ -347,11 +346,11 @@ func TestLoadConfig_JWTExpiration(t *testing.T) {
 				defer os.Unsetenv("JWT_EXPIRATION_MINUTES")
 			}
 
-			mockSecrets := &secrets.AppSecrets{
-				JWTSigningKey: "test-jwt-key",
-				DbPassword:    "test-password",
-			}
-			config := LoadConfig(mockSecrets)
+			//mockSecrets := &secrets.AppSecrets{
+			//	JWTSigningKey: "test-jwt-key",
+			//	DbPassword:    "test-password",
+			//}
+			config := LoadConfig()
 
 			assert.Equal(t, tt.expected, config.JWTExpirationMinutes)
 		})
