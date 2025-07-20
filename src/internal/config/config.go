@@ -3,10 +3,11 @@ package configuration
 import (
 	"log/slog"
 	"os"
-	"safehouse-main-back/src/internal/secrets"
 	"strconv"
 	"time"
 )
+
+const FrontendTokenAuth = "safehouse-frontend"
 
 type Config struct {
 	Environment          string
@@ -22,15 +23,15 @@ type Config struct {
 }
 
 type DbConfig struct {
-	DbHost     string
-	DbName     string
-	DbUser     string
-	DbPort     string
-	DbPassword string
-	DbTimeout  time.Duration
+	DbUrl     string
+	DbHost    string
+	DbName    string
+	DbUser    string
+	DbPort    string
+	DbTimeout time.Duration
 }
 
-func LoadConfig(appSecrets *secrets.AppSecrets) Config {
+func LoadConfig() Config {
 	env := GetEnvOrDefault("ENV", "development")
 
 	isProd := env == "production"
@@ -38,14 +39,10 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:80")
 	port := GetEnvOrDefault("PORT", "8080")
 
-	dbHost := GetEnvOrDefault("DB_HOST", "postgres-dev")
-	dbUser := GetEnvOrDefault("DB_USER", "dev_user")
-	dbName := GetEnvOrDefault("DB_NAME", "dev_db")
-
-	dbPortStr := GetEnvOrDefault("DB_PORT", "5432")
-	_, err := strconv.Atoi(dbPortStr)
-	if err != nil {
-		slog.Warn("Invalid DB_PORT value, falling back to default", "default", "5432")
+	dbUrl := os.Getenv("DATABASE_URL")
+	if dbUrl == "" {
+		slog.Warn("Invalid DATABASE_URL value, exiting application")
+		os.Exit(1)
 	}
 
 	dbTimeoutStr := GetEnvOrDefault("DATABASE_TIMEOUT", "10s")
@@ -70,6 +67,7 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		writeTimeout = 1 * time.Second
 	}
 
+	// TODO - Everything related with JWT is pretty useless right now - I'll come back to it later
 	jwtExpirationStr := GetEnvOrDefault("JWT_EXPIRATION_MINUTES", "30")
 	jwtExpiration, err := strconv.Atoi(jwtExpirationStr)
 	if err != nil {
@@ -77,13 +75,11 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		jwtExpiration = 30
 	}
 
+	jwtSigning := GetEnvOrDefault("JWT_SIGNING_KEY", "dev_jwt_signing_key")
+
 	dbConfig := DbConfig{
-		DbHost:     dbHost,
-		DbName:     dbName,
-		DbUser:     dbUser,
-		DbPort:     dbPortStr,
-		DbPassword: appSecrets.DbPassword,
-		DbTimeout:  dbTimeout,
+		DbUrl:     dbUrl,
+		DbTimeout: dbTimeout,
 	}
 
 	return Config{
@@ -94,8 +90,8 @@ func LoadConfig(appSecrets *secrets.AppSecrets) Config {
 		DatabaseConfig:       dbConfig,
 		ReadTimeout:          readTimeout,
 		WriteTimeout:         writeTimeout,
-		JWTSigningKey:        appSecrets.JWTSigningKey,
-		FrontendAuthKey:      secrets.FrontendTokenAuth,
+		JWTSigningKey:        jwtSigning,
+		FrontendAuthKey:      FrontendTokenAuth,
 		JWTExpirationMinutes: jwtExpiration,
 	}
 }

@@ -4,51 +4,20 @@ REST API backend for a personal portfolio application built with Go.
 
 ## Table of Contents
 
-- [Overview](#overview)
 - [Technologies Used](#technologies-used)
 - [API Endpoints](#api-endpoints)
-- [Getting Started](#getting-started)
 - [Development](#development)
 - [Testing](#testing)
 - [Deployment](#deployment)
-- [Security Features](#security-features)
-- [Environment Variables](#environment-variables)
-- [Contributing](#contributing)
-
-## Overview
-
-Safehouse Backend is a Go application that serves as the backend for a personal portfolio website. It features:
-
-- **JWT-based Authentication** with configurable expiration -> the project does not use credentials at the moment but that might change in the future
-- **Multi-layered Security** including rate limiting, input validation, and security headers
-- **PostgreSQL Database** with GORM for type-safe queries
-- **Dual Secret Management** (Google Cloud Secret Manager for production, local files/env for development)
-- **Cloud Native** with Docker support and Google Cloud Run deployment
-- **Testing** 
+- [Related Projects](#related-projects)
 
 ## Technologies Used
 
-### **Core Technologies**
+### **Technologies**
 - **Go 1.24** - Programming language
 - **Gin Framework** - HTTP web framework
 - **PostgreSQL** - Primary database
 - **GORM** - ORM for database operations
-- **JWT** - Authentication tokens
-
-### **Security & Middleware**
-- **Rate Limiting** - IP-based request throttling
-- **Input Validation** - XSS, SQL injection, and attack prevention
-- **Security Headers** - CSP, CORS, X-Frame-Options, etc.
-- **Google Cloud Secret Manager** - Secure secret storage
-
-### **Infrastructure & DevOps**
-- **Docker** - Containerization
-- **Google Cloud Run** - Serverless deployment
-- **Google Container Registry** - Image storage
-- **GitHub Actions** - CI/CD pipeline
-- **Trivy** - Container vulnerability scanning
-
-### **Development Tools**
 - **Swagger/OpenAPI** - API documentation
 - **Testify** - Testing framework
 
@@ -122,14 +91,6 @@ GET /swagger/*
 - **Description**: Swagger API documentation
 - **Authentication**: Not required (development only)
 
-## Getting Started
-
-### **Prerequisites**
-- Go 1.24 or higher
-- PostgreSQL 12+ database
-- Docker
-- Google Cloud SDK (for production deployment)
-
 ## Development
 
 ### **Development Environment Setup**
@@ -195,44 +156,19 @@ go mod verify
 
 ```bash
 # Build locally
-docker build -t safehouse-backend .
+docker build -t ${BACKEND_IMAGE} ${BACKEND_DOCKERFILE}
 
 # Run container
-docker run -p 8080:8080 \
-  -e ENV=development \
-  -e GCP_PROJECT_ID=your-project \
-  safehouse-backend
+docker run \
+        -e ENV=development \
+        -e DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable" \
+        -e FRONTEND_URL=${FRONTEND_URL} \
+        -e PORT=${BACKEND_PORT} \
+        --network ${NETWORK_NAME} \
+        --name ${BACKEND_CONTAINER} \
+        -p ${BACKEND_PORT}:${BACKEND_PORT} \
+        -d ${BACKEND_IMAGE}
 ```
-
-### **Local Development**
-
-```bash
-# Set development environment
-export ENV=development
-
-# Run with development secrets
-go run src/cmd/api/main.go
-```
-
-## Security Features
-
-### **Multi-Layer Security Architecture**
-
-- **JWT Authentication** with HMAC-SHA256 signing
-- **Rate Limiting** (5 requests/second, 30 burst)
-- **Input Validation** (XSS, SQL injection, path traversal protection)
-- **Security Headers** (CSP, HSTS, X-Frame-Options, etc.)
-- **Attack Prevention** (null byte, control character filtering)
-- **Security Logging** with attack attempt tracking
-- **SSL/TLS** required for database connections
-- **Container Security** (non-root user, minimal base image)
-
-### **Security Scanning**
-
-The CI/CD pipeline includes:
-- **Trivy** vulnerability scanning
-- **Google Cloud** container image scanning
-
 
 ## Related Projects
 

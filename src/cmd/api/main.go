@@ -10,7 +10,6 @@ import (
 	configuration "safehouse-main-back/src/internal/config"
 	"safehouse-main-back/src/internal/controllers"
 	"safehouse-main-back/src/internal/database"
-	"safehouse-main-back/src/internal/secrets"
 	"safehouse-main-back/src/internal/security"
 	"syscall"
 	"time"
@@ -19,27 +18,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	secretProvider, err := secrets.NewSecretProvider(ctx)
-	if err != nil {
-		slog.Error("Failed to initialize secret manager", "error", err)
-		os.Exit(1)
-	}
-
-	defer func(secretManager secrets.SecretProvider) {
-		err := secretManager.Close()
-		if err != nil {
-			slog.Error("Failed to Close secret manager", "error", err)
-			os.Exit(1)
-		}
-	}(secretProvider)
-
-	appSecrets, err := secretProvider.LoadAppSecrets(ctx)
-	if err != nil {
-		slog.Error("Failed to load application secrets", "error", err)
-		os.Exit(1)
-	}
-
-	config := configuration.LoadConfig(appSecrets)
+	config := configuration.LoadConfig()
 
 	gormDB := database.InitDB(config)
 	db := database.NewPostgresDB(gormDB)
