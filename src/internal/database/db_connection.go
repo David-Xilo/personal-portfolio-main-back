@@ -23,7 +23,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 
 	var db *gorm.DB
 	for i := 0; i < maxRetries; i++ {
-		db, err = attemptConnection(dsn, i+1) // Use your function instead of gorm.Open directly
+		db, err = attemptConnection(dsn, i+1)
 		if err == nil {
 			slog.Info("Connected to the database successfully")
 			break
@@ -86,8 +86,6 @@ func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
 	}
 	slog.Info("Database ping successful", "attempt", attempt)
 
-	db = db.WithContext(ctx)
-
 	return db, nil
 }
 
@@ -115,6 +113,19 @@ func CloseDB(db *gorm.DB) error {
 }
 
 func ValidateDBSchema(db *gorm.DB) {
+	for i := 0; i < maxRetries; i++ {
+		hasContactTable := db.Migrator().HasTable(&models.Contacts{})
+		if !hasContactTable {
+			if i < maxRetries-1 {
+				waitTime := time.Duration(i+1) * 2 * time.Second
+				slog.Warn("Database schema is outdated, retrying",
+					"attempt", i+1,
+					"max_retries", maxRetries,
+					"wait_seconds", waitTime.Seconds())
+				time.Sleep(waitTime)
+			}
+		}
+	}
 	if !db.Migrator().HasTable(&models.Contacts{}) {
 		slog.Error("Database schema is outdated. Please run the migrations first.")
 		os.Exit(1)

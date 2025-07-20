@@ -59,6 +59,10 @@ func SetupRoutes(db database.Database, config configuration.Config, jwtManager *
 }
 
 func createRouter(config configuration.Config) *RouterSetup {
+	if config.IsProduction() {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.Default()
 
 	router.Use(middleware.BasicRequestValidationMiddleware())

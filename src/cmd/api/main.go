@@ -18,26 +18,6 @@ import (
 func main() {
 	ctx := context.Background()
 
-	//secretProvider, err := secrets.NewSecretProvider(ctx)
-	//if err != nil {
-	//	slog.Error("Failed to initialize secret manager", "error", err)
-	//	os.Exit(1)
-	//}
-
-	//defer func(secretManager secrets.SecretProvider) {
-	//	err := secretManager.Close()
-	//	if err != nil {
-	//		slog.Error("Failed to Close secret manager", "error", err)
-	//		os.Exit(1)
-	//	}
-	//}(secretProvider)
-
-	//appSecrets, err := secretProvider.LoadAppSecrets(ctx)
-	//if err != nil {
-	//	slog.Error("Failed to load application secrets", "error", err)
-	//	os.Exit(1)
-	//}
-
 	config := configuration.LoadConfig()
 
 	gormDB := database.InitDB(config)
