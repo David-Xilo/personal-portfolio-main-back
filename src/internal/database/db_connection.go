@@ -113,19 +113,6 @@ func CloseDB(db *gorm.DB) error {
 }
 
 func ValidateDBSchema(db *gorm.DB) {
-	for i := 0; i < maxRetries; i++ {
-		hasContactTable := db.Migrator().HasTable(&models.Contacts{})
-		if !hasContactTable {
-			if i < maxRetries-1 {
-				waitTime := time.Duration(i+1) * 2 * time.Second
-				slog.Warn("Database schema is outdated, retrying",
-					"attempt", i+1,
-					"max_retries", maxRetries,
-					"wait_seconds", waitTime.Seconds())
-				time.Sleep(waitTime)
-			}
-		}
-	}
 	if !db.Migrator().HasTable(&models.Contacts{}) {
 		slog.Error("Database schema is outdated. Please run the migrations first.")
 		os.Exit(1)
