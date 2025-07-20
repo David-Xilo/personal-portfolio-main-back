@@ -13,6 +13,7 @@ import (
 )
 
 const maxRetries = 15
+const dbTimoutSeconds = 30
 
 func InitDB(config configuration.Config) *gorm.DB {
 
@@ -54,7 +55,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
 	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout", "30s")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimoutSeconds*time.Second)
 	defer cancel()
 
 	config := &gorm.Config{
