@@ -13,7 +13,7 @@ import (
 )
 
 const maxRetries = 15
-const dbTimoutSeconds = 30
+const dbTimeoutSeconds = 30
 
 func InitDB(config configuration.Config) *gorm.DB {
 
@@ -53,22 +53,18 @@ func InitDB(config configuration.Config) *gorm.DB {
 }
 
 func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
-	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout", "30s")
+	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout", dbTimeoutSeconds, "seconds")
 
-	ctx, cancel := context.WithTimeout(context.Background(), dbTimoutSeconds*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeoutSeconds*time.Second)
 	defer cancel()
 
-	config := &gorm.Config{
-		Logger: nil,
-	}
-
 	slog.Info("Opening GORM connection")
-	db, err := gorm.Open(postgres.Open(dsn), config)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		slog.Error("GORM Open failed", "error", err, "attempt", attempt)
 		return nil, fmt.Errorf("gorm.Open failed: %w", err)
 	}
-	slog.Info("GORM connection opened successfully")
+	slog.Info("GORM connection opened; pinging with timeout")
 
 	slog.Info("Getting underlying SQL DB")
 	sqlDB, err := db.DB()
@@ -89,6 +85,8 @@ func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
 		return nil, fmt.Errorf("ping failed: %w", err)
 	}
 	slog.Info("Database ping successful", "attempt", attempt)
+
+	db = db.WithContext(ctx)
 
 	return db, nil
 }
