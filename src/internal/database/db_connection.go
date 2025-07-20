@@ -53,7 +53,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 }
 
 func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
-	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout", dbTimeoutSeconds, "seconds")
+	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout in seconds", dbTimeoutSeconds)
 
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeoutSeconds*time.Second)
 	defer cancel()
