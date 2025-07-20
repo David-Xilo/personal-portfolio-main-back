@@ -6,17 +6,14 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'prod'
+        default: 'production'
         type: choice
         options:
-          - prod
+          - production
       tag_version:
-        description: 'Custom tag version (e.g., v1.0.0)'
+        description: 'Custom tag version'
         required: true
         type: string
-
-env:
-  DOCKER_HUB_REPO: xilo/safehouse-backend-main
 
 jobs:
   test:
@@ -71,19 +68,12 @@ jobs:
           ENVIRONMENT="${{ github.event.inputs.environment }}"
           CUSTOM_TAG="${{ github.event.inputs.tag_version }}"
           
-          # Always tag with commit SHA
-          TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:${{ github.sha }},"
-          
-          # Tag based on environment
-          if [[ "$ENVIRONMENT" == "prod" ]]; then
-            TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:latest,"
-          elif [[ "$ENVIRONMENT" == "dev" ]]; then
-            TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:dev,"
+          if [[ "$ENVIRONMENT" == "production" ]]; then
+            TAGS="${TAGS}xilo/safehouse-backend-main:latest,"
           fi
           
-          # Add custom tag if provided
           if [[ -n "$CUSTOM_TAG" ]]; then
-            TAGS="${TAGS}${{ env.DOCKER_HUB_REPO }}:${CUSTOM_TAG},"
+            TAGS="${TAGS}xilo/safehouse-backend-main:${CUSTOM_TAG},"
           fi
           
           # Remove trailing comma
@@ -108,33 +98,20 @@ jobs:
           platforms: linux/amd64
           build-args: |
             ENV=${{ github.event.inputs.environment }}
-            BUILD_TIME=${{ github.run_number }}
-            GIT_COMMIT=${{ github.sha }}
 
       - name: Output build summary
         run: |
           echo "## 🚀 Backend Build Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** ${{ github.event.inputs.environment }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Custom Tag:** ${{ github.event.inputs.tag_version || 'None' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Custom Tag:** ${{ github.event.inputs.tag_version }}" >> $GITHUB_STEP_SUMMARY
           echo "**Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Built Images:**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Primary Deployment Image:**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.primary_tag }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
   security-scan:
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -146,11 +123,10 @@ jobs:
         run: |
           IMAGE="${{ needs.build-and-push.outputs.image }}"
           
-          echo "🔍 Scanning image: $IMAGE"
-          echo "📋 All built tags: ${{ needs.build-and-push.outputs.all_tags }}"
+          echo "Scanning image: $IMAGE"
+          echo "All built tags: ${{ needs.build-and-push.outputs.all_tags }}"
           
-          # Trivy security scan
-          echo "🔍 Running Trivy security scan..."
+          echo "Running Trivy security scan..."
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:latest image \
@@ -158,4 +134,4 @@ jobs:
             --exit-code 0 \
             $IMAGE || echo "⚠️ Trivy scan completed with findings"
           
-          echo "✅ Security scan completed for: $IMAGE"
+          echo "Security scan completed for: $IMAGE"
