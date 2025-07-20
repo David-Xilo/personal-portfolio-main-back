@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/secrets"
 	security2 "safehouse-main-back/src/internal/security"
 )
 
@@ -15,10 +14,6 @@ func TestRouterSetup_GracefulShutdown(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	mockDB := new(MockDatabase)
-	mockSecrets := &secrets.AppSecrets{
-		JWTSigningKey: "test-jwt-key",
-		DbPassword:    "test-db-password",
-	}
 	config := configuration.Config{
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
@@ -29,8 +24,8 @@ func TestRouterSetup_GracefulShutdown(t *testing.T) {
 		},
 		ReadTimeout:          10 * time.Second,
 		WriteTimeout:         1 * time.Second,
-		JWTSigningKey:        mockSecrets.JWTSigningKey,
-		FrontendAuthKey:      secrets.FrontendTokenAuth,
+		JWTSigningKey:        "JWTSigningKey",
+		FrontendAuthKey:      configuration.FrontendTokenAuth,
 		JWTExpirationMinutes: 30,
 	}
 	jwtManager := security2.NewJWTManager(config)

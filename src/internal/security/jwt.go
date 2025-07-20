@@ -9,6 +9,7 @@ import (
 	configuration "safehouse-main-back/src/internal/config"
 )
 
+// TODO - Everything related with JWT is pretty useless right now - I'll come back to it later
 type JWTClaims struct {
 	jwt.RegisteredClaims
 	ClientType string `json:"client_type"`

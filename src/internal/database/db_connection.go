@@ -16,21 +16,9 @@ const maxRetries = 15
 
 func InitDB(config configuration.Config) *gorm.DB {
 
-	//dbConfig := config.DatabaseConfig
-	//encodedPassword := url.QueryEscape(dbConfig.DbPassword)
-
-	var dsn string
 	var err error
 
-	if config.DatabaseConfig.UseIAMAuth {
-		slog.Info("Using IAM authentication for database connection")
-		dsn = buildIAMDSN(config)
-	} else {
-		slog.Info("Using password authentication for database connection")
-		dsn = config.DatabaseConfig.DbUrl
-	}
-
-	slog.Info("Attempting to connect to database", "dsn_pattern", maskPassword(dsn))
+	dsn := config.DatabaseConfig.DbUrl
 
 	var db *gorm.DB
 	for i := 0; i < maxRetries; i++ {
@@ -41,7 +29,7 @@ func InitDB(config configuration.Config) *gorm.DB {
 		}
 		if i < maxRetries-1 {
 			waitTime := time.Duration(i+1) * 2 * time.Second
-			slog.Warn("Connection failed, retrying...",
+			slog.Warn("Connection failed, retrying",
 				"attempt", i+1,
 				"max_retries", maxRetries,
 				"wait_seconds", waitTime.Seconds(),
@@ -63,37 +51,17 @@ func InitDB(config configuration.Config) *gorm.DB {
 	return db
 }
 
-func buildIAMDSN(config configuration.Config) string {
-	dbConfig := config.DatabaseConfig
-
-	if config.IsProduction() {
-		// Cloud Run with Cloud SQL Proxy and IAM auth
-		return fmt.Sprintf("postgres://%s@/%s?host=%s&sslmode=require",
-			dbConfig.DbUser,
-			dbConfig.DbName,
-			dbConfig.DbHost)
-	} else {
-		// Local development with IAM (less common)
-		return fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=disable",
-			dbConfig.DbUser,
-			dbConfig.DbHost,
-			dbConfig.DbPort,
-			dbConfig.DbName)
-	}
-}
-
 func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
 	slog.Info("Starting database connection attempt", "attempt", attempt, "timeout", "30s")
 
-	// Create a context with timeout for the connection attempt
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	config := &gorm.Config{
-		Logger: nil, // Disable GORM's default logger to avoid log spam
+		Logger: nil,
 	}
 
-	slog.Info("Opening GORM connection...")
+	slog.Info("Opening GORM connection")
 	db, err := gorm.Open(postgres.Open(dsn), config)
 	if err != nil {
 		slog.Error("GORM Open failed", "error", err, "attempt", attempt)
@@ -101,22 +69,19 @@ func attemptConnection(dsn string, attempt int) (*gorm.DB, error) {
 	}
 	slog.Info("GORM connection opened successfully")
 
-	// Get the underlying sql.DB
-	slog.Info("Getting underlying SQL DB...")
+	slog.Info("Getting underlying SQL DB")
 	sqlDB, err := db.DB()
 	if err != nil {
 		slog.Error("Failed to get underlying sql.DB", "error", err)
 		return nil, fmt.Errorf("failed to get underlying sql.DB: %w", err)
 	}
 
-	// Configure connection pool
-	slog.Info("Configuring connection pool...")
+	slog.Info("Configuring connection pool")
 	sqlDB.SetMaxOpenConns(10)
 	sqlDB.SetMaxIdleConns(5)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	// Test the connection with context
-	slog.Info("Pinging database...")
+	slog.Info("Pinging database")
 	if err := sqlDB.PingContext(ctx); err != nil {
 		slog.Error("Database ping failed", "error", err, "attempt", attempt)
 		sqlDB.Close()
@@ -139,13 +104,6 @@ func testConnection(db *gorm.DB) error {
 
 	slog.Info("Database connection test passed")
 	return nil
-}
-
-func maskPassword(dsn string) string {
-	if len(dsn) > 50 {
-		return dsn[:30] + "***" + dsn[len(dsn)-10:]
-	}
-	return "***"
 }
 
 func CloseDB(db *gorm.DB) error {

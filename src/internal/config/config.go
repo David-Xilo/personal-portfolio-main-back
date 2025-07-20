@@ -1,13 +1,13 @@
 package configuration
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
-	"safehouse-main-back/src/internal/secrets"
 	"strconv"
 	"time"
 )
+
+const FrontendTokenAuth = "safehouse-frontend"
 
 type Config struct {
 	Environment          string
@@ -23,13 +23,12 @@ type Config struct {
 }
 
 type DbConfig struct {
-	DbUrl      string
-	UseIAMAuth bool
-	DbHost     string
-	DbName     string
-	DbUser     string
-	DbPort     string
-	DbTimeout  time.Duration
+	DbUrl     string
+	DbHost    string
+	DbName    string
+	DbUser    string
+	DbPort    string
+	DbTimeout time.Duration
 }
 
 func LoadConfig() Config {
@@ -37,30 +36,13 @@ func LoadConfig() Config {
 
 	isProd := env == "production"
 
-	useIAMAuthStr := GetEnvOrDefault("USE_IAM_DB_AUTH", "false")
-	useIAMAuth := useIAMAuthStr == "true"
-
 	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:80")
 	port := GetEnvOrDefault("PORT", "8080")
 
-	dbHost := GetEnvOrDefault("DB_HOST", "postgres-dev")
-	dbUser := GetEnvOrDefault("DB_USER", "dev_user")
-	dbName := GetEnvOrDefault("DB_NAME", "dev_db")
-	dbPassword := GetEnvOrDefault("DB_PASSWORD", "dev_password")
-
-	dbPortStr := GetEnvOrDefault("DB_PORT", "5432")
-
-	defaultDbUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		dbUser,
-		dbPassword,
-		dbHost,
-		dbPortStr,
-		dbName)
-	dburl := GetEnvOrDefault("DATABASE_URL", defaultDbUrl)
-
-	_, err := strconv.Atoi(dbPortStr)
-	if err != nil {
-		slog.Warn("Invalid DB_PORT value, falling back to default", "default", "5432")
+	dbUrl := os.Getenv("DATABASE_URL")
+	if dbUrl == "" {
+		slog.Warn("Invalid DATABASE_URL value, exiting application")
+		os.Exit(1)
 	}
 
 	dbTimeoutStr := GetEnvOrDefault("DATABASE_TIMEOUT", "10s")
@@ -85,6 +67,7 @@ func LoadConfig() Config {
 		writeTimeout = 1 * time.Second
 	}
 
+	// TODO - Everything related with JWT is pretty useless right now - I'll come back to it later
 	jwtExpirationStr := GetEnvOrDefault("JWT_EXPIRATION_MINUTES", "30")
 	jwtExpiration, err := strconv.Atoi(jwtExpirationStr)
 	if err != nil {
@@ -95,13 +78,8 @@ func LoadConfig() Config {
 	jwtSigning := GetEnvOrDefault("JWT_SIGNING_KEY", "dev_jwt_signing_key")
 
 	dbConfig := DbConfig{
-		DbUrl:      dburl,
-		UseIAMAuth: useIAMAuth,
-		DbHost:     dbHost,
-		DbName:     dbName,
-		DbUser:     dbUser,
-		DbPort:     dbPortStr,
-		DbTimeout:  dbTimeout,
+		DbUrl:     dbUrl,
+		DbTimeout: dbTimeout,
 	}
 
 	return Config{
@@ -113,7 +91,7 @@ func LoadConfig() Config {
 		ReadTimeout:          readTimeout,
 		WriteTimeout:         writeTimeout,
 		JWTSigningKey:        jwtSigning,
-		FrontendAuthKey:      secrets.FrontendTokenAuth,
+		FrontendAuthKey:      FrontendTokenAuth,
 		JWTExpirationMinutes: jwtExpiration,
 	}
 }

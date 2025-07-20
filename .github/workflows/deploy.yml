@@ -126,7 +126,7 @@ jobs:
           echo "Scanning image: $IMAGE"
           echo "All built tags: ${{ needs.build-and-push.outputs.all_tags }}"
           
-          echo "Running Trivy security scan..."
+          echo "Running Trivy security scan"
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:latest image \
