@@ -1,10 +1,8 @@
 package models
 
-import (
-	"time"
-)
+import "time"
 
-type TechRepositories struct {
+type ProjectRepositories struct {
 	ID             uint       `json:"id"`
 	CreatedAt      time.Time  `json:"created_at"`
 	UpdatedAt      time.Time  `json:"updated_at"`
@@ -14,9 +12,16 @@ type TechRepositories struct {
 	Description    string     `json:"description"`
 	LinkToGit      string     `json:"link_to_git"`
 }
-
-type TechRepositoriesDTO struct {
+type RepositoriesDTO struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	LinkToGit   string `json:"link_to_git"`
+}
+
+func ProjectRepositoriesToDTO(projectRepository *ProjectRepositories) *RepositoriesDTO {
+	return &RepositoriesDTO{
+		Title:       projectRepository.Title,
+		Description: projectRepository.Description,
+		LinkToGit:   projectRepository.LinkToGit,
+	}
 }

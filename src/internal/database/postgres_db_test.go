@@ -21,9 +21,7 @@ func setupTestDBForPostgres(t *testing.T) *gorm.DB {
 		&models.Contacts{},
 		&models.ProjectGroups{},
 		&models.GamesPlayed{},
-		&models.TechRepositories{},
-		&models.GameRepositories{},
-		&models.FinanceRepositories{},
+		&models.ProjectRepositories{},
 	)
 	require.NoError(t, err)
 
