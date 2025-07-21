@@ -30,9 +30,7 @@ func (p *PostgresDB) GetProjects(projectType models.ProjectType) ([]*models.Proj
 
 	if err := p.db.
 		Where("project_type = ?", projectType).
-		Preload("TechRepositories").
-		Preload("GameRepositories").
-		Preload("FinanceRepositories").
+		Preload("ProjectRepositories").
 		Order("created_at desc").
 		Find(&projectGroups).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

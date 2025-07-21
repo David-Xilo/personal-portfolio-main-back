@@ -9,7 +9,7 @@ import (
 
 func TestToProjectGroupsDTO(t *testing.T) {
 	// Create test repositories
-	techRepos := []TechRepositories{
+	repos := []ProjectRepositories{
 		{
 			ID:             1,
 			ProjectGroupID: 1,
@@ -17,20 +17,13 @@ func TestToProjectGroupsDTO(t *testing.T) {
 			Description:    "First tech repository",
 			LinkToGit:      "https://github.com/user/tech1",
 		},
-	}
-
-	gameRepos := []GameRepositories{
 		{
 			ID:             2,
 			ProjectGroupID: 1,
 			Title:          "Game Repo 1",
 			Description:    "First game repository",
 			LinkToGit:      "https://github.com/user/game1",
-			LinkToStore:    "https://store.com/game1",
 		},
-	}
-
-	financeRepos := []FinanceRepositories{
 		{
 			ID:             3,
 			ProjectGroupID: 1,
@@ -48,9 +41,7 @@ func TestToProjectGroupsDTO(t *testing.T) {
 		Title:               "Test Project Group",
 		Description:         "A test project group",
 		ProjectType:         "tech",
-		TechRepositories:    techRepos,
-		GameRepositories:    gameRepos,
-		FinanceRepositories: financeRepos,
+		ProjectRepositories: repos,
 	}
 
 	// Convert to DTO
@@ -74,9 +65,7 @@ func TestToProjectGroupsDTO_EmptyRepositories(t *testing.T) {
 		Title:               "Empty Project Group",
 		Description:         "A project group with no repositories",
 		ProjectType:         "game",
-		TechRepositories:    []TechRepositories{},
-		GameRepositories:    []GameRepositories{},
-		FinanceRepositories: []FinanceRepositories{},
+		ProjectRepositories: []ProjectRepositories{},
 	}
 
 	// Convert to DTO
@@ -202,16 +191,10 @@ func TestProjectGroupsRelationships(t *testing.T) {
 	projectGroup := ProjectGroups{}
 
 	// These slices start as nil or empty
-	assert.Len(t, projectGroup.TechRepositories, 0)
-	assert.Len(t, projectGroup.GameRepositories, 0)
-	assert.Len(t, projectGroup.FinanceRepositories, 0)
+	assert.Len(t, projectGroup.ProjectRepositories, 0)
 
 	// Test that we can assign to them
-	projectGroup.TechRepositories = []TechRepositories{{Title: "Test"}}
-	projectGroup.GameRepositories = []GameRepositories{{Title: "Test"}}
-	projectGroup.FinanceRepositories = []FinanceRepositories{{Title: "Test"}}
+	projectGroup.ProjectRepositories = []ProjectRepositories{{Title: "Test 1"}, {Title: "Test 2"}}
 
-	assert.Len(t, projectGroup.TechRepositories, 1)
-	assert.Len(t, projectGroup.GameRepositories, 1)
-	assert.Len(t, projectGroup.FinanceRepositories, 1)
+	assert.Len(t, projectGroup.ProjectRepositories, 2)
 }
