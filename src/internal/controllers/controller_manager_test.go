@@ -54,8 +54,8 @@ func TestSetupRoutes(t *testing.T) {
 	config := configuration.Config{
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
-		Port:                "8080",
-		FrontendURL:         "http://localhost:80",
+		Port:                "4000",
+		FrontendURL:         "http://localhost:3000",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
@@ -94,8 +94,8 @@ func TestCreateRouter(t *testing.T) {
 	config := configuration.Config{
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
-		Port:                "8080",
-		FrontendURL:         "http://localhost:80",
+		Port:                "4000",
+		FrontendURL:         "http://localhost:3000",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
@@ -123,7 +123,7 @@ func TestCreateRouter_WithHTTPSRedirect(t *testing.T) {
 	config := configuration.Config{
 		Environment:         "production",
 		EnableHTTPSRedirect: true,
-		Port:                "8080",
+		Port:                "4000",
 		FrontendURL:         "https://example.com",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
@@ -144,8 +144,8 @@ func TestGetControllers(t *testing.T) {
 	config := configuration.Config{
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
-		Port:                "8080",
-		FrontendURL:         "http://localhost:80",
+		Port:                "4000",
+		FrontendURL:         "http://localhost:3000",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},

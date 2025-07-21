@@ -36,8 +36,8 @@ func LoadConfig() Config {
 
 	isProd := env == "production"
 
-	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:80")
-	port := GetEnvOrDefault("PORT", "8080")
+	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:3000")
+	port := GetEnvOrDefault("PORT", "4000")
 
 	dbUrl := os.Getenv("DATABASE_URL")
 	if dbUrl == "" {

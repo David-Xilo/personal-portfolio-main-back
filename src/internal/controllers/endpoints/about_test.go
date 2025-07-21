@@ -51,8 +51,8 @@ func setupTestAboutController() (*AboutController, *MockDatabase) {
 	config := configuration.Config{
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
-		Port:                "8080",
-		FrontendURL:         "http://localhost:80",
+		Port:                "4000",
+		FrontendURL:         "http://localhost:3000",
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
