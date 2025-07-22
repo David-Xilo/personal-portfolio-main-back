@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -13,7 +14,7 @@ type Config struct {
 	Environment          string
 	EnableHTTPSRedirect  bool
 	Port                 string
-	FrontendURL          string
+	AllowedOrigins       []string
 	DatabaseConfig       DbConfig
 	ReadTimeout          time.Duration
 	WriteTimeout         time.Duration
@@ -36,12 +37,23 @@ func LoadConfig() Config {
 
 	isProd := env == "production"
 
-	frontendURL := GetEnvOrDefault("FRONTEND_URL", "http://localhost:3000")
+	originList := os.Getenv("ALLOWED_ORIGINS")
+	if originList == "" {
+		slog.Warn("Unset FRONTEND_URL value, exiting application")
+		os.Exit(1)
+	}
+	origins := []string{}
+	for _, origin := range strings.Split(originList, ",") {
+		if trimmed := strings.TrimSpace(origin); trimmed != "" {
+			origins = append(origins, trimmed)
+		}
+	}
+
 	port := GetEnvOrDefault("PORT", "4000")
 
 	dbUrl := os.Getenv("DATABASE_URL")
 	if dbUrl == "" {
-		slog.Warn("Invalid DATABASE_URL value, exiting application")
+		slog.Warn("Unset DATABASE_URL value, exiting application")
 		os.Exit(1)
 	}
 
@@ -85,7 +97,7 @@ func LoadConfig() Config {
 	return Config{
 		Environment:          env,
 		EnableHTTPSRedirect:  isProd,
-		FrontendURL:          frontendURL,
+		AllowedOrigins:       origins,
 		Port:                 port,
 		DatabaseConfig:       dbConfig,
 		ReadTimeout:          readTimeout,

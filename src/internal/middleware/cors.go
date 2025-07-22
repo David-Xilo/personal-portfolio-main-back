@@ -26,9 +26,7 @@ func getCORSConfig(config configuration.Config) cors.Config {
 	}
 
 	return cors.Config{
-		AllowOrigins: []string{
-			config.FrontendURL,
-		},
+		AllowOrigins:     config.AllowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     allowedHeaders,
 		AllowCredentials: true,

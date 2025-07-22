@@ -22,7 +22,7 @@ func setupTestFinanceController() (*FinanceController, *MockDatabase) {
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
-		FrontendURL:         "http://localhost:3000",
+		AllowedOrigins:      []string{"http://localhost:3000"},
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 10 * time.Second,
 		},
@@ -200,7 +200,7 @@ func TestFinanceController_HandleProjects_Timeout(t *testing.T) {
 		Environment:         "test",
 		EnableHTTPSRedirect: false,
 		Port:                "4000",
-		FrontendURL:         "http://localhost:3000",
+		AllowedOrigins:      []string{"http://localhost:3000"},
 		DatabaseConfig: configuration.DbConfig{
 			DbTimeout: 1 * time.Nanosecond, // Very short timeout
 		},
