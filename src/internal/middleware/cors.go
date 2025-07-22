@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	configuration "safehouse-main-back/src/internal/config"
+	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 func GetCors(config configuration.Config) gin.HandlerFunc {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	configuration "safehouse-main-back/src/internal/config"
+	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 func TestJWTManager_GenerateAndValidateToken(t *testing.T) {

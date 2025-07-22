@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"net/http"
-	"safehouse-main-back/src/internal/security"
+	"personal-portfolio-main-back/src/internal/security"
 	"strings"
 
 	"github.com/gin-gonic/gin"

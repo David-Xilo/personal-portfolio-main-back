@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 	"log/slog"
 	"os"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/models"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/models"
 	"time"
 )
 

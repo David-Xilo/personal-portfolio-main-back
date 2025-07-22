@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	configuration "safehouse-main-back/src/internal/config"
+	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 // TODO - Everything related with JWT is pretty useless right now - I'll come back to it later

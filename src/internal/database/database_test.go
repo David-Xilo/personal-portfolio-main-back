@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"safehouse-main-back/src/internal/models"
+	"personal-portfolio-main-back/src/internal/models"
 )
 
 // TestDatabaseInterface tests that the Database interface is properly defined

@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"net/http"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/database"
-	dberrors "safehouse-main-back/src/internal/database/errors"
-	"safehouse-main-back/src/internal/database/timeout"
-	"safehouse-main-back/src/internal/models"
-	"safehouse-main-back/src/internal/service"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/database"
+	dberrors "personal-portfolio-main-back/src/internal/database/errors"
+	"personal-portfolio-main-back/src/internal/database/timeout"
+	"personal-portfolio-main-back/src/internal/models"
+	"personal-portfolio-main-back/src/internal/service"
 )
 
 type AboutController struct {

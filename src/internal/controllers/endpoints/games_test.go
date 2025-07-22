@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/models"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/models"
 )
 
 func setupTestGamesController() (*GamesController, *MockDatabase) {

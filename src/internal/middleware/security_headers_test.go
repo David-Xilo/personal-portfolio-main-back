@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	configuration "safehouse-main-back/src/internal/config"
+	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 func TestSecurityHeadersMiddleware_BasicHeaders(t *testing.T) {

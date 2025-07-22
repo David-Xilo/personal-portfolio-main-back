@@ -3,9 +3,9 @@ package endpoints
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/middleware"
-	"safehouse-main-back/src/internal/security"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/middleware"
+	"personal-portfolio-main-back/src/internal/security"
 	"strings"
 )
 

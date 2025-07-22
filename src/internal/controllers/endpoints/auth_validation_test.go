@@ -10,8 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/security"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/security"
 )
 
 func TestAuthController_InputValidation(t *testing.T) {

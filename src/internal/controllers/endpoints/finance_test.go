@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/models"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/models"
 )
 
 func setupTestFinanceController() (*FinanceController, *MockDatabase) {

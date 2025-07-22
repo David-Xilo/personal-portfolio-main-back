@@ -79,12 +79,12 @@ info:
     email: support@support.com
     name: API Support
     url: http://www.support.com
-  description: safehouse documentation for backend
+  description: personal-portfolio documentation for backend
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://yourterms.com
-  title: safehouse
+  title: personal-portfolio
   version: "1.0"
 paths:
   /about/contact:

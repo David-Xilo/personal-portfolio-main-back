@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	configuration "safehouse-main-back/src/internal/config"
-	security2 "safehouse-main-back/src/internal/security"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	security2 "personal-portfolio-main-back/src/internal/security"
 )
 
 func TestRouterSetup_GracefulShutdown(t *testing.T) {

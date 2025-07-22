@@ -1,4 +1,4 @@
-module safehouse-main-back
+module personal-portfolio-main-back
 
 go 1.23.0
 

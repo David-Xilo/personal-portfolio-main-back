@@ -1,4 +1,4 @@
-# Safehouse Backend
+# Personal Portfolio Backend
 
 REST API backend for a personal portfolio application built with Go.
 
@@ -95,7 +95,7 @@ GET /swagger/*
 
 ### **Development Environment Setup**
 
-For development environment please check https://github.com/David-Xilo/safehouse-orchestration
+For development environment please check https://github.com/David-Xilo/personal-portfolio-orchestration
 
 ## Testing
 
@@ -172,8 +172,8 @@ docker run \
 
 ## Related Projects
 
-- **Frontend**: https://github.com/David-Xilo/safehouse-main-front
-- **Infrastructure**: https://github.com/David-Xilo/safehouse-orchestration
-- **Database**: https://github.com/David-Xilo/safehouse-db-schema
+- **Frontend**: https://github.com/David-Xilo/personal-portfolio-main-front
+- **Infrastructure**: https://github.com/David-Xilo/personal-portfolio-orchestration
+- **Database**: https://github.com/David-Xilo/personal-portfolio-db-schema
 
 ---

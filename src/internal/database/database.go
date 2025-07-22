@@ -1,7 +1,7 @@
 package database
 
 import (
-	"safehouse-main-back/src/internal/models"
+	"personal-portfolio-main-back/src/internal/models"
 )
 
 type Database interface {

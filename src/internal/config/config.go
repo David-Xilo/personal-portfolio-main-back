@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const FrontendTokenAuth = "safehouse-frontend"
+const FrontendTokenAuth = "personal-portfolio-frontend"
 
 type Config struct {
 	Environment          string

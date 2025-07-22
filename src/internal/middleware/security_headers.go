@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
-	configuration "safehouse-main-back/src/internal/config"
+	configuration "personal-portfolio-main-back/src/internal/config"
 	"strings"
 )
 

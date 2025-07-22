@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	security2 "safehouse-main-back/src/internal/security"
+	security2 "personal-portfolio-main-back/src/internal/security"
 	"testing"
 	"time"
 
@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/models"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/models"
 )
 
 // MockDatabase implements the Database interface for testing

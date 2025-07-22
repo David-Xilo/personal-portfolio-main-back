@@ -3,7 +3,7 @@ package database
 import (
 	"errors"
 	"gorm.io/gorm"
-	"safehouse-main-back/src/internal/models"
+	"personal-portfolio-main-back/src/internal/models"
 )
 
 type PostgresDB struct {

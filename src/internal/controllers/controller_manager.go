@@ -1,6 +1,6 @@
-// @title safehouse
+// @title personal-portfolio
 // @version 1.0
-// @description safehouse documentation for backend
+// @description personal-portfolio documentation for backend
 // @termsOfService http://yourterms.com
 
 // @contact.name API Support
@@ -18,13 +18,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
 	"net/http"
-	_ "safehouse-main-back/docs"
-	configuration "safehouse-main-back/src/internal/config"
-	"safehouse-main-back/src/internal/controllers/endpoints"
-	swaggerconfig "safehouse-main-back/src/internal/controllers/swagger"
-	"safehouse-main-back/src/internal/database"
-	"safehouse-main-back/src/internal/middleware"
-	"safehouse-main-back/src/internal/security"
+	_ "personal-portfolio-main-back/docs"
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/controllers/endpoints"
+	swaggerconfig "personal-portfolio-main-back/src/internal/controllers/swagger"
+	"personal-portfolio-main-back/src/internal/database"
+	"personal-portfolio-main-back/src/internal/middleware"
+	"personal-portfolio-main-back/src/internal/security"
 	"time"
 )
 

@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "safehouse documentation for backend",
-        "title": "safehouse",
+        "description": "personal-portfolio documentation for backend",
+        "title": "personal-portfolio",
         "termsOfService": "http://yourterms.com",
         "contact": {
             "name": "API Support",
