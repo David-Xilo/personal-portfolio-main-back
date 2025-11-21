@@ -8,13 +8,14 @@ import (
 	"testing"
 	"time"
 
+	configuration "personal-portfolio-main-back/src/internal/config"
+	"personal-portfolio-main-back/src/internal/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
-	configuration "personal-portfolio-main-back/src/internal/config"
-	"personal-portfolio-main-back/src/internal/models"
 )
 
 // MockDatabase implements the Database interface for testing

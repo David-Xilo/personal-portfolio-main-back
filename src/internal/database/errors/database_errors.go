@@ -3,11 +3,12 @@ package dberrors
 import (
 	"database/sql"
 	"errors"
+	"log/slog"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
-	"log/slog"
-	"net/http"
 )
 
 type APIError struct {

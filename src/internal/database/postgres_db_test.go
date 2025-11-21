@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
+	"personal-portfolio-main-back/src/internal/models"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"personal-portfolio-main-back/src/internal/models"
 )
 
 func setupTestDBForPostgres(t *testing.T) *gorm.DB {

@@ -4,9 +4,10 @@ import (
 	"testing"
 	"time"
 
+	configuration "personal-portfolio-main-back/src/internal/config"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 func TestJWTManager_GenerateAndValidateToken(t *testing.T) {

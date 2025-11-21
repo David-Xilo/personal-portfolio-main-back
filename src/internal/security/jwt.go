@@ -5,8 +5,9 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	configuration "personal-portfolio-main-back/src/internal/config"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // TODO - Everything related with JWT is pretty useless right now - I'll come back to it later

@@ -5,10 +5,11 @@ import (
 	"testing"
 	"time"
 
+	"personal-portfolio-main-back/src/internal/models"
+
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"personal-portfolio-main-back/src/internal/models"
 )
 
 func TestCloseDB_Success(t *testing.T) {

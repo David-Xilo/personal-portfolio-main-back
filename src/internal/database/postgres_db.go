@@ -2,8 +2,9 @@ package database
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"personal-portfolio-main-back/src/internal/models"
+
+	"gorm.io/gorm"
 )
 
 type PostgresDB struct {

@@ -1,12 +1,13 @@
 package endpoints
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	configuration "personal-portfolio-main-back/src/internal/config"
 	"personal-portfolio-main-back/src/internal/middleware"
 	"personal-portfolio-main-back/src/internal/security"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthController struct {

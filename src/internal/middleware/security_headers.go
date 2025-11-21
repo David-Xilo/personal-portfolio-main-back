@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	configuration "personal-portfolio-main-back/src/internal/config"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SecurityHeadersMiddleware(config configuration.Config) gin.HandlerFunc {

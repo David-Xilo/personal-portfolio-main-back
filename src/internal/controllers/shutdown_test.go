@@ -4,10 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	configuration "personal-portfolio-main-back/src/internal/config"
 	security2 "personal-portfolio-main-back/src/internal/security"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRouterSetup_GracefulShutdown(t *testing.T) {

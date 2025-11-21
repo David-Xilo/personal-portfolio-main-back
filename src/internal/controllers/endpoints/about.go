@@ -1,8 +1,6 @@
 package endpoints
 
 import (
-	"github.com/gin-gonic/gin"
-	"golang.org/x/net/context"
 	"net/http"
 	configuration "personal-portfolio-main-back/src/internal/config"
 	"personal-portfolio-main-back/src/internal/database"
@@ -10,6 +8,9 @@ import (
 	"personal-portfolio-main-back/src/internal/database/timeout"
 	"personal-portfolio-main-back/src/internal/models"
 	"personal-portfolio-main-back/src/internal/service"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
 )
 
 type AboutController struct {

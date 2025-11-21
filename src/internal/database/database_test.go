@@ -3,8 +3,9 @@ package database
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"personal-portfolio-main-back/src/internal/models"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestDatabaseInterface tests that the Database interface is properly defined

@@ -5,9 +5,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	configuration "personal-portfolio-main-back/src/internal/config"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 func TestSecurityHeadersMiddleware_BasicHeaders(t *testing.T) {

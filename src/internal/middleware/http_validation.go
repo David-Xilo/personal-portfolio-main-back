@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
 	"unicode"
+
+	"github.com/gin-gonic/gin"
 )
 
 const (

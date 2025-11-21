@@ -8,10 +8,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	configuration "personal-portfolio-main-back/src/internal/config"
 	"personal-portfolio-main-back/src/internal/security"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthController_InputValidation(t *testing.T) {

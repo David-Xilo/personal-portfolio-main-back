@@ -1,11 +1,12 @@
 package swaggerconfig
 
 import (
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
-	"strings"
 )
 
 func AddSwaggerEndpoint(router *gin.Engine) {

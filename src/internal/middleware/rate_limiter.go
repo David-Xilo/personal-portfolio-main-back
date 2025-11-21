@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
-	"golang.org/x/time/rate"
 	"log/slog"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 )
 
 type IPLimiterEntry struct {

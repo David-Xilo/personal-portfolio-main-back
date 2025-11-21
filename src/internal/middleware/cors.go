@@ -1,9 +1,10 @@
 package middleware
 
 import (
+	configuration "personal-portfolio-main-back/src/internal/config"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	configuration "personal-portfolio-main-back/src/internal/config"
 )
 
 func GetCors(config configuration.Config) gin.HandlerFunc {

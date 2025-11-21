@@ -15,8 +15,6 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"golang.org/x/time/rate"
 	"net/http"
 	_ "personal-portfolio-main-back/docs"
 	configuration "personal-portfolio-main-back/src/internal/config"
@@ -26,6 +24,9 @@ import (
 	"personal-portfolio-main-back/src/internal/middleware"
 	"personal-portfolio-main-back/src/internal/security"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 )
 
 type Controller interface {

@@ -1,14 +1,15 @@
 package endpoints
 
 import (
-	"github.com/gin-gonic/gin"
-	"golang.org/x/net/context"
 	"net/http"
 	configuration "personal-portfolio-main-back/src/internal/config"
 	"personal-portfolio-main-back/src/internal/database"
 	"personal-portfolio-main-back/src/internal/database/errors"
 	"personal-portfolio-main-back/src/internal/database/timeout"
 	"personal-portfolio-main-back/src/internal/models"
+
+	"github.com/gin-gonic/gin"
+	"golang.org/x/net/context"
 )
 
 type TechController struct {
